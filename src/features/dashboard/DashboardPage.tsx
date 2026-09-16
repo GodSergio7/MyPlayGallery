@@ -1,0 +1,166 @@
+import { Link } from 'react-router-dom'
+import { GAME_STATUSES } from '@/shared/types/domain'
+import { listEntries, listGames } from '@/data/mock/store'
+import { useAsync } from '@/shared/hooks/useAsync'
+import { formatDate, formatHours } from '@/shared/lib/format'
+import { PageHeader } from '@/shared/components/PageHeader'
+import { StatCard } from '@/shared/components/StatCard'
+import { Button } from '@/shared/components/Button'
+import { StatusBadge } from '@/shared/components/Badges'
+import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
+import { ClockIcon, LibraryIcon, StarIcon, TrophyIcon } from '@/shared/components/icons'
+import styles from './DashboardPage.module.css'
+
+export function DashboardPage() {
+  const entriesState = useAsync(() => listEntries(), [])
+  const gamesState = useAsync(() => listGames(), [])
+
+  if (entriesState.loading || gamesState.loading) {
+    return <LoadingState message="Cargando tu biblioteca…" />
+  }
+
+  if (entriesState.error || gamesState.error) {
+    return (
+      <ErrorState
+        onRetry={() => {
+          entriesState.reload()
+          gamesState.reload()
+        }}
+      />
+    )
+  }
+
+  const entries = entriesState.data ?? []
+  const games = gamesState.data ?? []
+
+  if (entries.length === 0) {
+    return (
+      <>
+        <PageHeader title="Dashboard" description="Tu biblioteca de videojuegos de un vistazo." />
+        <EmptyState
+          title="Tu biblioteca está vacía"
+          description="Busca un videojuego en RAWG y añádelo para empezar a registrar tu experiencia."
+          action={
+            <Link to="/search">
+              <Button>Buscar y añadir</Button>
+            </Link>
+          }
+        />
+      </>
+    )
+  }
+
+  const gameById = new Map(games.map((game) => [game.rawgId, game]))
+  const total = entries.length
+  const totalHours = entries.reduce((sum, entry) => sum + (entry.hoursPlayed ?? 0), 0)
+  const scored = entries.filter((entry) => entry.score !== null)
+  const averageScore =
+    scored.length > 0
+      ? scored.reduce((sum, entry) => sum + (entry.score ?? 0), 0) / scored.length
+      : null
+  const platinumCount = entries.filter((entry) => entry.platinum).length
+  const hundredCount = entries.filter((entry) => entry.hundredPercent).length
+
+  const statusCounts = GAME_STATUSES.map((status) => ({
+    ...status,
+    count: entries.filter((entry) => entry.status === status.value).length,
+  }))
+
+  const recent = [...entries]
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .slice(0, 5)
+
+  return (
+    <>
+      <PageHeader
+        title="Dashboard"
+        description="Tu biblioteca de videojuegos de un vistazo."
+        actions={
+          <Link to="/search">
+            <Button>Buscar y añadir</Button>
+          </Link>
+        }
+      />
+
+      <section className={styles.stats} aria-label="Métricas de la biblioteca">
+        <StatCard label="Entradas" value={total} icon={<LibraryIcon width={18} height={18} />} />
+        <StatCard
+          label="Horas totales"
+          value={formatHours(totalHours)}
+          icon={<ClockIcon width={18} height={18} />}
+        />
+        <StatCard
+          label="Nota media"
+          value={averageScore === null ? '—' : `${averageScore.toFixed(1)}/10`}
+          icon={<StarIcon width={18} height={18} />}
+          hint={scored.length > 0 ? `Sobre ${scored.length} con nota` : 'Sin notas'}
+        />
+        <StatCard
+          label="Platinos"
+          value={platinumCount}
+          icon={<TrophyIcon width={18} height={18} />}
+        />
+        <StatCard label="Juegos al 100%" value={hundredCount} />
+      </section>
+
+      <div className={styles.columns}>
+        <section className={styles.panel} aria-labelledby="distribution-heading">
+          <h2 id="distribution-heading" className={styles.panelTitle}>
+            Distribución por estado
+          </h2>
+          <ul className={styles.distribution}>
+            {statusCounts.map((status) => (
+              <li key={status.value} className={styles.distributionRow}>
+                <span className={styles.distributionLabel}>{status.label}</span>
+                <span className={styles.bar} aria-hidden="true">
+                  <span
+                    className={styles.barFill}
+                    data-status={status.value}
+                    style={{ width: `${(status.count / total) * 100}%` }}
+                  />
+                </span>
+                <span className={styles.distributionCount}>{status.count}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className={styles.panel} aria-labelledby="recent-heading">
+          <h2 id="recent-heading" className={styles.panelTitle}>
+            Actividad reciente
+          </h2>
+          <ul className={styles.recent}>
+            {recent.map((entry) => {
+              const game = gameById.get(entry.rawgId)
+              return (
+                <li key={entry.id}>
+                  <Link to={`/library/${entry.id}`} className={styles.recentItem}>
+                    <span className={styles.recentInfo}>
+                      <span className={styles.recentTitle}>
+                        {game?.title ?? 'Juego desconocido'}
+                      </span>
+                      <span className={styles.recentMeta}>{entry.platformName}</span>
+                    </span>
+                    <span className={styles.recentRight}>
+                      <StatusBadge status={entry.status} />
+                      <span className={styles.recentDate}>{formatDate(entry.updatedAt)}</span>
+                    </span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      </div>
+
+      <section className={styles.quick} aria-label="Accesos rápidos">
+        <Link to="/search">
+          <Button variant="secondary">Buscar en RAWG</Button>
+        </Link>
+        <Link to="/library">
+          <Button variant="secondary">Ver biblioteca</Button>
+        </Link>
+      </section>
+    </>
+  )
+}

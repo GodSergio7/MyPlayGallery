@@ -1,0 +1,40 @@
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.searchField {
+  align-self: end;
+}
+
+.clearWrapper {
+  display: flex;
+  align-items: flex-end;
+}
+
+@media (min-width: 480px) {
+  .toolbar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .searchField {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .toolbar {
+    grid-template-columns: 2fr 1fr 1fr 1.2fr auto;
+    align-items: end;
+  }
+
+  .searchField {
+    grid-column: auto;
+  }
+}

@@ -1,0 +1,60 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  line-height: 1.6;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pending {
+  color: var(--color-warning);
+  border-color: rgba(232, 196, 106, 0.4);
+}
+
+.playing {
+  color: var(--color-primary);
+  border-color: rgba(184, 247, 228, 0.4);
+}
+
+.completed {
+  color: var(--color-success);
+  border-color: rgba(111, 224, 176, 0.4);
+}
+
+.abandoned {
+  color: var(--color-error);
+  border-color: rgba(240, 138, 138, 0.4);
+}
+
+.platform {
+  color: var(--color-text-secondary);
+}
+
+.score {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.scoreMax {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.scoreEmpty {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
