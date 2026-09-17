@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { deleteEntry, getEntry, getGame, listEntriesByGame, updateEntry } from '@/data/mock/store'
+import { gamesRepository, libraryRepository } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
@@ -22,15 +22,15 @@ export function EntryDetailPage() {
   const id = entryId ?? ''
   const navigate = useNavigate()
 
-  const entryState = useAsync(() => getEntry(id), [id])
+  const entryState = useAsync(() => libraryRepository.getById(id), [id])
   const entry = entryState.data
 
   const gameState = useAsync(
-    () => (entry ? getGame(entry.rawgId) : Promise.resolve(undefined)),
+    () => (entry ? gamesRepository.getById(entry.rawgId) : Promise.resolve(undefined)),
     [entry?.rawgId],
   )
   const siblingsState = useAsync(
-    () => (entry ? listEntriesByGame(entry.rawgId) : Promise.resolve([])),
+    () => (entry ? libraryRepository.listByGame(entry.rawgId) : Promise.resolve([])),
     [entry?.rawgId],
   )
 
@@ -60,7 +60,7 @@ export function EntryDetailPage() {
 
     setSaving(true)
     try {
-      await updateEntry(id, {
+      await libraryRepository.update(id, {
         ...formToInput(values, game.platforms),
         rawgId: entry.rawgId,
       })
@@ -72,7 +72,7 @@ export function EntryDetailPage() {
   }
 
   async function handleDelete() {
-    await deleteEntry(id)
+    await libraryRepository.remove(id)
     navigate('/library')
   }
 

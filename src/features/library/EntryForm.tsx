@@ -81,7 +81,7 @@ export function EntryFields({
           id={`${idPrefix}-hours`}
           type="number"
           min={0}
-          step={0.5}
+          step={0.1}
           inputMode="decimal"
           value={values.hoursPlayed}
           onChange={(event) => onChange({ hoursPlayed: event.target.value })}

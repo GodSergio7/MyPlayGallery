@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { GAME_STATUSES } from '@/shared/types/domain'
-import { listEntries, listGames } from '@/data/mock/store'
+import { gamesRepository, libraryRepository } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
@@ -12,8 +12,8 @@ import { ClockIcon, LibraryIcon, StarIcon, TrophyIcon } from '@/shared/component
 import styles from './DashboardPage.module.css'
 
 export function DashboardPage() {
-  const entriesState = useAsync(() => listEntries(), [])
-  const gamesState = useAsync(() => listGames(), [])
+  const entriesState = useAsync(() => libraryRepository.list(), [])
+  const gamesState = useAsync(() => gamesRepository.list(), [])
 
   if (entriesState.loading || gamesState.loading) {
     return <LoadingState message="Cargando tu biblioteca…" />

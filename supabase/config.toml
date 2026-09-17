@@ -1,0 +1,7 @@
+project_id = "myplaygallery"
+
+# SPEC-04: el gateway de Supabase exige JWT (anon key) para invocar la funcion,
+# de modo que no queda completamente expuesta. No se implementa autenticacion
+# de usuario en esta fase; se abordara en SPEC-05/Auth.
+[functions.rawg-proxy]
+verify_jwt = true

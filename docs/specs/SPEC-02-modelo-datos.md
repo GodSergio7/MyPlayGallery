@@ -5,7 +5,7 @@
 | ID | SPEC-02 |
 | Título | Modelo de datos de Supabase |
 | Versión | 0.2 |
-| Estado | Borrador |
+| Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
 | Redactado por | Agente de desarrollo |

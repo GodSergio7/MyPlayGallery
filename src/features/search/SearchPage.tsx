@@ -1,29 +1,25 @@
 import { useEffect, useState } from 'react'
-import { searchGames } from '@/data/mock/store'
-import { useAsync } from '@/shared/hooks/useAsync'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
 import { GameGrid } from '@/shared/components/GameGrid'
 import { GameCard } from '@/shared/components/GameCard'
 import { EmptyState, ErrorState, GridSkeleton } from '@/shared/components/StateViews'
+import { useGameSearch } from './hooks/useGameSearch'
 import styles from './SearchPage.module.css'
+
+const DEBOUNCE_MS = 350
 
 export function SearchPage() {
   const [term, setTerm] = useState('')
   const [debounced, setDebounced] = useState('')
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebounced(term), 350)
+    const timer = setTimeout(() => setDebounced(term), DEBOUNCE_MS)
     return () => clearTimeout(timer)
   }, [term])
 
   const isSearching = debounced.trim() !== ''
-  const state = useAsync(
-    () => (isSearching ? searchGames(debounced) : Promise.resolve([])),
-    [debounced, isSearching],
-  )
-
-  const results = state.data ?? []
+  const { games, isLoading, isError, refetch } = useGameSearch(debounced)
 
   return (
     <>
@@ -48,18 +44,18 @@ export function SearchPage() {
           title="Busca tu próximo juego"
           description="Escribe el título de un videojuego para ver resultados de RAWG y abrir su ficha."
         />
-      ) : state.loading ? (
+      ) : isLoading ? (
         <GridSkeleton count={6} />
-      ) : state.error ? (
-        <ErrorState onRetry={state.reload} />
-      ) : results.length === 0 ? (
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
+      ) : games.length === 0 ? (
         <EmptyState
           title="Sin resultados"
           description={`No hemos encontrado juegos para “${debounced}”. Prueba con otro término.`}
         />
       ) : (
         <GameGrid>
-          {results.map((game) => (
+          {games.map((game) => (
             <GameCard key={game.rawgId} game={game} />
           ))}
         </GameGrid>

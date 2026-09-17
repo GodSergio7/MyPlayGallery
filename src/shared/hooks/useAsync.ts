@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface AsyncState<T> {
   data: T | null
@@ -16,13 +16,26 @@ export function useAsync<T>(
   const [error, setError] = useState<Error | null>(null)
   const [nonce, setNonce] = useState(0)
 
+  const taskRef = useRef(task)
+
+  useEffect(() => {
+    taskRef.current = task
+  }, [task])
+
+  const requestKey = JSON.stringify([...deps, nonce])
+  const [previousKey, setPreviousKey] = useState(requestKey)
+
+  if (previousKey !== requestKey) {
+    setPreviousKey(requestKey)
+    setLoading(true)
+    setError(null)
+  }
+
   useEffect(() => {
     let active = true
 
-    setLoading(true)
-    setError(null)
-
-    task()
+    taskRef
+      .current()
       .then((result) => {
         if (active) {
           setData(result)
@@ -39,8 +52,7 @@ export function useAsync<T>(
     return () => {
       active = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, nonce])
+  }, [requestKey])
 
   const reload = useCallback(() => {
     setNonce((value) => value + 1)

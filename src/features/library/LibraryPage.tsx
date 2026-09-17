@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GAME_STATUSES, type GameStatus } from '@/shared/types/domain'
-import { listEntries, listGames } from '@/data/mock/store'
+import { gamesRepository, libraryRepository } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
@@ -49,8 +49,8 @@ function compareNullableDates(a: string | null, b: string | null): number {
 }
 
 export function LibraryPage() {
-  const entriesState = useAsync(() => listEntries(), [])
-  const gamesState = useAsync(() => listGames(), [])
+  const entriesState = useAsync(() => libraryRepository.list(), [])
+  const gamesState = useAsync(() => gamesRepository.list(), [])
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'all' | GameStatus>('all')
@@ -109,7 +109,8 @@ export function LibraryPage() {
     })
   }, [entries, gameById, query, status, platformId, sort])
 
-  const hasActiveFilters = query.trim() !== '' || status !== 'all' || platformId !== 'all'
+  const hasActiveFilters =
+    query.trim() !== '' || status !== 'all' || platformId !== 'all' || sort !== 'recent'
 
   function clearFilters() {
     setQuery('')

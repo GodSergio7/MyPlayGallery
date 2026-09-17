@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { createEntry, getGame, listEntriesByGame } from '@/data/mock/store'
+import { gamesRepository, libraryRepository } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
@@ -21,8 +21,11 @@ export function GameDetailPage() {
   const rawgIdNumber = Number(rawgId)
   const navigate = useNavigate()
 
-  const gameState = useAsync(() => getGame(rawgIdNumber), [rawgIdNumber])
-  const entriesState = useAsync(() => listEntriesByGame(rawgIdNumber), [rawgIdNumber])
+  const gameState = useAsync(() => gamesRepository.getById(rawgIdNumber), [rawgIdNumber])
+  const entriesState = useAsync(
+    () => libraryRepository.listByGame(rawgIdNumber),
+    [rawgIdNumber],
+  )
 
   const [values, setValues] = useState<EntryFormValues>(createEmptyForm)
   const [submitting, setSubmitting] = useState(false)
@@ -45,7 +48,7 @@ export function GameDetailPage() {
 
     setSubmitting(true)
     try {
-      const created = await createEntry({
+      const created = await libraryRepository.create({
         ...formToInput(values, game.platforms),
         rawgId: rawgIdNumber,
       })
