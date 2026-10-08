@@ -182,3 +182,18 @@
     padding: 0 var(--space-5);
   }
 }
+
+.signOut {
+  display: inline-flex;
+  padding: var(--space-2);
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.signOut:hover {
+  color: var(--color-text);
+  background: var(--color-surface);
+}

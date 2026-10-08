@@ -6,7 +6,7 @@ export interface Platform {
 }
 
 export interface Game {
-  rawgId: number
+  externalId: number
   title: string
   coverUrl: string | null
   released: string | null
@@ -16,7 +16,7 @@ export interface Game {
 
 export interface LibraryEntry {
   id: string
-  rawgId: number
+  externalId: number
   platformId: number
   platformName: string
   status: GameStatus

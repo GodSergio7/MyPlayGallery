@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GAME_STATUSES, type GameStatus } from '@/shared/types/domain'
-import { gamesRepository, libraryRepository } from '@/data/repository'
+import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
@@ -49,19 +49,18 @@ function compareNullableDates(a: string | null, b: string | null): number {
 }
 
 export function LibraryPage() {
-  const entriesState = useAsync(() => libraryRepository.list(), [])
-  const gamesState = useAsync(() => gamesRepository.list(), [])
+  const libraryState = useAsync(loadLibraryWithGames, [])
 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'all' | GameStatus>('all')
   const [platformId, setPlatformId] = useState<'all' | number>('all')
   const [sort, setSort] = useState<SortKey>('recent')
 
-  const entries = useMemo(() => entriesState.data ?? [], [entriesState.data])
-  const games = useMemo(() => gamesState.data ?? [], [gamesState.data])
+  const entries = useMemo(() => libraryState.data?.entries ?? [], [libraryState.data])
+  const games = useMemo(() => libraryState.data?.games ?? [], [libraryState.data])
 
   const gameById = useMemo(
-    () => new Map(games.map((game) => [game.rawgId, game])),
+    () => new Map(games.map((game) => [game.externalId, game])),
     [games],
   )
 
@@ -82,7 +81,7 @@ export function LibraryPage() {
         return false
       }
       if (normalized) {
-        const title = gameById.get(entry.rawgId)?.title.toLowerCase() ?? ''
+        const title = gameById.get(entry.externalId)?.title.toLowerCase() ?? ''
         if (!title.includes(normalized)) {
           return false
         }
@@ -99,8 +98,8 @@ export function LibraryPage() {
         case 'started':
           return compareNullableDates(a.startedOn, b.startedOn)
         case 'title':
-          return (gameById.get(a.rawgId)?.title ?? '').localeCompare(
-            gameById.get(b.rawgId)?.title ?? '',
+          return (gameById.get(a.externalId)?.title ?? '').localeCompare(
+            gameById.get(b.externalId)?.title ?? '',
           )
         case 'recent':
         default:
@@ -119,7 +118,7 @@ export function LibraryPage() {
     setSort('recent')
   }
 
-  if (entriesState.loading || gamesState.loading) {
+  if (libraryState.loading) {
     return (
       <>
         <PageHeader title="Biblioteca" description="Todas tus experiencias registradas." />
@@ -128,12 +127,11 @@ export function LibraryPage() {
     )
   }
 
-  if (entriesState.error || gamesState.error) {
+  if (libraryState.error) {
     return (
       <ErrorState
         onRetry={() => {
-          entriesState.reload()
-          gamesState.reload()
+          libraryState.reload()
         }}
       />
     )
@@ -145,7 +143,7 @@ export function LibraryPage() {
         <PageHeader title="Biblioteca" description="Todas tus experiencias registradas." />
         <EmptyState
           title="Todavía no has añadido juegos"
-          description="Busca un videojuego en RAWG y registra tu experiencia para verlo aquí."
+          description="Busca un videojuego en IGDB y registra tu experiencia para verlo aquí."
           action={
             <Link to="/search">
               <Button>Buscar y añadir</Button>
@@ -242,7 +240,7 @@ export function LibraryPage() {
       ) : (
         <GameGrid>
           {filtered.map((entry) => (
-            <LibraryCard key={entry.id} entry={entry} game={gameById.get(entry.rawgId)} />
+            <LibraryCard key={entry.id} entry={entry} game={gameById.get(entry.externalId)} />
           ))}
         </GameGrid>
       )}

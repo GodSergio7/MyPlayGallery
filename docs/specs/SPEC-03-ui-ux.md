@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.2 |
+| Versión | 0.3 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | 0.1 | 2026-09-16 | Creación inicial. UI/UX y diseño visual del MVP. |
 | 0.2 | 2026-09-16 | Resueltas las 6 decisiones pendientes de la v0.1: paleta auxiliar, patrón de navegación, métricas del Dashboard, búsqueda/filtros/ordenación de Biblioteca, rejilla única y footer. SPEC-03 aprobada. |
+| 0.3 | 2026-10-08 | Enmienda por SPEC-05: se añaden la pantalla de acceso (inicio de sesión y registro), la pantalla "Revisa tu email" y el botón de cerrar sesión en la cabecera. |
 
 ## Leyenda de estados de decisión
 
@@ -102,6 +103,20 @@ Rutas (DEFINIDAS en SPEC-01) y su elemento de navegación:
   - Tablet y escritorio (`≥ 768`): navegación en el header superior.
 
 **Estado**: `DEFINIDO` (header superior en tablet/escritorio; barra inferior fija en móvil con Inicio, Biblioteca y Buscar; sin sidebar ni menú hamburguesa).
+
+### 3.1 Acceso y sesión (enmienda v0.3, SPEC-05)
+
+- **Sin sesión**, cualquier ruta muestra la **pantalla de acceso** en lugar del shell: una tarjeta centrada con el logo, sin header, footer ni navegación.
+- La pantalla de acceso tiene dos modos en el mismo formulario, que se alternan con un enlace al pie:
+  - **Iniciar sesión**: email y contraseña. Enlace "¿No tienes cuenta? Regístrate".
+  - **Crear cuenta**: email, contraseña (pista "Mínimo 6 caracteres") y repetición de la contraseña. Enlace "¿Ya tienes cuenta? Inicia sesión".
+- El botón principal se desactiva mientras faltan campos o se está enviando, y cambia su texto ("Entrando…", "Creando cuenta…").
+- Los errores se muestran bajo los campos con el color de error y `role="alert"`.
+- Tras registrarse con confirmación de email activada se muestra **"Revisa tu email"**, con el email usado y un botón "Ir a iniciar sesión".
+- **Con sesión**, la cabecera muestra a la derecha un botón de icono **"Cerrar sesión"** (con `aria-label` y `title`), visible en móvil y escritorio.
+- Mientras se comprueba la sesión al cargar se muestra un estado de carga ("Comprobando tu sesión…").
+
+**Estado**: `IMPLEMENTADO`.
 
 ## 4. Dashboard (`/`)
 
@@ -393,7 +408,8 @@ No se escribe código de mocks en esta SPEC; solo se especifica qué deben repre
 **Heredado de SPEC-00/01/02**
 
 - Colores `#B8F7E4` (principal) y `#26272C` (fondo); estética oscura, minimalista, moderna, limpia, sin RGB gamer.
-- Rutas `/`, `/library`, `/search`, `/game/:rawgId`, `/library/:entryId`.
+- Rutas `/`, `/library`, `/search`, `/game/:rawgId`, `/library/:entryId` (desde SPEC-04 v0.4, `/game/:gameId`).
+- Pantalla de acceso con inicio de sesión y registro, y botón de cerrar sesión (sección 3.1, SPEC-05).
 - 4 estados fijos, puntuación 0–10 (pasos de 0.5), fechas día/mes/año, plataformas de RAWG.
 - Una `LibraryEntry` por (usuario, juego, plataforma); varias experiencias por juego.
 - Los metadatos de RAWG no se almacenan en Supabase.

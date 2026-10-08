@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-01 |
 | Título | Arquitectura técnica |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -18,6 +18,7 @@
 | 0.1 | 2026-09-16 | Creación inicial. Arquitectura técnica del MVP. |
 | 0.2 | 2026-09-16 | Resueltas las decisiones pendientes: estructura, oxlint, CSS Modules, React Router, estado/datos, Supabase Auth + RLS, RAWG sin persistir + Edge Function, Zod, testing y alias `@/`. |
 | 0.3 | 2026-09-16 | Aprobadas las decisiones de gestión de variables de entorno y de errores/carga. SPEC-01 aprobada. Unificada la nomenclatura a MyPlayGallery. |
+| 0.4 | 2026-10-08 | Enmienda por SPEC-05: Supabase Auth pasa de cuenta única a registro abierto (multiusuario). Se añaden `AuthProvider` y `RequireAuth` en `src/app/auth`. |
 
 ## Leyenda de estados de decisión
 
@@ -139,7 +140,7 @@ No se ha detectado ninguna incompatibilidad técnica con estas rutas. Los nombre
 
 **Propuesta**:
 
-- **Estado de UI**: `useState`/`useReducer` y contexto de React cuando sea necesario. Sin librería global de estado en el MVP monousuario.
+- **Estado de UI**: `useState`/`useReducer` y contexto de React cuando sea necesario. Sin librería global de estado en el MVP. La sesión de usuario se comparte con un contexto de React (`AuthProvider`, SPEC-05).
 - **Datos asíncronos**: **TanStack Query** para consultas, caché y revalidación (búsqueda en RAWG y lecturas/escrituras de Supabase), con claves de consulta por dominio.
 
 **Alternativas**: hooks propios con `useEffect` (menos dependencias, pero gestión manual de caché/errores/carreras); Zustand (útil si crece el estado global, innecesario ahora).
@@ -157,12 +158,13 @@ No se ha detectado ninguna incompatibilidad técnica con estas rutas. Los nombre
 - Cliente `@supabase/supabase-js` encapsulado en `src/data/supabase`.
 - Patrón **repositorio**: funciones tipadas (p. ej. `listLibraryEntries`, `createLibraryEntry`, `updateLibraryEntry`) que aíslan las consultas del resto de la app.
 - **Supabase Auth** con **RLS**: las políticas se aplicarán por usuario autenticado.
-- El producto sigue siendo **monousuario** funcionalmente: una única cuenta personal, sin perfiles, invitaciones, roles ni funciones multiusuario.
+- ~~El producto sigue siendo **monousuario** funcionalmente.~~ Desde la v0.4 el producto es **multiusuario con registro abierto**: cada usuario tiene su propia biblioteca, sin perfiles, invitaciones, roles ni funciones sociales (SPEC-05).
 - El detalle del modelo de tablas, campos y políticas RLS queda para **SPEC-02**.
 
 **Decisión — control de acceso**:
 
-- Opción elegida: **cuenta única con Supabase Auth y RLS**, por seguridad, aun siendo una aplicación personal. La alternativa sin autenticación (proyecto/anon key restringido) queda descartada.
+- Opción elegida: **Supabase Auth y RLS**. La alternativa sin autenticación (proyecto/anon key restringido) queda descartada.
+- v0.3: cuenta única. **v0.4: registro abierto**, con inicio y cierre de sesión en la app (SPEC-05).
 
 **Estado**: `DEFINIDO` (estrategia de acceso). El modelo de datos: `PENDING` en **SPEC-02**.
 
@@ -314,7 +316,7 @@ No se ha detectado ninguna incompatibilidad técnica con estas rutas. Los nombre
 | 4 | Estrategia de CSS: CSS Modules + variables CSS | 5 | DEFINIDO |
 | 5 | Routing: React Router | 6 | DEFINIDO |
 | 6 | Estado: React + TanStack Query (sin Zustand) | 7 | DEFINIDO |
-| 7 | Supabase: Auth + RLS (estrategia de acceso) | 8 | DEFINIDO |
+| 7 | Supabase: Auth + RLS (estrategia de acceso); multiusuario desde SPEC-05 | 8 | DEFINIDO |
 | 8 | Caché de RAWG: sin persistir en PostgreSQL, caché de TanStack Query | 9 | DEFINIDO |
 | 9 | Exposición de la API key: RAWG vía Supabase Edge Function | 11 | DEFINIDO |
 | 10 | Validación: Zod | 13 | DEFINIDO |

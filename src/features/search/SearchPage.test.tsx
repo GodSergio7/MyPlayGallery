@@ -8,15 +8,15 @@ import { HttpResponse, delay, http } from 'msw'
 import { setupServer } from 'msw/node'
 import { SearchPage } from './SearchPage'
 
-const BASE = 'http://localhost:54321/functions/v1/rawg-proxy'
+const BASE = 'http://localhost:54321/functions/v1/igdb-proxy'
 
 const sampleGame = {
-  id: 4200,
+  id: 1942,
   name: 'The Witcher 3: Wild Hunt',
-  released: '2015-05-18',
-  background_image: 'https://media.rawg.io/media/games/witcher.jpg',
-  genres: [{ id: 5, name: 'RPG' }],
-  platforms: [{ platform: { id: 4, name: 'PC' } }],
+  first_release_date: 1431907200,
+  cover: { url: '//images.igdb.com/igdb/image/upload/t_thumb/hash.jpg' },
+  genres: [{ name: 'RPG' }],
+  platforms: [{ id: 6, name: 'PC (Microsoft Windows)' }],
 }
 
 const server = setupServer()
@@ -66,7 +66,7 @@ describe('SearchPage', () => {
     expect(screen.getByText('Busca tu próximo juego')).toBeDefined()
   })
 
-  it('muestra los resultados de RAWG', async () => {
+  it('muestra los resultados de IGDB', async () => {
     server.use(http.get(`${BASE}/games`, () => HttpResponse.json({ results: [sampleGame] })))
 
     const user = userEvent.setup()

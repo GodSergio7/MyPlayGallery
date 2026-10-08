@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { gamesRepository, libraryRepository } from '@/data/repository'
+import { errorMessage } from '@/data/errors'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
@@ -26,17 +27,18 @@ export function EntryDetailPage() {
   const entry = entryState.data
 
   const gameState = useAsync(
-    () => (entry ? gamesRepository.getById(entry.rawgId) : Promise.resolve(undefined)),
-    [entry?.rawgId],
+    () => (entry ? gamesRepository.getById(entry.externalId) : Promise.resolve(undefined)),
+    [entry?.externalId],
   )
   const siblingsState = useAsync(
-    () => (entry ? libraryRepository.listByGame(entry.rawgId) : Promise.resolve([])),
-    [entry?.rawgId],
+    () => (entry ? libraryRepository.listByGame(entry.externalId) : Promise.resolve([])),
+    [entry?.externalId],
   )
 
   const [editing, setEditing] = useState(false)
   const [values, setValues] = useState<EntryFormValues | null>(null)
   const [saving, setSaving] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const game = gameState.data
@@ -59,21 +61,30 @@ export function EntryDetailPage() {
     }
 
     setSaving(true)
+    setActionError(null)
     try {
       await libraryRepository.update(id, {
         ...formToInput(values, game.platforms),
-        rawgId: entry.rawgId,
+        externalId: entry.externalId,
       })
       setEditing(false)
       entryState.reload()
+    } catch (error) {
+      setActionError(errorMessage(error))
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete() {
-    await libraryRepository.remove(id)
-    navigate('/library')
+    setActionError(null)
+    try {
+      await libraryRepository.remove(id)
+      navigate('/library')
+    } catch (error) {
+      setConfirmOpen(false)
+      setActionError(errorMessage(error))
+    }
   }
 
   if (entryState.loading || gameState.loading || siblingsState.loading) {
@@ -145,6 +156,11 @@ export function EntryDetailPage() {
               platforms={game?.platforms ?? []}
               onChange={updateForm}
             />
+            {actionError && (
+              <p className={styles.formError} role="alert">
+                {actionError}
+              </p>
+            )}
             <div className={styles.formActions}>
               <Button
                 variant="ghost"
@@ -160,6 +176,11 @@ export function EntryDetailPage() {
           </section>
         ) : (
           <section className={styles.panel} aria-label="Resumen de la experiencia">
+            {actionError && (
+              <p className={styles.formError} role="alert">
+                {actionError}
+              </p>
+            )}
             <dl className={styles.details}>
               <div className={styles.detailItem}>
                 <dt>Puntuación</dt>

@@ -144,3 +144,9 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.formError {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+}

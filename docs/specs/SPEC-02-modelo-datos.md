@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-02 |
 | Título | Modelo de datos de Supabase |
-| Versión | 0.2 |
+| Versión | 0.3 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | 0.1 | 2026-09-16 | Creación inicial. Modelo de datos de Supabase. |
 | 0.2 | 2026-09-16 | Resueltas las decisiones pendientes del modelo: sin tablas `games`/`platforms`/`profiles`, `status` con `CHECK`, horas `numeric(6,1)`, booleanos, trigger de `updated_at` y eliminación de `rawg_slug`. Ajustados índices. |
+| 0.3 | 2026-10-08 | Enmienda por SPEC-05: producto multiusuario con registro abierto (el modelo no cambia: `user_id` + RLS ya aislaban los datos). Por la migración a IGDB (SPEC-04 v0.4), la columna `rawg_id` se implementa como `external_id` y los `platform_id` son de IGDB. El modelo está implementado en `supabase/migrations/20261008000000_library_entries.sql`. |
 
 ## Leyenda de estados de decisión
 
@@ -25,6 +26,8 @@
 - **PENDING**: decisión abierta que debe aprobar el responsable de producto.
 
 > Esta SPEC es **solo documentación**. **No** contiene SQL ejecutable, **no** crea tablas, **no** ejecuta migraciones y **no** conecta con Supabase.
+>
+> **Enmienda (2026-10-08)**: el modelo ya está implementado en `supabase/migrations/20261008000000_library_entries.sql`. Allí `rawg_id` se llama **`external_id`** (identificador de IGDB, SPEC-04 v0.4) y los `platform_id` son de IGDB. Donde esta SPEC dice `rawg_id` o "RAWG", léase `external_id` e "IGDB". El producto es multiusuario ([SPEC-05](SPEC-05-autenticacion-multiusuario.md)).
 
 ---
 
@@ -38,7 +41,7 @@
 - **RAWG no se convierte en una base de datos propia**: en el MVP no se duplican título, portada, géneros, fecha de lanzamiento ni plataformas disponibles.
 - De RAWG solo se conserva el **identificador necesario** para volver a consultar el juego.
 - La información personal se guarda en Supabase y se aísla por usuario mediante **Auth + RLS**.
-- Producto **monousuario**, pero el modelo debe ser correcto y seguro con una cuenta autenticada.
+- Producto **multiusuario** con registro abierto (SPEC-05): el modelo aísla los datos de cada usuario autenticado.
 - Prioridad: simplicidad, integridad, seguridad, mantenibilidad y ampliabilidad.
 
 **Estado**: `DEFINIDO`.
@@ -63,7 +66,7 @@ library_entries ──(rawg_id)──▶ RAWG (externo, no persistido)
 
 **Alternativas descartadas para el MVP**:
 
-- Crear tablas `games` y `platforms`: más "normalizado", pero añade sincronización y mantenimiento sin aportar valor claro en un MVP monousuario (ver secciones 5 y 6).
+- Crear tablas `games` y `platforms`: más "normalizado", pero añade sincronización y mantenimiento sin aportar valor claro en el MVP (ver secciones 5 y 6).
 - Persistir una copia local de los metadatos de RAWG: descartado por SPEC-01 (no persistir RAWG).
 
 **Estado**: `DEFINIDO`.
@@ -74,7 +77,7 @@ library_entries ──(rawg_id)──▶ RAWG (externo, no persistido)
 | --- | --- | --- |
 | `auth.users` | Sí (gestionada por Supabase Auth) | Identidad del usuario autenticado. Aporta `user_id`. |
 | `library_entries` | Sí | Datos personales de cada experiencia (juego + plataforma). |
-| `profiles` | **No** en el MVP | No aporta valor al ser monousuario; se valorará si crece el producto. |
+| `profiles` | **No** en el MVP | No aporta valor: el email de `auth.users` basta para identificar a cada usuario (SPEC-05). Se valorará si se necesitan perfiles públicos. |
 | `games` | **No** en el MVP | `Game` es una referencia externa de RAWG identificada por `rawg_id`. |
 | `platforms` | **No** en el MVP (valor controlado) | La plataforma se guarda como `platform_id` + `platform_name` en la entrada. |
 | `game_status` | **No** en el MVP (valor controlado) | Los 4 estados fijos se representan con una columna restringida. |
@@ -255,9 +258,9 @@ Esto materializa el ejemplo de *Witcher 3*: el mismo juego puede tener una entra
 
 - Se usa **Supabase Auth**; el usuario vive en `auth.users` (no se crea tabla de perfiles en el MVP).
 - `library_entries.user_id` referencia `auth.users(id)`.
-- Producto **monousuario**: una única cuenta personal, sin roles, invitaciones ni perfiles.
+- Producto **multiusuario** con registro abierto (SPEC-05): cada usuario tiene su propia biblioteca, sin roles, invitaciones ni perfiles.
 
-**Estado**: `DEFINIDO`. No se crea tabla `profiles` en el MVP; `auth.users` es suficiente. Si el producto evoluciona a multiusuario/perfiles, se abordará mediante una SPEC futura.
+**Estado**: `DEFINIDO`. No se crea tabla `profiles`; `auth.users` es suficiente. Perfiles públicos o datos compartidos requerirían una SPEC nueva.
 
 ## 18. Diseño conceptual de RLS
 
@@ -324,7 +327,7 @@ Interpretación: *Witcher 3* (mismo `rawg_id`) registrado de forma independiente
 - Añadir `platforms` como tabla de referencia si se necesita integridad/agrupación.
 - Añadir `games` como ancla local si se decide persistir metadatos mínimos de RAWG.
 - Añadir valoraciones o campos adicionales (p. ej. dificultad, rejugadas) mediante nueva SPEC.
-- Añadir `profiles` solo si el producto evoluciona a multiusuario.
+- Añadir `profiles` solo si se necesitan perfiles públicos o datos de usuario adicionales al email.
 
 ## 24. Decisiones
 
@@ -338,7 +341,7 @@ Interpretación: *Witcher 3* (mismo `rawg_id`) registrado de forma independiente
 - Puntuación 0–10 en pasos de 0.5.
 - Horas y fechas (día/mes/año).
 - No persistir metadatos de RAWG en PostgreSQL; guardar solo identificadores.
-- Supabase Auth + RLS, producto monousuario.
+- Supabase Auth + RLS, producto multiusuario con registro abierto (SPEC-05).
 - Sin tabla `profiles` en el MVP; `auth.users` es suficiente.
 
 **Estructura de datos**

@@ -8,7 +8,7 @@ import styles from './GameCard.module.css'
 export function GameCard({ game }: { game: Game }) {
   return (
     <Link
-      to={`/game/${game.rawgId}`}
+      to={`/game/${game.externalId}`}
       className={styles.card}
       aria-label={`Ver ${game.title}`}
     >

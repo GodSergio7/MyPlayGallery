@@ -72,3 +72,7 @@ export function isAbortError(value: unknown): boolean {
     (value as { name?: unknown }).name === 'AbortError'
   )
 }
+
+export function errorMessage(error: unknown): string {
+  return isDataError(error) ? error.message : DEFAULT_MESSAGES.internalError
+}

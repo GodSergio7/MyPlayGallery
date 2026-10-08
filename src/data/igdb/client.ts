@@ -31,7 +31,7 @@ function normalizeInvokeError(error: unknown, response: Response | undefined): D
   return new DataError('internalError')
 }
 
-export async function invokeRawgProxy(path: string, signal?: AbortSignal): Promise<unknown> {
+export async function invokeIgdbProxy(path: string, signal?: AbortSignal): Promise<unknown> {
   let client: SupabaseClient
   try {
     client = getSupabaseClient()

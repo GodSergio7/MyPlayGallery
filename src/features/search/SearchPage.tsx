@@ -25,13 +25,13 @@ export function SearchPage() {
     <>
       <PageHeader
         title="Buscar videojuegos"
-        description="Consultas la base de datos de RAWG para añadir juegos a tu biblioteca."
+        description="Consultas la base de datos de IGDB para añadir juegos a tu biblioteca."
       />
 
       <div className={styles.searchField}>
         <SearchBar
-          id="rawg-search"
-          label="Buscar videojuegos en RAWG"
+          id="igdb-search"
+          label="Buscar videojuegos en IGDB"
           value={term}
           onChange={setTerm}
           placeholder="Buscar por título…"
@@ -42,7 +42,7 @@ export function SearchPage() {
       {!isSearching ? (
         <EmptyState
           title="Busca tu próximo juego"
-          description="Escribe el título de un videojuego para ver resultados de RAWG y abrir su ficha."
+          description="Escribe el título de un videojuego para ver resultados de IGDB y abrir su ficha."
         />
       ) : isLoading ? (
         <GridSkeleton count={6} />
@@ -56,7 +56,7 @@ export function SearchPage() {
       ) : (
         <GameGrid>
           {games.map((game) => (
-            <GameCard key={game.rawgId} game={game} />
+            <GameCard key={game.externalId} game={game} />
           ))}
         </GameGrid>
       )}

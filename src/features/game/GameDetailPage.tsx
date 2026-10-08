@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { gamesRepository, libraryRepository } from '@/data/repository'
+import { errorMessage } from '@/data/errors'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
@@ -17,18 +18,19 @@ import {
 import styles from './GameDetailPage.module.css'
 
 export function GameDetailPage() {
-  const { rawgId } = useParams()
-  const rawgIdNumber = Number(rawgId)
+  const { gameId } = useParams()
+  const gameIdNumber = Number(gameId)
   const navigate = useNavigate()
 
-  const gameState = useAsync(() => gamesRepository.getById(rawgIdNumber), [rawgIdNumber])
+  const gameState = useAsync(() => gamesRepository.getById(gameIdNumber), [gameIdNumber])
   const entriesState = useAsync(
-    () => libraryRepository.listByGame(rawgIdNumber),
-    [rawgIdNumber],
+    () => libraryRepository.listByGame(gameIdNumber),
+    [gameIdNumber],
   )
 
   const [values, setValues] = useState<EntryFormValues>(createEmptyForm)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const game = gameState.data
   const entries = entriesState.data ?? []
@@ -47,12 +49,15 @@ export function GameDetailPage() {
     }
 
     setSubmitting(true)
+    setSubmitError(null)
     try {
       const created = await libraryRepository.create({
         ...formToInput(values, game.platforms),
-        rawgId: rawgIdNumber,
+        externalId: gameIdNumber,
       })
       navigate(`/library/${created.id}`)
+    } catch (error) {
+      setSubmitError(errorMessage(error))
     } finally {
       setSubmitting(false)
     }
@@ -79,7 +84,7 @@ export function GameDetailPage() {
         <BackLink />
         <EmptyState
           title="Juego no encontrado"
-          description="Este juego no está disponible en los datos de RAWG."
+          description="Este juego no está disponible en los datos de IGDB."
         />
       </>
     )
@@ -97,7 +102,7 @@ export function GameDetailPage() {
             <CoverImage src={game.coverUrl} title={game.title} />
           </div>
           <div className={styles.externalInfo}>
-            <span className={styles.externalTag}>Información de RAWG</span>
+            <span className={styles.externalTag}>Información de IGDB</span>
             <h1 id="game-info-heading" className={styles.title}>
               {game.title}
             </h1>
@@ -163,6 +168,12 @@ export function GameDetailPage() {
             platforms={game.platforms}
             onChange={updateForm}
           />
+
+          {submitError && (
+            <p className={styles.formError} role="alert">
+              {submitError}
+            </p>
+          )}
 
           <div className={styles.actions}>
             <Button onClick={handleSubmit} disabled={!canSubmit}>

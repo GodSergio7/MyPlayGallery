@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-00 |
 | Título | Base del proyecto |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobado |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -17,6 +17,7 @@
 | 0.1 | 2026-09-16 | Creación inicial del documento base. |
 | 0.2 | 2026-09-16 | Definidas puntuación (0–10, pasos de 0.5), estados fijos, precisión de fechas (día/mes/año) y plataformas derivadas de RAWG. |
 | 0.3 | 2026-09-16 | Nombre canónico confirmado como MyPlayGallery. Documento aprobado. |
+| 0.4 | 2026-10-08 | Enmienda por SPEC-05: el producto deja de ser monousuario y pasa a ser multiusuario con registro abierto; cada usuario tiene su propia biblioteca. |
 
 ---
 
@@ -102,7 +103,7 @@ Estas funcionalidades podrán estudiarse posteriormente mediante nuevas SPEC.
 - **Spec-Driven Development (SDD)**: ninguna funcionalidad se implementa sin una SPEC aprobada que lo indique.
 - **Separación de datos**: RAWG aporta datos generales; Supabase almacena datos personales. Ambos dominios se mantienen claramente separados.
 - **Una entrada de biblioteca por combinación (juego, plataforma)**: un mismo juego puede registrarse en varias plataformas de forma independiente.
-- **MVP monousuario**: la aplicación está pensada como biblioteca personal de un único usuario. No se diseñan cuentas ni perfiles en esta fase.
+- **Multiusuario con biblioteca personal**: cualquier persona puede registrarse y cada usuario tiene su propia biblioteca, privada e independiente. No hay perfiles públicos ni interacción entre usuarios (SPEC-05). _Sustituye a "MVP monousuario" (v0.3)._
 - **Evolución por SPEC**: los cambios de alcance o de arquitectura se tramitan mediante nuevas SPEC.
 - **No introducir dependencias ni cambios estructurales** sin una SPEC que los justifique.
 
@@ -217,7 +218,7 @@ Los siguientes colores son **propuestas** derivadas de la identidad visual. No s
 
 - **Persistencia**: la información personal se almacena en Supabase / PostgreSQL.
 - **Datos generales**: se obtienen de RAWG.
-- **MVP monousuario**: no se implementan cuentas, perfiles ni autenticación multiusuario en esta fase.
+- **Cuentas de usuario**: registro, inicio y cierre de sesión con Supabase Auth; los datos de cada usuario se aíslan con RLS (SPEC-05). _Sustituye a "MVP monousuario" (v0.3)._
 - La exposición de la API key de RAWG, el uso de claves y las políticas de acceso se definirán en la SPEC de arquitectura técnica.
 
 ## 13. Responsive
@@ -230,7 +231,7 @@ Los siguientes colores son **propuestas** derivadas de la identidad visual. No s
 
 - Nombre del proyecto: **MyPlayGallery**.
 - El producto es una **biblioteca personal de videojuegos**, no un catálogo.
-- MVP **monousuario**. La evolución a multiusuario se documenta como posibilidad futura, pero no se diseña ahora.
+- ~~MVP **monousuario**.~~ Desde la v0.4: producto **multiusuario** con registro abierto (SPEC-05).
 - Un mismo juego puede registrarse en **varias plataformas** de forma independiente.
 - RAWG aporta datos generales; Supabase almacena datos personales.
 - **Puntuación personal**: escala de **0 a 10**, en pasos de **0.5**.
@@ -265,7 +266,7 @@ Los siguientes colores son **propuestas** derivadas de la identidad visual. No s
 
 - **SPEC-01**: arquitectura técnica (resolverá las decisiones técnicas pendientes).
 - **SPEC posteriores**: modelo de datos y persistencia, integración con RAWG, y funcionalidades fuera del MVP (sección 3).
-- La evolución a multiusuario se estudiará si el producto lo requiere.
+- La evolución a multiusuario está resuelta en **SPEC-05**. Perfiles públicos o funciones sociales requerirían una SPEC nueva.
 
 ## 17. Criterios de aprobación
 

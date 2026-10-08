@@ -55,7 +55,7 @@ export function formToInput(
   const platform = platforms.find((item) => String(item.id) === values.platformId)
 
   return {
-    rawgId: 0,
+    externalId: 0,
     platformId: Number(values.platformId),
     platformName: platform?.name ?? 'Plataforma',
     status: values.status,

@@ -6,7 +6,7 @@ const SEARCH_STALE_TIME = 5 * 60 * 1000
 const SEARCH_GC_TIME = 30 * 60 * 1000
 
 export function gameSearchQueryKey(query: string) {
-  return ['rawg', 'search', query.trim().toLowerCase()] as const
+  return ['igdb', 'search', query.trim().toLowerCase()] as const
 }
 
 export interface GameSearchState {

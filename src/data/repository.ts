@@ -1,38 +1,43 @@
 import type { Game, LibraryEntry, LibraryEntryInput } from '@/shared/types/domain'
 import {
-  createEntry as mockCreateEntry,
-  deleteEntry as mockDeleteEntry,
-  getEntry as mockGetEntry,
-  listEntries as mockListEntries,
-  listEntriesByGame as mockListEntriesByGame,
-  listGames as mockListGames,
-  updateEntry as mockUpdateEntry,
-} from './mock/store'
-import { rawgGamesRepository, type RawgGamesRepository } from './rawg/repository'
+  createEntry,
+  deleteEntry,
+  getEntry,
+  listEntries,
+  listEntriesByGame,
+  updateEntry,
+} from './supabase/libraryRepository'
+import { igdbGamesRepository, type IgdbGamesRepository } from './igdb/repository'
 
-export interface GamesRepository extends RawgGamesRepository {
-  list(): Promise<Game[]>
-}
+export type GamesRepository = IgdbGamesRepository
 
 export interface LibraryRepository {
   list(): Promise<LibraryEntry[]>
   getById(id: string): Promise<LibraryEntry | undefined>
-  listByGame(rawgId: number): Promise<LibraryEntry[]>
+  listByGame(externalId: number): Promise<LibraryEntry[]>
   create(input: LibraryEntryInput): Promise<LibraryEntry>
   update(id: string, input: LibraryEntryInput): Promise<LibraryEntry | undefined>
   remove(id: string): Promise<void>
 }
 
-export const gamesRepository: GamesRepository = {
-  ...rawgGamesRepository,
-  list: mockListGames,
+export interface LibraryWithGames {
+  entries: LibraryEntry[]
+  games: Game[]
 }
 
+export const gamesRepository: GamesRepository = igdbGamesRepository
+
 export const libraryRepository: LibraryRepository = {
-  list: mockListEntries,
-  getById: mockGetEntry,
-  listByGame: mockListEntriesByGame,
-  create: mockCreateEntry,
-  update: mockUpdateEntry,
-  remove: mockDeleteEntry,
+  list: listEntries,
+  getById: getEntry,
+  listByGame: listEntriesByGame,
+  create: createEntry,
+  update: updateEntry,
+  remove: deleteEntry,
+}
+
+export async function loadLibraryWithGames(): Promise<LibraryWithGames> {
+  const entries = await libraryRepository.list()
+  const games = await gamesRepository.getByIds(entries.map((entry) => entry.externalId))
+  return { entries, games }
 }

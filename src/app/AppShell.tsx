@@ -1,5 +1,12 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { HomeIcon, LibraryIcon, Ps5ControllerIcon, SearchIcon } from '@/shared/components/icons'
+import {
+  HomeIcon,
+  LibraryIcon,
+  LogOutIcon,
+  Ps5ControllerIcon,
+  SearchIcon,
+} from '@/shared/components/icons'
+import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
 const NAV_ITEMS = [
@@ -13,6 +20,8 @@ function navLinkClass({ isActive }: { isActive: boolean }): string {
 }
 
 export function AppShell() {
+  const { signOut } = useAuth()
+
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
@@ -44,6 +53,16 @@ export function AppShell() {
           <NavLink to="/search" className={styles.searchShortcut} aria-label="Buscar juegos">
             <SearchIcon />
           </NavLink>
+
+          <button
+            type="button"
+            className={styles.signOut}
+            onClick={() => void signOut()}
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <LogOutIcon />
+          </button>
         </div>
       </header>
 
@@ -56,7 +75,7 @@ export function AppShell() {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <span>MyPlayGallery</span>
-          <span>Datos de juegos por RAWG</span>
+          <span>Datos de juegos por IGDB</span>
         </div>
       </footer>
 

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { GAME_STATUSES } from '@/shared/types/domain'
-import { gamesRepository, libraryRepository } from '@/data/repository'
+import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
@@ -12,26 +12,24 @@ import { ClockIcon, LibraryIcon, StarIcon, TrophyIcon } from '@/shared/component
 import styles from './DashboardPage.module.css'
 
 export function DashboardPage() {
-  const entriesState = useAsync(() => libraryRepository.list(), [])
-  const gamesState = useAsync(() => gamesRepository.list(), [])
+  const libraryState = useAsync(loadLibraryWithGames, [])
 
-  if (entriesState.loading || gamesState.loading) {
+  if (libraryState.loading) {
     return <LoadingState message="Cargando tu biblioteca…" />
   }
 
-  if (entriesState.error || gamesState.error) {
+  if (libraryState.error) {
     return (
       <ErrorState
         onRetry={() => {
-          entriesState.reload()
-          gamesState.reload()
+          libraryState.reload()
         }}
       />
     )
   }
 
-  const entries = entriesState.data ?? []
-  const games = gamesState.data ?? []
+  const entries = libraryState.data?.entries ?? []
+  const games = libraryState.data?.games ?? []
 
   if (entries.length === 0) {
     return (
@@ -39,7 +37,7 @@ export function DashboardPage() {
         <PageHeader title="Dashboard" description="Tu biblioteca de videojuegos de un vistazo." />
         <EmptyState
           title="Tu biblioteca está vacía"
-          description="Busca un videojuego en RAWG y añádelo para empezar a registrar tu experiencia."
+          description="Busca un videojuego en IGDB y añádelo para empezar a registrar tu experiencia."
           action={
             <Link to="/search">
               <Button>Buscar y añadir</Button>
@@ -50,7 +48,7 @@ export function DashboardPage() {
     )
   }
 
-  const gameById = new Map(games.map((game) => [game.rawgId, game]))
+  const gameById = new Map(games.map((game) => [game.externalId, game]))
   const total = entries.length
   const totalHours = entries.reduce((sum, entry) => sum + (entry.hoursPlayed ?? 0), 0)
   const scored = entries.filter((entry) => entry.score !== null)
@@ -131,7 +129,7 @@ export function DashboardPage() {
           </h2>
           <ul className={styles.recent}>
             {recent.map((entry) => {
-              const game = gameById.get(entry.rawgId)
+              const game = gameById.get(entry.externalId)
               return (
                 <li key={entry.id}>
                   <Link to={`/library/${entry.id}`} className={styles.recentItem}>
@@ -155,7 +153,7 @@ export function DashboardPage() {
 
       <section className={styles.quick} aria-label="Accesos rápidos">
         <Link to="/search">
-          <Button variant="secondary">Buscar en RAWG</Button>
+          <Button variant="secondary">Buscar en IGDB</Button>
         </Link>
         <Link to="/library">
           <Button variant="secondary">Ver biblioteca</Button>
