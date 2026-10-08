@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -18,6 +18,7 @@
 | 0.1 | 2026-09-16 | Creación inicial. UI/UX y diseño visual del MVP. |
 | 0.2 | 2026-09-16 | Resueltas las 6 decisiones pendientes de la v0.1: paleta auxiliar, patrón de navegación, métricas del Dashboard, búsqueda/filtros/ordenación de Biblioteca, rejilla única y footer. SPEC-03 aprobada. |
 | 0.3 | 2026-10-08 | Enmienda por SPEC-05: se añaden la pantalla de acceso (inicio de sesión y registro), la pantalla "Revisa tu email" y el botón de cerrar sesión en la cabecera. |
+| 0.4 | 2026-10-08 | Nueva identidad visual "gaming" aprobada por el responsable de producto: fondo azul marino profundo, degradado de marca rosa → violeta → azul, superficies de cristal, tipografía Poppins y radios mayores. Sustituye a los colores definidos en la v0.2. La pantalla de acceso pasa a tener panel de presentación y pestañas. |
 
 ## Leyenda de estados de decisión
 
@@ -285,6 +286,30 @@ Se muestra explícitamente que **un mismo juego puede tener varias experiencias*
 **Problema**: definir los tokens visuales para mantener consistencia (SPEC-01 usa CSS Modules + variables CSS).
 
 ### Colores
+
+> **Enmienda v0.4 (2026-10-08)**: el responsable de producto aprueba una nueva identidad visual moderna y "gaming". Los valores de esta sección sustituyen a los de la v0.2, que se conservan más abajo como histórico. La fuente de verdad es `src/shared/styles/tokens.css`.
+
+**DEFINIDOS (v0.4)**:
+
+| Token | Valor | Uso |
+| --- | --- | --- |
+| Primario (rosa neón) | `#FF3D8B` | Acento, elementos activos, puntos de estado "Jugando" |
+| Secundario (violeta) | `#9B4DFF` | Parte central del degradado, casillas, foco |
+| Acento (azul eléctrico) | `#4361FF` | Final del degradado |
+| Degradado de marca | `#FF3D8B → #B13DFF → #4361FF` (135°) | Botones principales, navegación activa, logo, iconos destacados, valores numéricos |
+| Fondo | `#0A0A1F` liso | Fondo de la aplicación |
+| Superficie | Cristal: degradado translúcido violeta oscuro + `backdrop-filter: blur` | Tarjetas, paneles, modales |
+| Texto principal | `#F6F4FF` | Texto sobre fondo oscuro |
+| Texto secundario | `#A9A6CC` | Metadatos y apoyo |
+| Borde | `rgba(255, 255, 255, 0.09)` | Separadores y contornos |
+| Éxito | `#3EE6A8` | Completado / confirmaciones |
+| Aviso | `#FFC857` | Pendiente / advertencias |
+| Error | `#FF5C7A` | Abandonado / errores |
+| Foco | `#C58BFF` | Anillo de foco |
+
+**Estilo (v0.4)**: tipografía **Poppins** (Google Fonts), botones en píldora con degradado, tarjetas que se elevan y resaltan el borde al pasar el ratón, **sin efectos de brillo ni neón** (sin sombras de color, halos ni luces difusas), radios de 10 / 16 / 24 / 32 px y títulos de página con barra de acento en degradado.
+
+**Histórico v0.2** (sustituido):
 
 **DEFINIDOS** (no se modifican):
 

@@ -30,7 +30,9 @@ export function AppShell() {
             <span className={styles.brandMark} aria-hidden="true">
               <Ps5ControllerIcon width={30} height={30} />
             </span>
-            <span className={styles.brandName}>MyPlayGallery</span>
+            <span className={styles.brandName}>
+              MyPlay<span className="text-gradient">Gallery</span>
+            </span>
           </NavLink>
 
           <nav className={styles.nav} aria-label="Navegación principal">

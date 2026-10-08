@@ -3,7 +3,7 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: var(--radius-md);
-  background: var(--color-bg);
+  background: var(--color-bg-deep);
 }
 
 .placeholder {
@@ -12,6 +12,7 @@
   justify-content: center;
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  color: var(--color-primary);
-  border: var(--border-width) solid var(--color-border);
+  color: var(--color-on-primary);
+  background: var(--gradient-brand);
+  border: none;
 }

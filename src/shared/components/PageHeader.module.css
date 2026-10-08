@@ -4,7 +4,7 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .text {
@@ -14,7 +14,22 @@
 }
 
 .title {
-  font-size: var(--font-size-2xl);
+  position: relative;
+  padding-bottom: var(--space-2);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 56px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--gradient-brand);
 }
 
 .description {

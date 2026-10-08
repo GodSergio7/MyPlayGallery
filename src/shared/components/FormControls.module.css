@@ -16,9 +16,17 @@
   font: inherit;
   font-size: var(--font-size-sm);
   color: var(--color-text);
-  background: var(--color-bg);
+  background: rgba(8, 8, 28, 0.6);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+select.control option {
+  color: var(--color-text);
+  background: var(--color-surface);
 }
 
 .control::placeholder {
@@ -26,13 +34,13 @@
 }
 
 .control:hover {
-  border-color: var(--color-text-secondary);
+  border-color: rgba(197, 139, 255, 0.4);
 }
 
 .control:focus-visible {
   outline: none;
-  border-color: var(--color-focus);
-  box-shadow: 0 0 0 2px var(--color-primary-soft);
+  border-color: rgba(197, 139, 255, 0.8);
+  box-shadow: 0 0 0 3px rgba(155, 77, 255, 0.22);
 }
 
 textarea.control {
@@ -62,5 +70,5 @@ textarea.control {
 .checkbox input {
   width: 18px;
   height: 18px;
-  accent-color: var(--color-primary);
+  accent-color: var(--color-secondary);
 }

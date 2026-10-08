@@ -1,69 +1,81 @@
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   border: var(--border-width) solid transparent;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
   white-space: nowrap;
   transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .md {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-5);
   font-size: var(--font-size-sm);
 }
 
 .sm {
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-4);
   font-size: var(--font-size-xs);
 }
 
 .primary {
-  background: var(--color-primary);
-  color: #1c2a26;
+  color: var(--color-on-primary);
+  background: var(--gradient-brand);
 }
 
-.primary:hover {
-  background: #a3ecd6;
+.primary:hover:not(:disabled) {
+  background: var(--gradient-brand-hover);
+  transform: translateY(-1px);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .secondary {
-  background: var(--color-surface);
   color: var(--color-text);
+  background: var(--glass-bg);
   border-color: var(--color-border);
+  backdrop-filter: var(--glass-blur);
 }
 
-.secondary:hover {
+.secondary:hover:not(:disabled) {
   background: var(--color-surface-hover);
+  border-color: rgba(197, 139, 255, 0.45);
 }
 
 .danger {
-  background: transparent;
   color: var(--color-error);
+  background: transparent;
+  border-color: rgba(255, 92, 122, 0.6);
+}
+
+.danger:hover:not(:disabled) {
+  background: var(--color-danger-soft);
   border-color: var(--color-error);
 }
 
-.danger:hover {
-  background: var(--color-danger-soft);
-}
-
 .ghost {
-  background: transparent;
   color: var(--color-text-secondary);
+  background: transparent;
 }
 
-.ghost:hover {
+.ghost:hover:not(:disabled) {
   color: var(--color-text);
-  background: var(--color-surface);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }

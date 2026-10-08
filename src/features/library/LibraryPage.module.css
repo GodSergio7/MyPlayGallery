@@ -4,9 +4,11 @@
   gap: var(--space-4);
   margin-bottom: var(--space-5);
   padding: var(--space-4);
-  background: var(--color-surface);
+  background: var(--gradient-card);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--glass-blur);
 }
 
 .searchField {

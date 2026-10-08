@@ -17,7 +17,7 @@ body {
   font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--color-text);
-  background: var(--color-bg);
+  background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -28,6 +28,13 @@ h3,
 h4,
 p {
   margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 h1 {
@@ -46,7 +53,7 @@ h3 {
 }
 
 a {
-  color: var(--color-primary);
+  color: #ff6aa8;
   text-decoration: none;
 }
 
@@ -90,4 +97,22 @@ img {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+::selection {
+  color: var(--color-on-primary);
+  background: rgba(255, 61, 139, 0.6);
+}
+
+/* Texto con el degradado de marca */
+.text-gradient {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Scrollbar oscura */
+* {
+  scrollbar-color: rgba(155, 77, 255, 0.45) transparent;
 }

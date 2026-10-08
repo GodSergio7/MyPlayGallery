@@ -13,9 +13,11 @@
 
 .panel {
   padding: var(--space-4);
-  background: var(--color-surface);
+  background: var(--gradient-card);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--glass-blur);
 }
 
 .panelTitle {
@@ -46,8 +48,8 @@
 
 .bar {
   display: block;
-  height: 8px;
-  background: var(--color-bg);
+  height: 10px;
+  background: rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -61,7 +63,7 @@
 }
 
 .barFill[data-status='playing'] {
-  background: var(--color-primary);
+  background: var(--gradient-brand);
 }
 
 .barFill[data-status='completed'] {
@@ -102,7 +104,7 @@
 }
 
 .recentItem:hover {
-  background: var(--color-bg);
+  background: rgba(255, 255, 255, 0.05);
   text-decoration: none;
 }
 

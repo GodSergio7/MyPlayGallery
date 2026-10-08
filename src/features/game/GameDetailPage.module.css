@@ -21,9 +21,11 @@
 .external,
 .personal {
   padding: var(--space-4);
-  background: var(--color-surface);
+  background: var(--gradient-card);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: var(--glass-blur);
 }
 
 .external {
@@ -133,8 +135,8 @@
   padding: var(--space-3);
   font-size: var(--font-size-sm);
   color: var(--color-warning);
-  background: rgba(232, 196, 106, 0.1);
-  border: var(--border-width) solid rgba(232, 196, 106, 0.4);
+  background: rgba(255, 200, 87, 0.08);
+  border: var(--border-width) solid rgba(255, 200, 87, 0.4);
   border-radius: var(--radius-md);
 }
 

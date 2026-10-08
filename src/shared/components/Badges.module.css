@@ -2,14 +2,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 2px var(--space-2);
+  padding: 3px var(--space-3);
   font-size: var(--font-size-xs);
   font-weight: 600;
   line-height: 1.6;
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-pill);
   color: var(--color-text-secondary);
-  background: var(--color-bg);
+  background: rgba(10, 10, 31, 0.6);
 }
 
 .dot {
@@ -21,22 +21,26 @@
 
 .pending {
   color: var(--color-warning);
-  border-color: rgba(232, 196, 106, 0.4);
+  border-color: rgba(255, 200, 87, 0.4);
+  background: rgba(255, 200, 87, 0.08);
 }
 
 .playing {
-  color: var(--color-primary);
-  border-color: rgba(184, 247, 228, 0.4);
+  color: #ff6aa8;
+  border-color: rgba(255, 61, 139, 0.45);
+  background: var(--color-primary-soft);
 }
 
 .completed {
   color: var(--color-success);
-  border-color: rgba(111, 224, 176, 0.4);
+  border-color: rgba(62, 230, 168, 0.4);
+  background: rgba(62, 230, 168, 0.08);
 }
 
 .abandoned {
   color: var(--color-error);
-  border-color: rgba(240, 138, 138, 0.4);
+  border-color: rgba(255, 92, 122, 0.4);
+  background: var(--color-danger-soft);
 }
 
 .platform {
@@ -44,8 +48,11 @@
 }
 
 .score {
-  font-weight: 700;
-  color: var(--color-primary);
+  font-weight: 800;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .scoreMax {

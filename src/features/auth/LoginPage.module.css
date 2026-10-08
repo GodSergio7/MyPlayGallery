@@ -1,9 +1,165 @@
+/* ---------- Estructura ---------- */
+
 .page {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* ---------- Panel de presentación (solo escritorio) ---------- */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-6);
+  padding: var(--space-7);
+  overflow: hidden;
+  background: linear-gradient(160deg, #1a0f3d 0%, #0b0a26 60%, #0a0a1f 100%);
+  border-right: var(--border-width) solid var(--color-border);
+}
+
+.heroArt {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100svh;
-  padding: var(--space-4);
+  height: 280px;
+}
+
+.heroTile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  color: #ffffff;
+  background: var(--gradient-brand);
+  border-radius: 48px;
+  transform: rotate(-6deg);
+  animation: bob 6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: rotate(-6deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-3deg) translateY(-10px);
+  }
+}
+
+.toast {
+  position: absolute;
+  right: 6%;
+  bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-bg-strong);
+  border: var(--border-width) solid rgba(197, 139, 255, 0.3);
+  border-radius: var(--radius-md);
+  backdrop-filter: var(--glass-blur);
+}
+
+.toastIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: #ffffff;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-sm);
+}
+
+.toastTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.toastText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.heroTitle {
+  max-width: 16ch;
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--color-text-secondary);
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.features svg {
+  flex-shrink: 0;
+  color: #ff6aa8;
+}
+
+/* ---------- Marca ---------- */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: #ffffff;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-sm);
+}
+
+.brandName {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.brandMobile {
+  justify-content: center;
+}
+
+/* ---------- Formulario ---------- */
+
+.panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-4);
 }
 
 .card {
@@ -11,50 +167,86 @@
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
-  max-width: 380px;
-  padding: var(--space-5);
-  background: var(--color-surface);
+  max-width: 420px;
+  padding: var(--space-6) var(--space-5);
+  background: var(--glass-bg);
+  border: var(--border-width) solid rgba(197, 139, 255, 0.22);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: rgba(8, 8, 28, 0.6);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
 }
 
-.brand {
+.tab {
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tabActive,
+.tabActive:hover {
+  color: #ffffff;
+  background: var(--gradient-brand);
+}
+
+.intro {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
-.brandMark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--color-bg);
-  background: var(--color-primary);
-  border-radius: var(--radius-sm);
-}
-
-.title {
-  margin: 0;
-  font-size: var(--font-size-lg);
+.heading {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
 }
 
 .subtitle {
-  margin: 0;
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }
 
-.error {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-error);
+.subtitle strong {
+  color: var(--color-text);
 }
 
-.heading {
+.error {
   margin: 0;
-  font-size: var(--font-size-base);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  background: var(--color-danger-soft);
+  border: var(--border-width) solid rgba(255, 92, 122, 0.35);
+  border-radius: var(--radius-sm);
+}
+
+.submit {
+  width: 100%;
+  margin-top: var(--space-1);
 }
 
 .switch {
@@ -67,8 +259,8 @@
 .switchButton {
   padding: 0;
   font: inherit;
-  font-weight: 600;
-  color: var(--color-primary);
+  font-weight: 700;
+  color: #ff6aa8;
   background: none;
   border: none;
   cursor: pointer;
@@ -76,4 +268,33 @@
 
 .switchButton:hover {
   text-decoration: underline;
+}
+
+.mailIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: 56px;
+  height: 56px;
+  font-size: 26px;
+  color: #ffffff;
+  background: var(--gradient-brand);
+  border-radius: var(--radius-md);
+}
+
+/* ---------- Escritorio ---------- */
+
+@media (min-width: 960px) {
+  .page {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+
+  .hero {
+    display: flex;
+  }
+
+  .brandMobile {
+    display: none;
+  }
 }

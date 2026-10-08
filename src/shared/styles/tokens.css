@@ -1,24 +1,41 @@
 :root {
-  /* Colors — defined identity */
-  --color-primary: #b8f7e4;
-  --color-bg: #26272c;
+  /* Colores — identidad (rosa neón → violeta → azul eléctrico) */
+  --color-primary: #ff3d8b;
+  --color-secondary: #9b4dff;
+  --color-accent: #4361ff;
+  --color-bg: #0a0a1f;
+  --color-bg-deep: #06061a;
 
-  /* Colors — approved auxiliary palette */
-  --color-text: #f2f5f4;
-  --color-text-secondary: #a3a8ae;
-  --color-surface: #2f3037;
-  --color-border: #3c3e46;
-  --color-success: #6fe0b0;
-  --color-warning: #e8c46a;
-  --color-error: #f08a8a;
-  --color-focus: #b8f7e4;
+  /* Colores — paleta auxiliar */
+  --color-text: #f6f4ff;
+  --color-text-secondary: #a9a6cc;
+  --color-surface: #15143a;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-success: #3ee6a8;
+  --color-warning: #ffc857;
+  --color-error: #ff5c7a;
+  --color-focus: #c58bff;
 
-  /* Derived helpers */
-  --color-primary-soft: rgba(184, 247, 228, 0.12);
-  --color-danger-soft: rgba(240, 138, 138, 0.12);
-  --color-surface-hover: #35363e;
+  /* Ayudas derivadas */
+  --color-primary-soft: rgba(255, 61, 139, 0.14);
+  --color-secondary-soft: rgba(155, 77, 255, 0.16);
+  --color-danger-soft: rgba(255, 92, 122, 0.14);
+  --color-surface-hover: #1d1b4a;
+  --color-on-primary: #ffffff;
 
-  /* Spacing scale (4/8 base) */
+  /* Degradados */
+  --gradient-brand: linear-gradient(135deg, #ff3d8b 0%, #b13dff 52%, #4361ff 100%);
+  --gradient-brand-hover: linear-gradient(135deg, #ff5a9d 0%, #bf5cff 52%, #5b76ff 100%);
+  --gradient-text: linear-gradient(90deg, #ff6aa8 0%, #c58bff 50%, #7d93ff 100%);
+  --gradient-card: linear-gradient(160deg, rgba(42, 36, 104, 0.55) 0%, rgba(18, 17, 52, 0.55) 100%);
+  --gradient-border: linear-gradient(135deg, rgba(255, 61, 139, 0.65), rgba(67, 97, 255, 0.65));
+
+  /* Cristal */
+  --glass-bg: rgba(22, 20, 60, 0.55);
+  --glass-bg-strong: rgba(14, 13, 40, 0.78);
+  --glass-blur: blur(18px);
+
+  /* Escala de espaciado (base 4/8) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -27,27 +44,30 @@
   --space-6: 32px;
   --space-7: 48px;
 
-  /* Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  /* Radios */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
   --radius-pill: 999px;
 
-  /* Borders & shadows */
+  /* Bordes y sombras */
   --border-width: 1px;
-  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 10px 30px rgba(3, 2, 20, 0.45);
+  --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.6);
 
-  /* Typography */
-  --font-sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Tipografía */
+  --font-sans: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;
   --font-size-lg: 20px;
   --font-size-xl: 24px;
   --font-size-2xl: 32px;
+  --font-size-3xl: 44px;
 
   /* Layout */
   --container-max: 1200px;
-  --header-height: 64px;
-  --bottom-nav-height: 60px;
+  --header-height: 72px;
+  --bottom-nav-height: 64px;
 }

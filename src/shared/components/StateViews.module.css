@@ -5,20 +5,21 @@
   gap: var(--space-3);
   padding: var(--space-7) var(--space-4);
   text-align: center;
-  border: var(--border-width) dashed var(--color-border);
+  border: var(--border-width) dashed rgba(197, 139, 255, 0.3);
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--gradient-card);
+  backdrop-filter: var(--glass-blur);
 }
 
 .icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  color: var(--color-on-primary);
+  background: var(--gradient-brand);
 }
 
 .iconError {
@@ -45,18 +46,19 @@
   font: inherit;
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #1c2a26;
-  background: var(--color-primary);
+  color: var(--color-on-primary);
+  background: var(--gradient-brand);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   cursor: pointer;
 }
 
 .spinner {
   width: 28px;
   height: 28px;
-  border: 3px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.1);
   border-top-color: var(--color-primary);
+  border-right-color: var(--color-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -75,7 +77,7 @@
 
 .skeleton {
   height: 300px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: linear-gradient(
     90deg,
     var(--color-surface) 25%,
