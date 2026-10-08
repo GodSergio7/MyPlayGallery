@@ -1,7 +1,9 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useAuth } from '@/app/auth/authContext'
 import { Button } from '@/shared/components/Button'
+import { AppBackground } from '@/shared/components/AppBackground'
 import { Field, Input } from '@/shared/components/FormControls'
+import BlurText from '@/shared/components/reactbits/BlurText'
 import {
   Ps5ControllerIcon,
   SearchIcon,
@@ -154,7 +156,9 @@ export function LoginPage() {
         </div>
 
         <div className={styles.intro}>
-          <h2 className={styles.heading}>{copy.heading}</h2>
+          <h2 className={styles.heading}>
+            <BlurText key={mode} text={copy.heading} delay={80} direction="bottom" />
+          </h2>
           <p className={styles.subtitle}>{copy.subtitle}</p>
         </div>
 
@@ -277,6 +281,7 @@ function AuthLayout({ children }: { children: ReactNode }) {
       </section>
 
       <div className={styles.panel}>
+        <AppBackground variant="panel" className={styles.ball} />
         <BrandLogo className={styles.brandMobile} />
         {children}
       </div>

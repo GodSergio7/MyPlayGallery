@@ -16,3 +16,7 @@
   background: var(--gradient-brand);
   border: none;
 }
+
+.tiltFrame {
+  overflow: visible;
+}

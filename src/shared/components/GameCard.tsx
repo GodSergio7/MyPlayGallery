@@ -12,7 +12,7 @@ export function GameCard({ game }: { game: Game }) {
       className={styles.card}
       aria-label={`Ver ${game.title}`}
     >
-      <CoverImage src={game.coverUrl} title={game.title} />
+      <CoverImage src={game.coverUrl} title={game.title} tilt />
       <div className={styles.body}>
         <h3 className={styles.title}>{game.title}</h3>
         <p className={styles.meta}>{formatDate(game.released)}</p>

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { GAME_STATUSES } from '@/shared/types/domain'
 import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
-import { formatDate, formatHours } from '@/shared/lib/format'
+import { formatAverage, formatDate, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { StatCard } from '@/shared/components/StatCard'
 import { Button } from '@/shared/components/Button'
@@ -84,12 +84,14 @@ export function DashboardPage() {
         <StatCard label="Entradas" value={total} icon={<LibraryIcon width={18} height={18} />} />
         <StatCard
           label="Horas totales"
-          value={formatHours(totalHours)}
+          value={totalHours}
+          format={formatHours}
           icon={<ClockIcon width={18} height={18} />}
         />
         <StatCard
           label="Nota media"
-          value={averageScore === null ? '—' : `${averageScore.toFixed(1)}/10`}
+          value={averageScore ?? '—'}
+          format={formatAverage}
           icon={<StarIcon width={18} height={18} />}
           hint={scored.length > 0 ? `Sobre ${scored.length} con nota` : 'Sin notas'}
         />

@@ -146,23 +146,37 @@
 }
 
 .brandMobile {
+  position: relative;
+  z-index: 1;
   justify-content: center;
+  /* En móvil el logo queda en el centro de la bola de cristal. */
+  min-height: var(--auth-ball-height);
+}
+
+/* Móvil: la bola enmarca el logo arriba. Escritorio: ocupa todo el panel, detrás del formulario. */
+.ball {
+  bottom: auto;
+  height: var(--auth-ball-height);
 }
 
 /* ---------- Formulario ---------- */
 
 .panel {
+  --auth-ball-height: 340px;
+
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-5);
-  padding: var(--space-6) var(--space-4);
+  justify-content: flex-start;
+  gap: var(--space-2);
+  padding: 0 var(--space-4) var(--space-6);
 }
 
 .card {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -296,5 +310,15 @@
 
   .brandMobile {
     display: none;
+  }
+
+  .panel {
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .ball {
+    bottom: 0;
+    height: auto;
   }
 }

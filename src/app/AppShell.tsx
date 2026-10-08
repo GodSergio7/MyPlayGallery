@@ -6,6 +6,7 @@ import {
   Ps5ControllerIcon,
   SearchIcon,
 } from '@/shared/components/icons'
+import { AppBackground } from '@/shared/components/AppBackground'
 import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
@@ -24,6 +25,8 @@ export function AppShell() {
 
   return (
     <div className={styles.shell}>
+      <AppBackground />
+
       <header className={styles.header}>
         <div className={styles.inner}>
           <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
