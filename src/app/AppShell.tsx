@@ -1,75 +1,73 @@
+import { useMemo } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import {
-  HomeIcon,
-  LibraryIcon,
-  LogOutIcon,
-  Ps5ControllerIcon,
-  SearchIcon,
-} from '@/shared/components/icons'
+import { Ps5ControllerIcon } from '@/shared/components/icons'
 import { AppBackground } from '@/shared/components/AppBackground'
+import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
 import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
-const NAV_ITEMS = [
-  { to: '/', label: 'Inicio', icon: HomeIcon, end: true },
-  { to: '/library', label: 'Biblioteca', icon: LibraryIcon, end: false },
-  { to: '/search', label: 'Buscar', icon: SearchIcon, end: false },
+// Tarjetas del menú: tonos oscuros del degradado de marca (rosa → violeta → azul)
+// para que el texto blanco tenga buen contraste.
+const CARD_BACKGROUNDS = [
+  'linear-gradient(160deg, #5a1a4a 0%, #3a1238 100%)',
+  'linear-gradient(160deg, #3d1f7a 0%, #26145a 100%)',
+  'linear-gradient(160deg, #1f2f86 0%, #141f5c 100%)',
 ]
 
-function navLinkClass({ isActive }: { isActive: boolean }): string {
-  return isActive ? `${styles.link} ${styles.linkActive}` : styles.link
-}
-
 export function AppShell() {
-  const { signOut } = useAuth()
+  const { session, signOut } = useAuth()
+  const email = session?.user.email
+
+  const items = useMemo<CardNavItem[]>(
+    () => [
+      {
+        label: 'Mi colección',
+        background: CARD_BACKGROUNDS[0],
+        textColor: '#fff',
+        description: 'Tu biblioteca y estadísticas',
+        links: [
+          { label: 'Inicio', to: '/', end: true },
+          { label: 'Biblioteca', to: '/library' },
+        ],
+      },
+      {
+        label: 'Descubrir',
+        background: CARD_BACKGROUNDS[1],
+        textColor: '#fff',
+        description: 'Todo el catálogo de IGDB',
+        links: [{ label: 'Buscar juegos', to: '/search' }],
+      },
+      {
+        label: 'Cuenta',
+        background: CARD_BACKGROUNDS[2],
+        textColor: '#fff',
+        description: email,
+        links: [{ label: 'Cerrar sesión', onClick: () => void signOut() }],
+      },
+    ],
+    [email, signOut],
+  )
 
   return (
     <div className={styles.shell}>
       <AppBackground />
 
-      <header className={styles.header}>
-        <div className={styles.inner}>
-          <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
-            <span className={styles.brandMark} aria-hidden="true">
-              <Ps5ControllerIcon width={30} height={30} />
-            </span>
-            <span className={styles.brandName}>
-              MyPlay<span className="text-gradient">Gallery</span>
-            </span>
-          </NavLink>
-
-          <nav className={styles.nav} aria-label="Navegación principal">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  className={navLinkClass}
-                >
-                  <Icon width={18} height={18} />
-                  {item.label}
-                </NavLink>
-              )
-            })}
-          </nav>
-
-          <NavLink to="/search" className={styles.searchShortcut} aria-label="Buscar juegos">
-            <SearchIcon />
-          </NavLink>
-
-          <button
-            type="button"
-            className={styles.signOut}
-            onClick={() => void signOut()}
-            aria-label="Cerrar sesión"
-            title="Cerrar sesión"
-          >
-            <LogOutIcon />
-          </button>
-        </div>
-      </header>
+      <div className={styles.navBar}>
+        <CardNav
+          items={items}
+          cta={{ label: 'Buscar juegos', to: '/search' }}
+          logo={
+            <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
+              <span className={styles.brandMark} aria-hidden="true">
+                <Ps5ControllerIcon width={26} height={26} />
+              </span>
+              <span className={styles.brandName}>
+                MyPlay<span className="text-gradient">Gallery</span>
+              </span>
+            </NavLink>
+          }
+        />
+      </div>
 
       <main className={styles.main}>
         <div className={styles.container}>
@@ -83,27 +81,6 @@ export function AppShell() {
           <span>Datos de juegos por IGDB</span>
         </div>
       </footer>
-
-      <nav className={styles.bottomNav} aria-label="Navegación principal móvil">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              className={({ isActive }) =>
-                isActive
-                  ? `${styles.bottomLink} ${styles.bottomLinkActive}`
-                  : styles.bottomLink
-              }
-            >
-              <Icon />
-              {item.label}
-            </NavLink>
-          )
-        })}
-      </nav>
     </div>
   )
 }

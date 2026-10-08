@@ -22,26 +22,6 @@ function Icon({ children, ...props }: IconProps & { children: ReactNode }) {
   )
 }
 
-export function LogOutIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-      <path d="m16 17 5-5-5-5" />
-      <path d="M21 12H9" />
-    </Icon>
-  )
-}
-
-export function HomeIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path d="M3 10.5 12 3l9 7.5" />
-      <path d="M5 9.5V21h14V9.5" />
-      <path d="M9.5 21v-6h5v6" />
-    </Icon>
-  )
-}
-
 export function LibraryIcon(props: IconProps) {
   return (
     <Icon {...props}>
@@ -136,6 +116,14 @@ export function ArrowLeftIcon(props: IconProps) {
   return (
     <Icon {...props}>
       <path d="M19 12H5M11 6l-6 6 6 6" />
+    </Icon>
+  )
+}
+
+export function ArrowUpRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 17 17 7M8 7h9v9" />
     </Icon>
   )
 }

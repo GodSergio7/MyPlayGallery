@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-06 |
 | Título | Animaciones de interfaz con React Bits |
-| Versión | 0.2 |
+| Versión | 0.3 |
 | Estado | Aprobada |
 | Fecha | 2026-10-08 |
 | Autor | Responsable de producto |
@@ -17,6 +17,7 @@
 | --- | --- | --- |
 | 0.1 | 2026-10-08 | Creación inicial. Se incorporan cuatro componentes de React Bits y las dependencias `motion` y `gsap`. Refleja lo ya implementado. |
 | 0.2 | 2026-10-08 | Se añade el fondo animado `CrystalizedBall` (WebGL) y la dependencia `ogl`. |
+| 0.3 | 2026-10-08 | La navegación principal pasa a ser `CardNav`: sustituye a la cabecera y a la barra inferior del móvil. |
 
 ---
 
@@ -39,6 +40,7 @@ Ubicación: `src/shared/components/reactbits/`. Cada archivo indica su origen y 
 | `TiltedCard` | Portadas de `GameCard` y `LibraryCard` | La portada se inclina en 3D siguiendo el ratón |
 | `AnimatedContent` | Elementos de `GameGrid` (Biblioteca y Búsqueda) | Las tarjetas entran con un deslizamiento suave y escalonado al aparecer en pantalla |
 | `CrystalizedBall` | Fondo de la app y de la pantalla de acceso, a través de `AppBackground` | Bola de cristal en WebGL con borde eléctrico y partículas que reaccionan al ratón |
+| `CardNav` | Navegación principal (`AppShell`) | Barra flotante que se despliega en tres tarjetas: Mi colección, Descubrir y Cuenta |
 
 **Estado**: `IMPLEMENTADO`.
 
@@ -55,6 +57,13 @@ Ubicación: `src/shared/components/reactbits/`. Cada archivo indica su origen y 
   - Variante `panel` (pantalla de acceso): en escritorio, detrás de la tarjeta del formulario; en móvil, enmarca el logo en la parte superior. 12.000 partículas.
   - Decorativo: `aria-hidden` y sin eventos de puntero propios (escucha el ratón a nivel de ventana).
   - Necesita WebGL 2. Si el navegador no lo tiene, no se dibuja nada y queda el fondo liso.
+- **`CardNav`**: sustituye a la cabecera y a la barra inferior del móvil. Cambios respecto al original:
+  - Enlaces del router (`NavLink`) en lugar de `<a href>`, con la página actual subrayada; admite acciones (Cerrar sesión).
+  - Hamburguesa como `<button>` con `aria-expanded`; se cierra con Escape (devolviendo el foco), al hacer clic fuera y al elegir un enlace.
+  - Logo como `ReactNode`, botón de acción "Buscar juegos" (enlace del router) y velo oscuro detrás del menú abierto.
+  - Colores de los tokens: barra de cristal y tarjetas en los tonos oscuros del degradado de marca. Icono propio en lugar de `react-icons`.
+  - Corrección de la altura en móvil (medía con las tarjetas desplazadas por la animación y dejaba un hueco).
+  - Respeta el movimiento reducido. Contenido: Mi colección (Inicio, Biblioteca), Descubrir (Buscar juegos) y Cuenta (email y Cerrar sesión).
 
 **Estado**: `IMPLEMENTADO`.
 
@@ -63,7 +72,7 @@ Ubicación: `src/shared/components/reactbits/`. Cada archivo indica su origen y 
 | Paquete | Usado por | Motivo |
 | --- | --- | --- |
 | `motion` (^12) | `CountUp`, `BlurText`, `TiltedCard` | Animaciones con muelles y valores animados en React |
-| `gsap` (^3) | `AnimatedContent` | Animación de entrada al hacer scroll (`ScrollTrigger`) |
+| `gsap` (^3) | `AnimatedContent`, `CardNav` | Animación de entrada al hacer scroll (`ScrollTrigger`) y despliegue del menú |
 | `ogl` (^1) | `CrystalizedBall` | Motor WebGL ligero para el fondo animado |
 
 **Estado**: `DEFINIDO`. Cualquier componente nuevo de React Bits que requiera otra dependencia (p. ej. `three`, `ogl`) necesita una revisión de esta SPEC.
@@ -86,4 +95,4 @@ jsdom no implementa `matchMedia` ni `IntersectionObserver`, que usan estas libre
 
 ## Estado de aprobación
 
-SPEC-06 queda **Aprobada** (v0.2) por decisión explícita del responsable de producto, que eligió los efectos, pidió el fondo `CrystalizedBall` y autorizó las dependencias necesarias.
+SPEC-06 queda **Aprobada** (v0.3) por decisión explícita del responsable de producto, que eligió los efectos, pidió el fondo `CrystalizedBall` y autorizó las dependencias necesarias.

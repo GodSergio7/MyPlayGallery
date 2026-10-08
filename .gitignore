@@ -26,3 +26,6 @@ dist-ssr
 
 # Supabase CLI (datos locales)
 supabase/.temp
+
+# Archivos temporales de Office (Excel abierto)
+~$*

@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.4 |
+| Versión | 0.5 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -19,6 +19,7 @@
 | 0.2 | 2026-09-16 | Resueltas las 6 decisiones pendientes de la v0.1: paleta auxiliar, patrón de navegación, métricas del Dashboard, búsqueda/filtros/ordenación de Biblioteca, rejilla única y footer. SPEC-03 aprobada. |
 | 0.3 | 2026-10-08 | Enmienda por SPEC-05: se añaden la pantalla de acceso (inicio de sesión y registro), la pantalla "Revisa tu email" y el botón de cerrar sesión en la cabecera. |
 | 0.4 | 2026-10-08 | Nueva identidad visual "gaming" aprobada por el responsable de producto: fondo azul marino profundo, degradado de marca rosa → violeta → azul, superficies de cristal, tipografía Poppins y radios mayores. Sustituye a los colores definidos en la v0.2. La pantalla de acceso pasa a tener panel de presentación y pestañas. |
+| 0.5 | 2026-10-08 | La navegación pasa a ser un menú desplegable de tarjetas (Card Nav de React Bits, ver SPEC-06) en móvil y escritorio. Se retiran la cabecera con enlaces y la barra inferior del móvil. |
 
 ## Leyenda de estados de decisión
 
@@ -105,6 +106,8 @@ Rutas (DEFINIDAS en SPEC-01) y su elemento de navegación:
 
 **Estado**: `DEFINIDO` (header superior en tablet/escritorio; barra inferior fija en móvil con Inicio, Biblioteca y Buscar; sin sidebar ni menú hamburguesa).
 
+> **Enmienda v0.5 (2026-10-08)**: la navegación descrita arriba (header con enlaces en escritorio y barra inferior en móvil) se sustituye por una **barra flotante única** para todos los tamaños: botón de menú a la izquierda, logo en el centro y "Buscar juegos" a la derecha (solo escritorio). Al abrir el menú aparecen tres tarjetas: **Mi colección** (Inicio, Biblioteca), **Descubrir** (Buscar juegos) y **Cuenta** (email y Cerrar sesión). La página actual se marca subrayada. Detalle técnico en SPEC-06.
+
 ### 3.1 Acceso y sesión (enmienda v0.3, SPEC-05)
 
 - **Sin sesión**, cualquier ruta muestra la **pantalla de acceso** en lugar del shell: una tarjeta centrada con el logo, sin header, footer ni navegación.
@@ -114,7 +117,7 @@ Rutas (DEFINIDAS en SPEC-01) y su elemento de navegación:
 - El botón principal se desactiva mientras faltan campos o se está enviando, y cambia su texto ("Entrando…", "Creando cuenta…").
 - Los errores se muestran bajo los campos con el color de error y `role="alert"`.
 - Tras registrarse con confirmación de email activada se muestra **"Revisa tu email"**, con el email usado y un botón "Ir a iniciar sesión".
-- **Con sesión**, la cabecera muestra a la derecha un botón de icono **"Cerrar sesión"** (con `aria-label` y `title`), visible en móvil y escritorio.
+- **Con sesión**, "Cerrar sesión" está en la tarjeta **Cuenta** del menú (desde v0.5; antes era un botón de icono en la cabecera).
 - Mientras se comprueba la sesión al cargar se muestra un estado de carga ("Comprobando tu sesión…").
 
 **Estado**: `IMPLEMENTADO`.
