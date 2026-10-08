@@ -29,17 +29,6 @@
   text-decoration: none;
 }
 
-.brandMark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--color-on-primary);
-  background: var(--gradient-brand);
-  border-radius: var(--radius-sm);
-}
-
 .brandName {
   font-size: var(--font-size-lg);
   letter-spacing: -0.01em;

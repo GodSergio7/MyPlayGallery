@@ -3,9 +3,9 @@ import { useAuth } from '@/app/auth/authContext'
 import { Button } from '@/shared/components/Button'
 import { AppBackground } from '@/shared/components/AppBackground'
 import { Field, Input } from '@/shared/components/FormControls'
+import { LogoMark } from '@/shared/components/LogoMark'
 import BlurText from '@/shared/components/reactbits/BlurText'
 import {
-  Ps5ControllerIcon,
   SearchIcon,
   StarIcon,
   TrophyIcon,
@@ -232,9 +232,7 @@ export function LoginPage() {
 function BrandLogo({ className }: { className?: string }) {
   return (
     <div className={cx(styles.brand, className)}>
-      <span className={styles.brandMark} aria-hidden="true">
-        <Ps5ControllerIcon width={28} height={28} />
-      </span>
+      <LogoMark size={44} />
       <span className={styles.brandName}>
         MyPlay<span className="text-gradient">Gallery</span>
       </span>
@@ -249,9 +247,7 @@ function AuthLayout({ children }: { children: ReactNode }) {
         <BrandLogo />
 
         <div className={styles.heroArt}>
-          <span className={styles.heroTile}>
-            <Ps5ControllerIcon width={128} height={128} strokeWidth={1.3} />
-          </span>
+          <LogoMark size={220} className={styles.heroLogo} />
           <div className={styles.toast}>
             <span className={styles.toastIcon}>
               <TrophyIcon width={18} height={18} />

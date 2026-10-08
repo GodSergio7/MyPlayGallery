@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Ps5ControllerIcon } from '@/shared/components/icons'
 import { AppBackground } from '@/shared/components/AppBackground'
 import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
 import { useAuth } from './auth/authContext'
@@ -58,9 +57,6 @@ export function AppShell() {
           cta={{ label: 'Buscar juegos', to: '/search' }}
           logo={
             <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
-              <span className={styles.brandMark} aria-hidden="true">
-                <Ps5ControllerIcon width={26} height={26} />
-              </span>
               <span className={styles.brandName}>
                 MyPlay<span className="text-gradient">Gallery</span>
               </span>

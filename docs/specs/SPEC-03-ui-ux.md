@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.5 |
+| Versión | 0.6 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -20,6 +20,7 @@
 | 0.3 | 2026-10-08 | Enmienda por SPEC-05: se añaden la pantalla de acceso (inicio de sesión y registro), la pantalla "Revisa tu email" y el botón de cerrar sesión en la cabecera. |
 | 0.4 | 2026-10-08 | Nueva identidad visual "gaming" aprobada por el responsable de producto: fondo azul marino profundo, degradado de marca rosa → violeta → azul, superficies de cristal, tipografía Poppins y radios mayores. Sustituye a los colores definidos en la v0.2. La pantalla de acceso pasa a tener panel de presentación y pestañas. |
 | 0.5 | 2026-10-08 | La navegación pasa a ser un menú desplegable de tarjetas (Card Nav de React Bits, ver SPEC-06) en móvil y escritorio. Se retiran la cabecera con enlaces y la barra inferior del móvil. |
+| 0.6 | 2026-10-08 | Nuevo logo: fotos apiladas con un mando delante, en capas rellenas con el degradado de marca y sombra oscura (sin brillo) (componente `LogoMark`, SVG). Se usa en la pantalla de acceso y el favicon; la barra de navegación muestra solo el texto MyPlayGallery. |
 
 ## Leyenda de estados de decisión
 

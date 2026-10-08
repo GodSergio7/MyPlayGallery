@@ -32,34 +32,25 @@
   height: 280px;
 }
 
-.heroTile {
+.heroLogo {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 200px;
-  color: #ffffff;
-  background: var(--gradient-brand);
-  border-radius: 48px;
-  transform: rotate(-6deg);
   animation: bob 6s ease-in-out infinite;
 }
 
 @keyframes bob {
   0%,
   100% {
-    transform: rotate(-6deg) translateY(0);
+    transform: translateY(0);
   }
   50% {
-    transform: rotate(-3deg) translateY(-10px);
+    transform: translateY(-10px);
   }
 }
 
 .toast {
   position: absolute;
-  right: 6%;
-  bottom: 6px;
+  right: 4%;
+  bottom: -28px;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -126,17 +117,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-}
-
-.brandMark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  color: #ffffff;
-  background: var(--gradient-brand);
-  border-radius: var(--radius-sm);
 }
 
 .brandName {

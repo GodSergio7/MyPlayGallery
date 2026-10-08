@@ -147,14 +147,3 @@ export function GamepadIcon(props: IconProps) {
     </Icon>
   )
 }
-
-export function Ps5ControllerIcon(props: IconProps) {
-  return (
-    <Icon viewBox="2.5 7 19 13" {...props}>
-      <path d="M8 8h8a5 5 0 0 1 4.9 6l-.6 3.1a2.3 2.3 0 0 1-4.2.6L15 17H9l-1.1 1.7a2.3 2.3 0 0 1-4.2-.6L3.1 14A5 5 0 0 1 8 8Z" />
-      <rect x="9.6" y="9.7" width="4.8" height="1.9" rx="0.8" />
-      <circle cx="9.5" cy="14.4" r="0.9" />
-      <circle cx="14.5" cy="14.4" r="0.9" />
-    </Icon>
-  )
-}
