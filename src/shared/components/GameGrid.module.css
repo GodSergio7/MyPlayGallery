@@ -21,3 +21,12 @@
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* Que todas las tarjetas de una fila tengan la misma altura */
+.item {
+  display: flex;
+}
+
+.item > * {
+  flex: 1;
+}

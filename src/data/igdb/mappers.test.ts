@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest'
-import { mapIgdbCoverUrl, mapIgdbGame, mapIgdbGameList, mapIgdbPlatform } from './mappers'
+import {
+  mapIgdbBrowsePage,
+  mapIgdbCoverUrl,
+  mapIgdbGame,
+  mapIgdbGameList,
+  mapIgdbPlatform,
+} from './mappers'
 import type { IgdbGame } from './schemas'
 
 const igdbGame: IgdbGame = {
   id: 1942,
   name: 'The Witcher 3: Wild Hunt',
   first_release_date: 1431907200,
+  total_rating: 92.6,
   cover: { url: '//images.igdb.com/igdb/image/upload/t_thumb/hash.jpg' },
   genres: [{ name: 'RPG' }, { name: 'Adventure' }],
   platforms: [
@@ -21,6 +28,7 @@ describe('mapIgdbGame', () => {
       title: 'The Witcher 3: Wild Hunt',
       coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/hash.jpg',
       released: '2015-05-18',
+      rating: 93,
       genres: ['RPG', 'Adventure'],
       platforms: [
         { id: 6, name: 'PC (Microsoft Windows)' },
@@ -34,6 +42,7 @@ describe('mapIgdbGame', () => {
       id: 1,
       name: 'Juego sin datos',
       first_release_date: null,
+      total_rating: null,
       cover: null,
       genres: [],
       platforms: [],
@@ -41,6 +50,7 @@ describe('mapIgdbGame', () => {
 
     expect(game.coverUrl).toBe(null)
     expect(game.released).toBe(null)
+    expect(game.rating).toBe(null)
     expect(game.genres).toEqual([])
     expect(game.platforms).toEqual([])
   })
@@ -81,5 +91,15 @@ describe('mapIgdbGameList', () => {
 
   it('mapea una lista vacía', () => {
     expect(mapIgdbGameList({ results: [] })).toEqual([])
+  })
+})
+
+describe('mapIgdbBrowsePage', () => {
+  it('transforma una página de exploración', () => {
+    const page = mapIgdbBrowsePage({ results: [igdbGame], has_more: true, total: 270873 })
+
+    expect(page.hasMore).toBe(true)
+    expect(page.total).toBe(270873)
+    expect(page.games.map((game) => game.title)).toEqual(['The Witcher 3: Wild Hunt'])
   })
 })

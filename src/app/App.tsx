@@ -8,6 +8,8 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { LibraryPage } from '@/features/library/LibraryPage'
 import { EntryDetailPage } from '@/features/library/EntryDetailPage'
 import { SearchPage } from '@/features/search/SearchPage'
+import { ExplorePage } from '@/features/explore/ExplorePage'
+import { GameInfoPage } from '@/features/game-info/GameInfoPage'
 import { GameDetailPage } from '@/features/game/GameDetailPage'
 
 export function App() {
@@ -21,6 +23,8 @@ export function App() {
                 <Route index element={<DashboardPage />} />
                 <Route path="library" element={<LibraryPage />} />
                 <Route path="library/:entryId" element={<EntryDetailPage />} />
+                <Route path="explore" element={<ExplorePage />} />
+                <Route path="explore/:gameId" element={<GameInfoPage />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route path="game/:gameId" element={<GameDetailPage />} />
                 <Route path="*" element={<NotFoundPage />} />

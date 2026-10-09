@@ -1,7 +1,8 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import { HttpResponse, delay, http } from 'msw'
 import { setupServer } from 'msw/node'
-import { igdbGamesRepository } from './repository'
+import { browseSearchParams, igdbGamesRepository } from './repository'
+import type { GameBrowseFilters } from '@/shared/types/domain'
 
 const BASE = 'http://localhost:54321/functions/v1/igdb-proxy'
 
@@ -32,6 +33,7 @@ describe('igdbGamesRepository.search', () => {
         title: 'The Witcher 3: Wild Hunt',
         coverUrl: 'https://images.igdb.com/igdb/image/upload/t_cover_big/hash.jpg',
         released: '2015-05-18',
+        rating: null,
         genres: ['RPG'],
         platforms: [{ id: 6, name: 'PC (Microsoft Windows)' }],
       },
@@ -155,6 +157,79 @@ describe('igdbGamesRepository.getByIds', () => {
     server.use(http.get(`${BASE}/games`, () => HttpResponse.json({ nope: true })))
 
     await expect(igdbGamesRepository.getByIds([1942])).rejects.toMatchObject({
+      kind: 'invalidResponse',
+    })
+  })
+})
+
+const noFilters: GameBrowseFilters = {
+  query: '',
+  letter: null,
+  platformId: null,
+  genreId: null,
+  fromYear: null,
+  toYear: null,
+  minRating: null,
+  sort: 'popular',
+}
+
+describe('browseSearchParams', () => {
+  it('solo envía el orden cuando no hay filtros', () => {
+    expect(browseSearchParams(noFilters, 0).toString()).toBe('sort=popular')
+  })
+
+  it('convierte todos los filtros en parámetros', () => {
+    const params = browseSearchParams(
+      {
+        query: '  zelda ',
+        letter: '#',
+        platformId: 130,
+        genreId: 12,
+        fromYear: 2010,
+        toYear: 2019,
+        minRating: 80,
+        sort: 'top_rated',
+      },
+      48,
+    )
+
+    expect(Object.fromEntries(params)).toEqual({
+      sort: 'top_rated',
+      q: 'zelda',
+      letter: '#',
+      platform: '130',
+      genre: '12',
+      from: '2010',
+      to: '2019',
+      min_rating: '80',
+      offset: '48',
+    })
+  })
+})
+
+describe('igdbGamesRepository.browse', () => {
+  it('pide la página con los filtros y devuelve juegos, si hay más y el total', async () => {
+    let requested: URL | null = null
+    server.use(
+      http.get(`${BASE}/games/browse`, ({ request }) => {
+        requested = new URL(request.url)
+        return HttpResponse.json({ results: [sampleGame], has_more: true, total: 1501 })
+      }),
+    )
+
+    const page = await igdbGamesRepository.browse({ ...noFilters, platformId: 167, letter: 'M' }, 24)
+
+    expect(requested!.searchParams.get('platform')).toBe('167')
+    expect(requested!.searchParams.get('letter')).toBe('M')
+    expect(requested!.searchParams.get('offset')).toBe('24')
+    expect(page).toMatchObject({ hasMore: true, total: 1501 })
+    expect(page.games[0].externalId).toBe(1942)
+  })
+
+  it('lanza invalidResponse si la respuesta no cumple el esquema', async () => {
+    server.use(http.get(`${BASE}/games/browse`, () => HttpResponse.json({ results: [] })))
+
+    await expect(igdbGamesRepository.browse(noFilters, 0)).rejects.toMatchObject({
       kind: 'invalidResponse',
     })
   })

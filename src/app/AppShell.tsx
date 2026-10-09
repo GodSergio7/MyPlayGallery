@@ -34,7 +34,10 @@ export function AppShell() {
         background: CARD_BACKGROUNDS[1],
         textColor: '#fff',
         description: 'Todo el catálogo de IGDB',
-        links: [{ label: 'Buscar juegos', to: '/search' }],
+        links: [
+          { label: 'Explorar catálogo', to: '/explore' },
+          { label: 'Buscar juegos', to: '/search' },
+        ],
       },
       {
         label: 'Cuenta',
