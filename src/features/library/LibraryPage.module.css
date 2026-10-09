@@ -1,104 +1,121 @@
-/* Móvil: buscador y botón "Filtros" arriba; los desplegables se abren en 2 × 2 */
+/* Filtros sin caja: buscador y vista arriba; debajo, pastillas de estado y de filtros
+   (FilterRow, PillSelect y ViewToggle están en shared/components/FilterControls). */
 .toolbar {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
-  padding: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.topRow {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.search {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Con filtros activos: recuento y "Limpiar filtros", siempre a la vista */
+.resultsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  margin: calc(var(--space-2) * -1) 0 var(--space-3);
+}
+
+.results {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* Estado: pastilla con punto de color y recuento */
+.chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip:hover {
+  color: var(--color-text);
+  border-color: rgba(179, 155, 255, 0.35);
+}
+
+.chip[aria-pressed='true'] {
+  color: var(--color-text);
+  background: rgba(106, 63, 224, 0.22);
+  border-color: rgba(179, 155, 255, 0.55);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.chipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+}
+
+.chip[data-status='pending'] .chipDot {
+  background: var(--color-warning);
+}
+
+.chip[data-status='playing'] .chipDot {
+  background: var(--color-primary);
+}
+
+.chip[data-status='completed'] .chipDot {
+  background: var(--color-success);
+}
+
+.chip[data-status='abandoned'] .chipDot {
+  background: var(--color-error);
+}
+
+.chipCount {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Vista de lista ---------- */
+
+.list {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
 
-.searchRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-2);
-  align-items: stretch;
-}
-
-.searchField {
-  align-self: end;
-  min-width: 0;
-}
-
-.filtersToggle {
-  min-height: 48px;
-  padding: 0 var(--space-4);
-  font: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-  background: rgba(8, 8, 28, 0.6);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.filtersToggle[aria-expanded='true'] {
-  border-color: rgba(197, 139, 255, 0.6);
-}
-
-.filters {
-  display: none;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-
-.filtersOpen {
-  display: grid;
-}
-
-.clearWrapper {
-  display: flex;
-  align-items: flex-end;
-  grid-column: 1 / -1;
-}
-
-.clearWrapper > * {
-  width: 100%;
-}
-
-/* Tablet: todo a la vista, buscador a lo ancho y filtros en dos columnas */
-@media (min-width: 768px) {
-  .toolbar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-5);
-    padding: var(--space-4);
-  }
-
-  .searchRow,
-  .filters {
-    display: contents;
-  }
-
-  .filtersToggle {
-    display: none;
-  }
-
-  .searchField {
-    grid-column: 1 / -1;
-  }
-
-  .clearWrapper > * {
-    width: auto;
-  }
-}
-
-/* Escritorio: una sola fila */
-@media (min-width: 1024px) {
-  .toolbar {
-    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
-    align-items: end;
-  }
-
-  .searchField,
-  .clearWrapper {
-    grid-column: auto;
-  }
+.list > li + li {
+  border-top: var(--border-width) solid var(--color-border);
 }

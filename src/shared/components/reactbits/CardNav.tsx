@@ -2,13 +2,13 @@
 // Cambios respecto al original:
 // - Enlaces del router (NavLink) en lugar de <a href>, con la página actual resaltada.
 // - Admite acciones (p. ej. "Cerrar sesión") además de enlaces.
-// - Logo como ReactNode y botón de acción configurable (enlace del router).
+// - Logo como ReactNode y hueco de acciones a la derecha (ReactNode); al pulsar una, el menú se cierra.
 // - Hamburguesa como <button> real; se cierra con Escape, al hacer clic fuera y al navegar.
 // - Respeta prefers-reduced-motion; textos en español; icono propio (sin react-icons).
 // - Los colores vienen de los tokens de la app (ver CardNav.css).
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ArrowUpRightIcon } from '../icons';
 import './CardNav.css';
@@ -35,7 +35,8 @@ export interface CardNavProps {
   logo: ReactNode;
   /** Debe ser estable (useMemo o constante): si cambia, se rehace la animación. */
   items: CardNavItem[];
-  cta?: { label: string; to: string };
+  /** Botones a la derecha de la barra (p. ej. añadir juego y perfil). Al pulsar, el menú se cierra. */
+  actions?: ReactNode;
   className?: string;
   ease?: string;
   ariaLabel?: string;
@@ -47,7 +48,7 @@ const prefersReducedMotion = () =>
 const CardNav = ({
   logo,
   items,
-  cta,
+  actions,
   className = '',
   ease = 'power3.out',
   ariaLabel = 'Navegación principal'
@@ -209,10 +210,10 @@ const CardNav = ({
 
           <div className="logo-container">{logo}</div>
 
-          {cta && (
-            <Link to={cta.to} className="card-nav-cta-button" onClick={closeMenu}>
-              {cta.label}
-            </Link>
+          {actions && (
+            <div className="card-nav-actions" onClick={closeMenu}>
+              {actions}
+            </div>
           )}
         </div>
 

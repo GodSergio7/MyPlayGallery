@@ -1,74 +1,43 @@
-.panel {
+/* Filtros sin caja, igual que en la Biblioteca: buscador y vista arriba, pastillas debajo
+   y la barra de letras (FilterRow, PillSelect y ViewToggle están en shared/components/FilterControls). */
+.toolbar {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-3);
   margin-bottom: var(--space-4);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
 }
 
-/* ---------- Buscador, orden y botón de filtros ---------- */
-
-/* Móvil: buscador a lo ancho; debajo, orden y botón de filtros en la misma fila */
 .topRow {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  align-items: stretch;
   gap: var(--space-2);
-  align-items: end;
 }
 
 .search {
-  grid-column: 1 / -1;
+  flex: 1;
   min-width: 0;
-}
-
-.filtersToggle {
-  min-height: 48px;
-  padding: 0 var(--space-4);
-  font: inherit;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-text);
-  background: rgba(8, 8, 28, 0.6);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.filtersToggle[aria-expanded='true'] {
-  border-color: rgba(197, 139, 255, 0.6);
-}
-
-/* ---------- Filtros (plegables en móvil) ---------- */
-
-.filters {
-  display: none;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-
-.filtersOpen {
-  display: grid;
 }
 
 /* ---------- Barra de letras ---------- */
 
+/* En móvil se desplaza en horizontal hasta el borde de la pantalla, como las pastillas */
 .letters {
   display: flex;
-  gap: var(--space-1);
-  padding-bottom: var(--space-1);
+  gap: 2px;
+  margin: 0 calc(var(--space-4) * -1);
+  padding: 2px var(--space-4);
   overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.letters::-webkit-scrollbar {
+  display: none;
 }
 
 .letter {
   flex: 0 0 auto;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 34px;
+  min-height: 34px;
   padding: 0 var(--space-2);
   font: inherit;
   font-size: var(--font-size-sm);
@@ -76,89 +45,61 @@
   color: var(--color-text-secondary);
   background: transparent;
   border: var(--border-width) solid transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   cursor: pointer;
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .letter:hover {
   color: var(--color-text);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .letter[aria-pressed='true'] {
-  color: var(--color-on-primary);
-  background: var(--color-accent);
+  color: var(--color-text);
+  background: rgba(106, 63, 224, 0.22);
+  border-color: rgba(179, 155, 255, 0.55);
 }
 
-/* ---------- Resumen y filtros activos ---------- */
+.letter:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
 
-.summary {
+/* ---------- Resultados ---------- */
+
+/* Recuento y "Limpiar filtros": siempre a la vista, aunque la fila de pastillas se desplace */
+.countRow {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
   min-height: 36px;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .count {
   font-size: var(--font-size-sm);
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.sortNote {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-secondary);
 }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+.list {
   margin: 0;
   padding: 0;
+  overflow: hidden;
   list-style: none;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  min-height: 32px;
-  padding: 0 var(--space-2) 0 var(--space-3);
-  font: inherit;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-text);
-  background: var(--color-primary-soft);
-  border: var(--border-width) solid rgba(197, 139, 255, 0.35);
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-}
-
-.chip:hover {
-  border-color: rgba(197, 139, 255, 0.7);
-}
-
-.clear {
-  min-height: 32px;
-  padding: 0 var(--space-2);
-  font: inherit;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-primary);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.clear:hover {
-  text-decoration: underline;
+.list > li + li {
+  border-top: var(--border-width) solid var(--color-border);
 }
 
 /* ---------- Paginación ---------- */
@@ -183,37 +124,11 @@
   text-align: center;
 }
 
-/* ---------- Tablet y escritorio ---------- */
-
-@media (min-width: 768px) {
-  .panel {
-    gap: var(--space-4);
-    padding: var(--space-4);
-  }
-
-  .topRow {
-    grid-template-columns: minmax(0, 1fr) 220px;
-    gap: var(--space-3);
-  }
-
-  .search {
-    grid-column: auto;
-  }
-
-  .filtersToggle {
-    display: none;
-  }
-
-  .filters {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-}
-
 /* Pantallas anchas: todas las letras en una fila, repartidas a partes iguales */
 @media (min-width: 1100px) {
   .letters {
+    margin: 0;
+    padding: 2px 0;
     overflow: visible;
   }
 

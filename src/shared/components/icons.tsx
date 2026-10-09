@@ -181,3 +181,32 @@ export function AlertIcon(props: IconProps) {
     </Icon>
   )
 }
+
+export function GridIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+    </Icon>
+  )
+}
+
+export function ListIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="4" y="4.5" width="4" height="4" rx="1" />
+      <rect x="4" y="15.5" width="4" height="4" rx="1" />
+      <path d="M11 6.5h9M11 17.5h9" />
+    </Icon>
+  )
+}
+
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </Icon>
+  )
+}

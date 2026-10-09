@@ -5,11 +5,13 @@ import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
-import { Select, Field } from '@/shared/components/FormControls'
 import { Button } from '@/shared/components/Button'
 import { GameGrid } from '@/shared/components/GameGrid'
 import { LibraryCard } from '@/shared/components/LibraryCard'
 import { EmptyState, ErrorState, GridSkeleton } from '@/shared/components/StateViews'
+import { ClearFiltersButton, FilterRow, PillSelect, ViewToggle } from '@/shared/components/FilterControls'
+import { useViewMode } from '@/shared/hooks/useViewMode'
+import { LibraryListRow } from './LibraryListRow'
 import styles from './LibraryPage.module.css'
 
 type SortKey = 'recent' | 'score' | 'hours' | 'started' | 'title'
@@ -74,12 +76,15 @@ function readFilters(params: URLSearchParams) {
   }
 }
 
+// La vista elegida (cuadrícula o lista) se recuerda en este navegador.
+const VIEW_STORAGE_KEY = 'myplaygallery.library.view'
+
 export function LibraryPage() {
   const libraryState = useAsync(loadLibraryWithGames, [])
   const [params, setParams] = useSearchParams()
   const { status, platformId, sort, achievement } = readFilters(params)
   const [query, setQuery] = useState('')
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [view, setView] = useViewMode(VIEW_STORAGE_KEY)
 
   function setFilter(name: 'estado' | 'plataforma' | 'orden' | 'logro', value: string | null) {
     setParams(
@@ -96,41 +101,37 @@ export function LibraryPage() {
   const entries = useMemo(() => libraryState.data?.entries ?? [], [libraryState.data])
   const games = useMemo(() => libraryState.data?.games ?? [], [libraryState.data])
 
-  const gameById = useMemo(
-    () => new Map(games.map((game) => [game.externalId, game])),
-    [games],
-  )
+  const gameById = useMemo(() => new Map(games.map((game) => [game.externalId, game])), [games])
 
   const platforms = useMemo(() => {
     const map = new Map<number, string>()
     entries.forEach((entry) => map.set(entry.platformId, entry.platformName))
-    return [...map.entries()].map(([id, name]) => ({ id, name }))
+    return [...map.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name))
   }, [entries])
 
-  const filtered = useMemo(() => {
+  // Todos los filtros menos el estado: sirve para filtrar y para contar cuántos hay de cada estado.
+  const matchingExceptStatus = useMemo(() => {
     const normalized = query.trim().toLowerCase()
-
-    const result = entries.filter((entry) => {
-      if (status !== 'all' && entry.status !== status) {
-        return false
-      }
-      if (platformId !== 'all' && entry.platformId !== platformId) {
-        return false
-      }
-      if (achievement === 'platino' && !entry.platinum) {
-        return false
-      }
-      if (achievement === 'completo' && !entry.hundredPercent) {
-        return false
-      }
+    return entries.filter((entry) => {
+      if (platformId !== 'all' && entry.platformId !== platformId) return false
+      if (achievement === 'platino' && !entry.platinum) return false
+      if (achievement === 'completo' && !entry.hundredPercent) return false
       if (normalized) {
         const title = gameById.get(entry.externalId)?.title.toLowerCase() ?? ''
-        if (!title.includes(normalized)) {
-          return false
-        }
+        if (!title.includes(normalized)) return false
       }
       return true
     })
+  }, [entries, gameById, query, platformId, achievement])
+
+  const statusCounts = useMemo(() => {
+    const counts = new Map<GameStatus, number>()
+    for (const entry of matchingExceptStatus) counts.set(entry.status, (counts.get(entry.status) ?? 0) + 1)
+    return counts
+  }, [matchingExceptStatus])
+
+  const filtered = useMemo(() => {
+    const result = matchingExceptStatus.filter((entry) => status === 'all' || entry.status === status)
 
     return result.sort((a, b) => {
       switch (sort) {
@@ -141,27 +142,16 @@ export function LibraryPage() {
         case 'started':
           return compareNullableDates(a.startedOn, b.startedOn)
         case 'title':
-          return (gameById.get(a.externalId)?.title ?? '').localeCompare(
-            gameById.get(b.externalId)?.title ?? '',
-          )
+          return (gameById.get(a.externalId)?.title ?? '').localeCompare(gameById.get(b.externalId)?.title ?? '')
         case 'recent':
         default:
           return b.updatedAt.localeCompare(a.updatedAt)
       }
     })
-  }, [entries, gameById, query, status, platformId, sort, achievement])
-
-  // Filtros distintos del valor por defecto (sin contar la búsqueda), para el botón de móvil.
-  const activeCount = [status !== 'all', platformId !== 'all', achievement !== 'all', sort !== 'recent'].filter(
-    Boolean,
-  ).length
+  }, [matchingExceptStatus, gameById, status, sort])
 
   const hasActiveFilters =
-    query.trim() !== '' ||
-    status !== 'all' ||
-    platformId !== 'all' ||
-    sort !== 'recent' ||
-    achievement !== 'all'
+    query.trim() !== '' || status !== 'all' || platformId !== 'all' || sort !== 'recent' || achievement !== 'all'
 
   function clearFilters() {
     setQuery('')
@@ -203,16 +193,15 @@ export function LibraryPage() {
     )
   }
 
+  const description = `${entries.length} ${entries.length === 1 ? 'juego' : 'juegos'}`
+
   return (
     <>
-      <PageHeader
-        title="Biblioteca"
-        description={`${entries.length} ${entries.length === 1 ? 'juego' : 'juegos'}`}
-      />
+      <PageHeader title="Biblioteca" description={description} />
 
       <section className={styles.toolbar} aria-label="Filtros de la biblioteca">
-        <div className={styles.searchRow}>
-          <div className={styles.searchField}>
+        <div className={styles.topRow}>
+          <div className={styles.search}>
             <SearchBar
               id="library-search"
               label="Buscar en mi biblioteca"
@@ -221,88 +210,83 @@ export function LibraryPage() {
               placeholder="Buscar por título…"
             />
           </div>
-          <button
-            type="button"
-            className={styles.filtersToggle}
-            aria-expanded={filtersOpen}
-            aria-controls="library-filters"
-            onClick={() => setFiltersOpen((open) => !open)}
+          <ViewToggle view={view} onChange={setView} />
+        </div>
+
+        <FilterRow label="Estado">
+          <StatusChip
+            label="Todos"
+            count={matchingExceptStatus.length}
+            active={status === 'all'}
+            onClick={() => setFilter('estado', null)}
+          />
+          {GAME_STATUSES.map((option) => (
+            <StatusChip
+              key={option.value}
+              label={option.label}
+              status={option.value}
+              count={statusCounts.get(option.value) ?? 0}
+              active={status === option.value}
+              onClick={() => setFilter('estado', status === option.value ? null : option.value)}
+            />
+          ))}
+        </FilterRow>
+
+        <FilterRow>
+          <PillSelect
+            id="library-platform"
+            label="Plataforma"
+            value={platformId === 'all' ? 'all' : String(platformId)}
+            active={platformId !== 'all'}
+            onChange={(value) => setFilter('plataforma', value)}
           >
-            Filtros{activeCount > 0 ? ` (${activeCount})` : ''}
-          </button>
-        </div>
+            <option value="all">Todas</option>
+            {platforms.map((platform) => (
+              <option key={platform.id} value={platform.id}>
+                {platform.name}
+              </option>
+            ))}
+          </PillSelect>
 
-        <div
-          id="library-filters"
-          className={filtersOpen ? `${styles.filters} ${styles.filtersOpen}` : styles.filters}
-        >
+          <PillSelect
+            id="library-achievement"
+            label="Logros"
+            value={achievement}
+            active={achievement !== 'all'}
+            onChange={(value) => setFilter('logro', value)}
+          >
+            <option value="all">Todos</option>
+            {ACHIEVEMENT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
 
-          <Field label="Estado" htmlFor="library-status">
-            <Select
-              id="library-status"
-              value={status}
-              onChange={(event) => setFilter('estado', event.target.value)}
-            >
-              <option value="all">Todos</option>
-              {GAME_STATUSES.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field label="Plataforma" htmlFor="library-platform">
-            <Select
-              id="library-platform"
-              value={platformId === 'all' ? 'all' : String(platformId)}
-              onChange={(event) => setFilter('plataforma', event.target.value)}
-            >
-              <option value="all">Todas</option>
-              {platforms.map((platform) => (
-                <option key={platform.id} value={platform.id}>
-                  {platform.name}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field label="Logros" htmlFor="library-achievement">
-            <Select
-              id="library-achievement"
-              value={achievement}
-              onChange={(event) => setFilter('logro', event.target.value)}
-            >
-              <option value="all">Todos</option>
-              {ACHIEVEMENT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <Field label="Ordenar por" htmlFor="library-sort">
-            <Select
-              id="library-sort"
-              value={sort}
-              onChange={(event) => setFilter('orden', event.target.value)}
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <div className={styles.clearWrapper}>
-            <Button variant="ghost" onClick={clearFilters} disabled={!hasActiveFilters}>
-              Limpiar filtros
-            </Button>
-          </div>
-        </div>
+          <PillSelect
+            id="library-sort"
+            label="Orden"
+            value={sort}
+            active={sort !== 'recent'}
+            onChange={(value) => setFilter('orden', value)}
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
+        </FilterRow>
       </section>
+
+      {hasActiveFilters && (
+        <div className={styles.resultsRow}>
+          <p className={styles.results} aria-live="polite">
+            {filtered.length} de {entries.length} juegos
+          </p>
+          <ClearFiltersButton onClick={clearFilters} />
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <EmptyState
@@ -313,6 +297,14 @@ export function LibraryPage() {
             </Button>
           }
         />
+      ) : view === 'list' ? (
+        <ul className={styles.list}>
+          {filtered.map((entry) => (
+            <li key={entry.id}>
+              <LibraryListRow entry={entry} game={gameById.get(entry.externalId)} />
+            </li>
+          ))}
+        </ul>
       ) : (
         <GameGrid>
           {filtered.map((entry) => (
@@ -321,5 +313,27 @@ export function LibraryPage() {
         </GameGrid>
       )}
     </>
+  )
+}
+
+function StatusChip({
+  label,
+  count,
+  active,
+  status,
+  onClick,
+}: {
+  label: string
+  count: number
+  active: boolean
+  status?: GameStatus
+  onClick: () => void
+}) {
+  return (
+    <button type="button" className={styles.chip} aria-pressed={active} data-status={status} onClick={onClick}>
+      {status && <span className={styles.chipDot} aria-hidden="true" />}
+      {label}
+      <span className={styles.chipCount}>{count}</span>
+    </button>
   )
 }

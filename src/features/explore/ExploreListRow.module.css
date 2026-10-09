@@ -1,0 +1,130 @@
+/* Móvil: portada | título, año y plataformas | nota.
+   Escritorio: columnas fijas para año y nota, alineadas entre filas. */
+.row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-areas: 'cover main rating';
+  align-items: center;
+  column-gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.row:hover,
+.row:active {
+  background: var(--color-surface-hover);
+  text-decoration: none;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
+.cover {
+  grid-area: cover;
+  width: 44px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  gap: var(--space-2);
+  max-width: 100%;
+  min-width: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.metaYear {
+  flex-shrink: 0;
+}
+
+.metaYear + .platforms::before {
+  content: '·';
+  margin-right: var(--space-2);
+}
+
+.platforms {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.inLibrary {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+}
+
+/* El año tiene columna propia solo en escritorio; en móvil va junto a las plataformas */
+.year {
+  display: none;
+}
+
+.rating {
+  grid-area: rating;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  justify-self: end;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-warning);
+  font-variant-numeric: tabular-nums;
+}
+
+.noRating {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: 44px minmax(0, 1fr) 64px 64px;
+    grid-template-areas: 'cover main year rating';
+    column-gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .metaYear {
+    display: none;
+  }
+
+  .metaYear + .platforms::before {
+    content: none;
+  }
+
+  .year {
+    display: block;
+    grid-area: year;
+    justify-self: end;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+}

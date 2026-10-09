@@ -110,23 +110,11 @@
   transform: translate(-50%, -50%);
 }
 
-.card-nav-cta-button {
-  display: inline-flex;
+/* Acciones a la derecha (añadir juego y perfil); el contenido lo pone AppShell */
+.card-nav-actions {
+  display: flex;
   align-items: center;
-  height: 100%;
-  padding: 0 1.25rem;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-on-primary);
-  text-decoration: none;
-  background: var(--color-accent);
-  border-radius: var(--radius-md);
-  transition: filter 0.2s ease;
-}
-
-.card-nav-cta-button:hover {
-  filter: brightness(1.1);
-  text-decoration: none;
+  gap: var(--space-2);
 }
 
 /* ---------- Tarjetas ---------- */
@@ -239,11 +227,12 @@
 @media (max-width: 768px) {
   .card-nav-top {
     justify-content: space-between;
+    gap: var(--space-1);
     padding: 0.5rem 0.5rem 0.5rem 1rem;
   }
 
   .hamburger-menu {
-    order: 2;
+    order: 3;
   }
 
   .logo-container {
@@ -252,8 +241,11 @@
     transform: none;
   }
 
-  .card-nav-cta-button {
-    display: none;
+  /* Logo a la izquierda; acciones y hamburguesa juntas a la derecha */
+  .card-nav-actions {
+    order: 2;
+    margin-left: auto;
+    gap: var(--space-1);
   }
 
   .card-nav-content {

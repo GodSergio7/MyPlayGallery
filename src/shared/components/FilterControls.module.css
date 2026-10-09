@@ -1,0 +1,152 @@
+/* ---------- Fila de pastillas ---------- */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 calc(var(--space-4) * -1);
+  padding: 2px var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.row::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Desplegable con forma de pastilla ---------- */
+
+.pill {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 36px;
+  padding-left: var(--space-3);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  background: transparent;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  transition: border-color 0.15s ease;
+}
+
+.pill:hover {
+  border-color: rgba(179, 155, 255, 0.35);
+}
+
+.pill:focus-within {
+  border-color: rgba(179, 155, 255, 0.75);
+}
+
+.pillActive {
+  background: rgba(106, 63, 224, 0.22);
+  border-color: rgba(179, 155, 255, 0.55);
+}
+
+.pillLabel {
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+/* El select ocupa el resto de la pastilla; field-sizing ajusta su ancho a la opción elegida */
+.pillSelect {
+  field-sizing: content;
+  max-width: 220px;
+  min-height: 34px;
+  padding: 0 30px 0 6px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  appearance: none;
+  cursor: pointer;
+}
+
+.pillSelect:focus-visible {
+  outline: none;
+}
+
+.pillSelect option,
+.pillSelect optgroup {
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.pillChevron {
+  position: absolute;
+  right: 11px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.clear {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.clear:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Cuadrícula / lista ---------- */
+
+.viewToggle {
+  display: flex;
+  flex-shrink: 0;
+  padding: 3px;
+  background: rgba(8, 8, 28, 0.6);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.viewButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.viewButton:hover {
+  color: var(--color-text);
+}
+
+.viewButton[aria-pressed='true'] {
+  color: var(--color-text);
+  background: rgba(106, 63, 224, 0.28);
+}
+
+.viewButton:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+/* En pantallas anchas las pastillas caben y no hace falta desplazar */
+@media (min-width: 768px) {
+  .row {
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 2px 0;
+    overflow: visible;
+  }
+}

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
-import { Field, Select } from '@/shared/components/FormControls'
+import { ClearFiltersButton, FilterRow, PillSelect, ViewToggle } from '@/shared/components/FilterControls'
 import { Button } from '@/shared/components/Button'
 import { GameGrid } from '@/shared/components/GameGrid'
 import { GameCard } from '@/shared/components/GameCard'
 import { EmptyState, ErrorState, GridSkeleton } from '@/shared/components/StateViews'
-import { CloseIcon } from '@/shared/components/icons'
+import { useViewMode } from '@/shared/hooks/useViewMode'
 import type { Game, GameBrowseSort } from '@/shared/types/domain'
 import {
   DECADE_OPTIONS,
@@ -15,26 +15,28 @@ import {
   MIN_RATING_OPTIONS,
   PLATFORM_GROUPS,
   SORT_OPTIONS,
-  labelFor,
 } from './catalog'
 import {
   countActiveFilters,
   toBrowseFilters,
   useExploreFilters,
-  type ExploreFilterState,
 } from './hooks/useExploreFilters'
 import { useGameBrowse, useLibraryGameIds } from './hooks/useGameBrowse'
+import { ExploreListRow } from './ExploreListRow'
 import styles from './ExplorePage.module.css'
 
 const SEARCH_DEBOUNCE_MS = 350
 const numberFormat = new Intl.NumberFormat('es-ES')
+const DEFAULT_SORT: GameBrowseSort = 'popular'
+// La vista elegida (cuadrícula o lista) se recuerda en este navegador.
+const VIEW_STORAGE_KEY = 'myplaygallery.explore.view'
 
 export function ExplorePage() {
   const { filters, update, clear } = useExploreFilters()
   const browse = useGameBrowse(toBrowseFilters(filters))
   const libraryIds = useLibraryGameIds()
   const activeCount = countActiveFilters(filters)
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [view, setView] = useViewMode(VIEW_STORAGE_KEY)
 
   // El texto se escribe en local y se lleva a la URL con un pequeño retardo.
   const [term, setTerm] = useState(filters.query)
@@ -52,11 +54,9 @@ export function ExplorePage() {
 
   return (
     <>
-      <PageHeader
-        title="Explorar"
-      />
+      <PageHeader title="Explorar" />
 
-      <section className={styles.panel} aria-label="Filtros del catálogo">
+      <section className={styles.toolbar} aria-label="Filtros del catálogo">
         <div className={styles.topRow}>
           <div className={styles.search}>
             <SearchBar
@@ -67,100 +67,88 @@ export function ExplorePage() {
               placeholder="Buscar por nombre…"
             />
           </div>
+          <ViewToggle view={view} onChange={setView} />
+        </div>
 
-          <Field label="Ordenar por" htmlFor="explore-sort">
-            <Select
-              id="explore-sort"
-              value={filters.sort}
-              onChange={(event) => update({ sort: event.target.value as GameBrowseSort })}
-            >
-              {SORT_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-
-          <button
-            type="button"
-            className={styles.filtersToggle}
-            aria-expanded={filtersOpen}
-            aria-controls="explore-filters"
-            onClick={() => setFiltersOpen((open) => !open)}
+        <FilterRow>
+          <PillSelect
+            id="explore-platform"
+            label="Consola"
+            value={filters.platformId ? String(filters.platformId) : ''}
+            active={filters.platformId !== null}
+            onChange={(value) => update({ platformId: value ? Number(value) : null })}
           >
-            Filtros{activeCount > 0 ? ` (${activeCount})` : ''}
-          </button>
-        </div>
+            <option value="">Todas</option>
+            {PLATFORM_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </PillSelect>
 
-        <div
-          id="explore-filters"
-          className={filtersOpen ? `${styles.filters} ${styles.filtersOpen}` : styles.filters}
-        >
-          <Field label="Consola" htmlFor="explore-platform">
-            <Select
-              id="explore-platform"
-              value={filters.platformId ?? ''}
-              onChange={(event) => update({ platformId: event.target.value ? Number(event.target.value) : null })}
-            >
-              <option value="">Todas</option>
-              {PLATFORM_GROUPS.map((group) => (
-                <optgroup key={group.label} label={group.label}>
-                  {group.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </Select>
-          </Field>
+          <PillSelect
+            id="explore-genre"
+            label="Género"
+            value={filters.genreId ? String(filters.genreId) : ''}
+            active={filters.genreId !== null}
+            onChange={(value) => update({ genreId: value ? Number(value) : null })}
+          >
+            <option value="">Todos</option>
+            {GENRE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
 
-          <Field label="Género" htmlFor="explore-genre">
-            <Select
-              id="explore-genre"
-              value={filters.genreId ?? ''}
-              onChange={(event) => update({ genreId: event.target.value ? Number(event.target.value) : null })}
-            >
-              <option value="">Todos</option>
-              {GENRE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
+          <PillSelect
+            id="explore-decade"
+            label="Época"
+            value={filters.decade ?? ''}
+            active={filters.decade !== null}
+            onChange={(value) => update({ decade: value || null })}
+          >
+            <option value="">Cualquiera</option>
+            {DECADE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
 
-          <Field label="Época" htmlFor="explore-decade">
-            <Select
-              id="explore-decade"
-              value={filters.decade ?? ''}
-              onChange={(event) => update({ decade: event.target.value || null })}
-            >
-              <option value="">Cualquiera</option>
-              {DECADE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
+          <PillSelect
+            id="explore-rating"
+            label="Nota"
+            value={filters.minRating ? String(filters.minRating) : ''}
+            active={filters.minRating !== null}
+            onChange={(value) => update({ minRating: value ? Number(value) : null })}
+          >
+            <option value="">Cualquiera</option>
+            {MIN_RATING_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
 
-          <Field label="Nota mínima" htmlFor="explore-rating">
-            <Select
-              id="explore-rating"
-              value={filters.minRating ?? ''}
-              onChange={(event) => update({ minRating: event.target.value ? Number(event.target.value) : null })}
-            >
-              <option value="">Cualquiera</option>
-              {MIN_RATING_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-        </div>
+          <PillSelect
+            id="explore-sort"
+            label="Orden"
+            value={filters.sort}
+            active={filters.sort !== DEFAULT_SORT}
+            onChange={(value) => update({ sort: value as GameBrowseSort })}
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </PillSelect>
+        </FilterRow>
 
         <div className={styles.letters} role="group" aria-label="Empieza por">
           <button
@@ -186,16 +174,19 @@ export function ExplorePage() {
         </div>
       </section>
 
-      <ResultsSummary
-        filters={filters}
-        total={browse.total}
-        loading={browse.isLoading}
-        onRemove={update}
-        onClear={() => {
-          setTerm('')
-          clear()
-        }}
-      />
+      <div className={styles.countRow}>
+        <p className={styles.count} aria-live="polite">
+          {browse.isLoading ? 'Buscando juegos…' : browse.total === null ? '' : `${numberFormat.format(browse.total)} juegos`}
+        </p>
+        {(activeCount > 0 || filters.sort !== DEFAULT_SORT) && (
+          <ClearFiltersButton
+            onClick={() => {
+              setTerm('')
+              clear()
+            }}
+          />
+        )}
+      </div>
 
       {browse.isLoading ? (
         <GridSkeleton count={8} />
@@ -219,16 +210,29 @@ export function ExplorePage() {
         />
       ) : (
         <>
-          <GameGrid>
-            {browse.games.map((game) => (
-              <GameCard
-                key={game.externalId}
-                game={withPlatformFirst(game, filters.platformId)}
-                to={`/explore/${game.externalId}`}
-                inLibrary={libraryIds.has(game.externalId)}
-              />
-            ))}
-          </GameGrid>
+          {view === 'list' ? (
+            <ul className={styles.list}>
+              {browse.games.map((game) => (
+                <li key={game.externalId}>
+                  <ExploreListRow
+                    game={withPlatformFirst(game, filters.platformId)}
+                    inLibrary={libraryIds.has(game.externalId)}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <GameGrid>
+              {browse.games.map((game) => (
+                <GameCard
+                  key={game.externalId}
+                  game={withPlatformFirst(game, filters.platformId)}
+                  to={`/explore/${game.externalId}`}
+                  inLibrary={libraryIds.has(game.externalId)}
+                />
+              ))}
+            </GameGrid>
+          )}
 
           <LoadMore
             hasNextPage={browse.hasNextPage}
@@ -250,58 +254,6 @@ function withPlatformFirst(game: Game, platformId: number | null): Game {
   const platforms = [...game.platforms]
   const [selected] = platforms.splice(index, 1)
   return { ...game, platforms: [selected, ...platforms] }
-}
-
-interface ResultsSummaryProps {
-  filters: ExploreFilterState
-  total: number | null
-  loading: boolean
-  onRemove: (patch: Partial<ExploreFilterState>) => void
-  onClear: () => void
-}
-
-function ResultsSummary({ filters, total, loading, onRemove, onClear }: ResultsSummaryProps) {
-  const chips: Array<{ key: string; label: string; patch: Partial<ExploreFilterState> }> = []
-  if (filters.query.trim()) chips.push({ key: 'q', label: `“${filters.query.trim()}”`, patch: { query: '' } })
-  if (filters.letter) chips.push({ key: 'letter', label: labelFor.letter(filters.letter), patch: { letter: null } })
-  if (filters.platformId)
-    chips.push({ key: 'platform', label: labelFor.platform(filters.platformId), patch: { platformId: null } })
-  if (filters.genreId) chips.push({ key: 'genre', label: labelFor.genre(filters.genreId), patch: { genreId: null } })
-  if (filters.decade) chips.push({ key: 'decade', label: labelFor.decade(filters.decade), patch: { decade: null } })
-  if (filters.minRating)
-    chips.push({ key: 'rating', label: labelFor.minRating(filters.minRating), patch: { minRating: null } })
-
-  return (
-    <div className={styles.summary}>
-      <p className={styles.count} aria-live="polite">
-        {loading ? 'Buscando juegos…' : total === null ? '' : `${numberFormat.format(total)} juegos`}
-        <span className={styles.sortNote}> · {labelFor.sort(filters.sort)}</span>
-      </p>
-
-      {chips.length > 0 && (
-        <ul className={styles.chips} aria-label="Filtros activos">
-          {chips.map((chip) => (
-            <li key={chip.key}>
-              <button
-                type="button"
-                className={styles.chip}
-                onClick={() => onRemove(chip.patch)}
-                aria-label={`Quitar filtro: ${chip.label}`}
-              >
-                {chip.label}
-                <CloseIcon width={14} height={14} aria-hidden="true" />
-              </button>
-            </li>
-          ))}
-          <li>
-            <button type="button" className={styles.clear} onClick={onClear}>
-              Limpiar filtros
-            </button>
-          </li>
-        </ul>
-      )}
-    </div>
-  )
 }
 
 interface LoadMoreProps {

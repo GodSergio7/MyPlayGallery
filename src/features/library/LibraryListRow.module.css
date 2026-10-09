@@ -1,0 +1,145 @@
+/* Móvil: portada | título y plataforma | estado y nota apilados a la derecha.
+   Escritorio: columnas fijas para estado, nota y horas, alineadas entre filas. */
+.row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'cover main status'
+    'cover main score';
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.row:hover,
+.row:active {
+  background: var(--color-surface-hover);
+  text-decoration: none;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
+.cover {
+  grid-area: cover;
+  width: 44px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+.main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.platform {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.achievement {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.status {
+  grid-area: status;
+  justify-self: end;
+}
+
+.score {
+  grid-area: score;
+  justify-self: end;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* En móvil, solo el trofeo: la palabra le quitaba sitio a la plataforma */
+.achievementLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Horas: en móvil, junto a la plataforma; en escritorio, en su propia columna */
+.metaHours {
+  flex-shrink: 0;
+}
+
+.hours {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .row {
+    grid-template-columns: 44px minmax(0, 1fr) 140px 72px 72px;
+    grid-template-areas: 'cover main status score hours';
+    column-gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .status {
+    justify-self: start;
+  }
+
+  .metaHours {
+    display: none;
+  }
+
+  .achievementLabel {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+
+  .hours {
+    display: block;
+    grid-area: hours;
+    justify-self: end;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score {
+    font-variant-numeric: tabular-nums;
+  }
+}

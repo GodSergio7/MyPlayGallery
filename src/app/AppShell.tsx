@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { AppBackground } from '@/shared/components/AppBackground'
 import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
 import { LogoMark } from '@/shared/components/LogoMark'
+import { PlusIcon } from '@/shared/components/icons'
+import { useConnections } from '@/features/settings/hooks/useConnections'
 import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
@@ -53,7 +55,14 @@ export function AppShell() {
       <div className={styles.navBar}>
         <CardNav
           items={items}
-          cta={{ label: 'Añadir juego', to: '/search' }}
+          actions={
+            <>
+              <Link to="/search" className={styles.addButton} aria-label="Añadir juego" title="Añadir juego">
+                <PlusIcon width={20} height={20} strokeWidth={2.2} />
+              </Link>
+              <UserLink email={email} />
+            </>
+          }
           logo={
             <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
               <LogoMark size={28} />
@@ -78,5 +87,30 @@ export function AppShell() {
         </div>
       </footer>
     </div>
+  )
+}
+
+/**
+ * Avatar y nombre del usuario, enlazados a su perfil.
+ * Con Steam conectado, el nombre y el avatar son los de Steam; si no, la parte del email
+ * antes de la @ y su inicial.
+ */
+function UserLink({ email }: { email: string | undefined }) {
+  const connections = useConnections()
+  const steam = connections.data?.find((item) => item.provider === 'steam')
+  const steamAvatar = steam?.avatarUrl ?? null
+  const name = steam?.displayName ?? (email ? email.split('@')[0] : 'Perfil')
+
+  return (
+    <Link to="/profile" className={styles.user} aria-label={`Tu perfil (${name})`} title="Tu perfil">
+      {steamAvatar ? (
+        <img src={steamAvatar} alt="" className={styles.avatar} width={32} height={32} />
+      ) : (
+        <span className={styles.avatar} aria-hidden="true">
+          {name.charAt(0).toUpperCase()}
+        </span>
+      )}
+      <span className={styles.userName}>{name}</span>
+    </Link>
   )
 }

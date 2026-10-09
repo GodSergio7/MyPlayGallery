@@ -12,6 +12,7 @@ import { ExplorePage } from '@/features/explore/ExplorePage'
 import { GameInfoPage } from '@/features/game-info/GameInfoPage'
 import { GameDetailPage } from '@/features/game/GameDetailPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { ProfilePage } from '@/features/profile/ProfilePage'
 import { SteamImportPage } from '@/features/settings/SteamImportPage'
 
 export function App() {
@@ -31,6 +32,7 @@ export function App() {
                 <Route path="game/:gameId" element={<GameDetailPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="settings/steam" element={<SteamImportPage />} />
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Route>

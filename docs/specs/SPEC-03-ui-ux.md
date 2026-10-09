@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.10 |
+| Versión | 0.13 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -25,6 +25,9 @@
 | 0.8 | 2026-10-09 | Diseño en móvil (por debajo de 768 px), con el mismo estilo que en escritorio. Rejillas de portadas en 2 columnas. Inicio: "Juegos" a todo el ancho y las otras cifras en 2 × 2; "Últimos cambios" (con miniatura de la portada) antes de "Por estado". Biblioteca y Explorar: buscador arriba y filtros plegables tras un botón "Filtros (n)" en 2 × 2. Fichas de la biblioteca y de añadir: portada pequeña junto al título y botones a todo el ancho. Ficha de Explorar: la captura hace de banner con la portada encima, y la duración va justo después de la descripción. Botones de al menos 44 px de alto y campos de 16 px (Safari en iPhone no hace zoom). Se corrige el desbordamiento horizontal del Inicio. |
 | 0.9 | 2026-10-09 | Nuevo logo: un mando envuelto en llamas, en una sola tinta (lila de marca `--color-primary`). `LogoMark` es un SVG vectorizado del PNG original, centrado en 64 × 64 y con `currentColor`. Vuelve a la barra de navegación (28 px, delante de MyPlayGallery) y sigue en la pantalla de acceso. Favicon SVG y `apple-touch-icon.png` (180 px): logo blanco sobre violeta `#6a3fe0`. `theme-color` pasa a `#0b0b1a`, el fondo real. |
 | 0.10 | 2026-10-09 | Nuevo formulario de acceso: pestañas Entrar / Crear cuenta con indicador deslizante (sustituyen al enlace inferior), título y frase según el modo, campos de 48 px con icono, botón para mostrar u ocultar la contraseña, aviso de Bloq Mayús, requisitos de la contraseña marcados en vivo al registrarse (mínimo 6 caracteres y coincidencia), validación del formato del email, errores con icono y botón con indicador de carga. La pantalla "Revisa tu correo" añade un icono, el aviso de mirar en spam y "Volver a entrar". |
+| 0.11 | 2026-10-09 | En el Inicio, "Últimos cambios" se sustituye por **Más jugados**: el total de horas de la biblioteca y los 3 juegos con más horas, en orden, con posición, portada, plataformas, horas y una barra en escala fija de 0 a 1000 h (sin números; llena a partir de 1000 h). Un juego en varias plataformas suma sus horas en una sola fila. "Ver todos" lleva a la biblioteca ordenada por horas. |
+| 0.12 | 2026-10-09 | Nuevos filtros de la Biblioteca, sin caja ni etiquetas de formulario. Arriba, el buscador y el cambio de vista. Debajo, el **estado como pastillas** con punto de color y recuento (que respeta los demás filtros). Después, **Plataforma, Logros y Orden como pastillas desplegables**, resaltadas cuando no están en su valor por defecto, y "Limpiar filtros" junto al recuento ("X de Y juegos"), solo con filtros activos. En móvil, las filas de pastillas se desplazan en horizontal (desaparece el panel plegable "Filtros"). Nueva **vista en lista** (portada, título, plataforma, trofeo de platino o 100%, estado, nota y horas; columnas alineadas en escritorio), recordada en el navegador. |
+| 0.13 | 2026-10-09 | Barra de navegación: el botón "Añadir juego" pasa a ser un **botón redondo "+"** (mismo destino, `/search`; "Añadir juego" como etiqueta accesible) y a su lado un **enlace al perfil** con el avatar y el nombre. Con Steam conectado, el nombre y el avatar son los de la cuenta de Steam; si no, la parte del email antes de la @ y su inicial. En móvil, el "+" y el avatar (sin nombre) se ven junto a la hamburguesa. El perfil (`/profile`) es de momento una página provisional que remite a Ajustes. El CardNav sustituye `cta` por un hueco genérico `actions`. |
 
 ## Leyenda de estados de decisión
 
@@ -142,7 +145,7 @@ Rutas (DEFINIDAS en SPEC-01) y su elemento de navegación:
    - Platinos conseguidos (recuento de `platinum`).
    - Juegos al 100% (recuento de `hundred_percent`).
 3. **Distribución por estado**: bloque visual independiente (barra segmentada o barras horizontales con recuento). Evitar gráficos complejos en el MVP.
-4. **Actividad reciente**: lista corta de las entradas modificadas más recientemente (`updated_at`), enlazando a `/library/:entryId`.
+4. **Más jugados** (enmienda v0.11, sustituye a "Actividad reciente"): total de horas y los 3 juegos con más horas (sumando plataformas), enlazando a `/library/:entryId` de la entrada con más horas.
 5. **Accesos rápidos**: botones a "Buscar y añadir" (`/search`) y "Ver biblioteca" (`/library`).
 6. **Estado vacío**: si no hay entradas, mensaje claro + CTA a `/search`.
 

@@ -17,8 +17,8 @@
   gap: var(--space-4);
 }
 
-/* En una sola columna, lo último que has tocado va antes que el reparto por estado */
-.recentPanel {
+/* En una sola columna, los más jugados van antes que el reparto por estado */
+.topPanel {
   order: -1;
 }
 
@@ -123,7 +123,25 @@
   text-align: right;
 }
 
-.recent {
+/* Título con subtítulo debajo: el margen pasa al subtítulo */
+.panelHeader > div > .panelTitle {
+  margin-bottom: 0;
+}
+
+.panelSubtitle {
+  margin: 2px 0 var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.panelEmpty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ---------- Más jugados ---------- */
+
+.top {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -132,7 +150,7 @@
   list-style: none;
 }
 
-.recentItem {
+.topItem {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -143,68 +161,87 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.recentItem:active {
+.topItem:hover,
+.topItem:active {
   background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
 }
 
-.recentCover {
-  width: 40px;
+.topRank {
+  flex-shrink: 0;
+  width: 18px;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.topCover {
+  width: 36px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
 }
 
-.recentItem:hover {
-  background: rgba(255, 255, 255, 0.05);
-  text-decoration: none;
-}
-
-.recentInfo {
+.topInfo {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
 }
 
-.recentTitle {
+.topRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.topTitle {
+  min-width: 0;
+  overflow: hidden;
   font-size: var(--font-size-sm);
   font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.recentMeta {
+.topHours {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.topMeta {
+  overflow: hidden;
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Móvil: estado encima de la fecha; en pantallas anchas, en línea */
-.recentRight {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-1);
-  flex-shrink: 0;
+/* Barra de horas en escala fija de 0 a 1000 h */
+.topBar {
+  display: block;
+  height: 4px;
+  margin-top: 2px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-pill);
 }
 
-.recentDate {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
+.topBarFill {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
 }
-
 
 @media (min-width: 640px) {
-  .recentRight {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
   .distributionRow {
     grid-template-columns: 120px minmax(0, 1fr) 32px;
   }
@@ -224,7 +261,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .recentPanel {
+  .topPanel {
     order: 0;
   }
 }

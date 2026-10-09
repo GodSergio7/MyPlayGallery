@@ -2,14 +2,18 @@ import { Link } from 'react-router-dom'
 import { GAME_STATUSES } from '@/shared/types/domain'
 import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
-import { formatAverage, formatDate, formatHours } from '@/shared/lib/format'
+import { formatAverage, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { StatCard } from '@/shared/components/StatCard'
 import { Button } from '@/shared/components/Button'
-import { StatusBadge } from '@/shared/components/Badges'
 import { CoverImage } from '@/shared/components/CoverImage'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
+import { mostPlayed } from './mostPlayed'
 import styles from './DashboardPage.module.css'
+
+const TOP_GAMES = 3
+// Escala fija de la barra de horas: de 0 a 1000 h (a partir de ahí, llena).
+const BAR_MAX_HOURS = 1000
 
 export function DashboardPage() {
   const libraryState = useAsync(loadLibraryWithGames, [])
@@ -64,9 +68,7 @@ export function DashboardPage() {
     count: entries.filter((entry) => entry.status === status.value).length,
   }))
 
-  const recent = [...entries]
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, 5)
+  const topGames = mostPlayed(entries, TOP_GAMES)
 
   return (
     <>
@@ -115,41 +117,51 @@ export function DashboardPage() {
           </ul>
         </section>
 
-        <section className={`${styles.panel} ${styles.recentPanel}`} aria-labelledby="recent-heading">
+        <section className={`${styles.panel} ${styles.topPanel}`} aria-labelledby="top-heading">
           <div className={styles.panelHeader}>
-            <h2 id="recent-heading" className={styles.panelTitle}>
-              Últimos cambios
-            </h2>
-            <Link to="/library" className={styles.panelLink}>
+            <div>
+              <h2 id="top-heading" className={styles.panelTitle}>
+                Más jugados
+              </h2>
+              <p className={styles.panelSubtitle}>{formatHours(totalHours)} en total</p>
+            </div>
+            <Link to="/library?orden=hours" className={styles.panelLink}>
               Ver todos
             </Link>
           </div>
-          <ul className={styles.recent}>
-            {recent.map((entry) => {
-              const game = gameById.get(entry.externalId)
-              return (
-                <li key={entry.id}>
-                  <Link to={`/library/${entry.id}`} className={styles.recentItem}>
-                    <CoverImage
-                      src={game?.coverUrl ?? null}
-                      title={game?.title ?? 'Juego desconocido'}
-                      className={styles.recentCover}
-                    />
-                    <span className={styles.recentInfo}>
-                      <span className={styles.recentTitle}>
-                        {game?.title ?? 'Juego desconocido'}
+          {topGames.length === 0 ? (
+            <p className={styles.panelEmpty}>Todavía no has apuntado horas en ningún juego.</p>
+          ) : (
+            <ol className={styles.top}>
+              {topGames.map((item, index) => {
+                const game = gameById.get(item.externalId)
+                const title = game?.title ?? 'Juego desconocido'
+                return (
+                  <li key={item.externalId}>
+                    <Link to={`/library/${item.entryId}`} className={styles.topItem}>
+                      <span className={styles.topRank} aria-hidden="true">
+                        {index + 1}
                       </span>
-                      <span className={styles.recentMeta}>{entry.platformName}</span>
-                    </span>
-                    <span className={styles.recentRight}>
-                      <StatusBadge status={entry.status} />
-                      <span className={styles.recentDate}>{formatDate(entry.updatedAt)}</span>
-                    </span>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+                      <CoverImage src={game?.coverUrl ?? null} title={title} className={styles.topCover} />
+                      <span className={styles.topInfo}>
+                        <span className={styles.topRow}>
+                          <span className={styles.topTitle}>{title}</span>
+                          <span className={styles.topHours}>{formatHours(item.hours)}</span>
+                        </span>
+                        <span className={styles.topMeta}>{item.platforms.join(' · ')}</span>
+                        <span className={styles.topBar} aria-hidden="true">
+                          <span
+                            className={styles.topBarFill}
+                            style={{ width: `${Math.min(item.hours / BAR_MAX_HOURS, 1) * 100}%` }}
+                          />
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ol>
+          )}
         </section>
       </div>
     </>
