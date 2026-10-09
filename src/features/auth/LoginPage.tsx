@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useAuth } from '@/app/auth/authContext'
 import { Button } from '@/shared/components/Button'
-import { AppBackground } from '@/shared/components/AppBackground'
+import Topography from '@/shared/components/reactbits/Topography'
 import { Field, Input } from '@/shared/components/FormControls'
 import { LogoMark } from '@/shared/components/LogoMark'
 import { CoverWall } from './CoverWall'
@@ -199,7 +199,22 @@ function AuthLayout({ children }: { children: ReactNode }) {
       </section>
 
       <div className={styles.panel}>
-        <AppBackground variant="panel" className={styles.ball} />
+        <div className={styles.topography} aria-hidden="true">
+          <Topography
+            lowColor="#2a1f6e"
+            midColor="#6a3fe0"
+            highColor="#b39bff"
+            bands={2.2}
+            thickness={0.012}
+            glow={0}
+            grain={false}
+            contrast={2.2}
+            opacity={0.7}
+            speed={0.25}
+            mouseRadius={0.25}
+            mouseStrength={0.3}
+          />
+        </div>
         <BrandLogo className={styles.brandMobile} />
         {children}
       </div>

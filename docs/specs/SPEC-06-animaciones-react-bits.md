@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-06 |
 | Título | Animaciones de interfaz con React Bits |
-| Versión | 0.5 |
+| Versión | 0.6 |
 | Estado | Aprobada |
 | Fecha | 2026-10-08 |
 | Autor | Responsable de producto |
@@ -20,6 +20,7 @@
 | 0.3 | 2026-10-08 | La navegación principal pasa a ser `CardNav`: sustituye a la cabecera y a la barra inferior del móvil. |
 | 0.4 | 2026-10-09 | Se retiran `BlurText`, `CountUp`, `TiltedCard` y `AnimatedContent` (y la dependencia `motion`) para una interfaz más sobria. Se mantienen `CardNav` y `CrystalizedBall`. Las secciones de abajo describen el estado anterior de esos cuatro componentes. |
 | 0.5 | 2026-10-09 | Se añade `SpotlightCard` para las tarjetas del Inicio, que pasan a ser enlaces a la Biblioteca ya filtrada (juegos, horas, nota, platinos, 100 % y cada estado). Luz blanca muy tenue que sigue al cursor, sin destello al pulsar; tema oscuro con los colores de la app; sin dependencias nuevas. |
+| 0.6 | 2026-10-09 | En la pantalla de acceso, `Topography` (mapa de curvas de nivel en WebGL, con `ogl`) sustituye a `CrystalizedBall` detrás del formulario: violetas de la marca, sin brillo ni grano, opacidad 0,7, reacciona al ratón y queda quieto con movimiento reducido. `CrystalizedBall` sigue solo como fondo dentro de la app (`AppBackground`, ya sin la variante `panel`). |
 
 ---
 
@@ -44,6 +45,7 @@ Ubicación: `src/shared/components/reactbits/`. Cada archivo indica su origen y 
 | `CrystalizedBall` | Fondo de la app y de la pantalla de acceso, a través de `AppBackground` | Bola de cristal en WebGL con borde eléctrico y partículas que reaccionan al ratón |
 | `CardNav` | Navegación principal (`AppShell`) | Barra flotante que se despliega en tres tarjetas: Biblioteca, Juegos y Cuenta |
 | `SpotlightCard` | Tarjetas de cifras del Inicio (`StatCard` con `to`) | Luz tenue que sigue al cursor dentro de la tarjeta para indicar que se puede pulsar |
+| `Topography` | Fondo del formulario en la pantalla de acceso | Curvas de nivel que se deforman despacio y reaccionan al ratón |
 
 **Estado**: `IMPLEMENTADO`.
 

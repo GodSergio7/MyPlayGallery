@@ -65,21 +65,19 @@
   position: relative;
   z-index: 1;
   justify-content: center;
-  /* En móvil el logo queda en el centro de la bola de cristal. */
-  min-height: var(--auth-ball-height);
+  padding: var(--space-7) 0 var(--space-5);
 }
 
-/* Móvil: la bola enmarca el logo arriba. Escritorio: ocupa todo el panel, detrás del formulario. */
-.ball {
-  bottom: auto;
-  height: var(--auth-ball-height);
+/* Mapa de curvas de nivel de fondo, en todo el panel del formulario. */
+.topography {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 /* ---------- Formulario ---------- */
 
 .panel {
-  --auth-ball-height: 240px;
-
   position: relative;
   z-index: 1;
   display: flex;
@@ -88,6 +86,7 @@
   justify-content: flex-start;
   gap: var(--space-2);
   padding: 0 var(--space-4) var(--space-6);
+  overflow: hidden;
 }
 
 .card {
@@ -170,10 +169,5 @@
   .panel {
     justify-content: center;
     padding: var(--space-6) var(--space-4);
-  }
-
-  .ball {
-    bottom: 0;
-    height: auto;
   }
 }
