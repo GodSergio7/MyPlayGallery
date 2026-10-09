@@ -71,16 +71,17 @@ export function DashboardPage() {
       <PageHeader title="Inicio" />
 
       <section className={styles.stats} aria-label="Resumen de la biblioteca">
-        <StatCard label="Juegos" value={total} />
-        <StatCard label="Horas jugadas" value={totalHours} format={formatHours} />
+        <StatCard label="Juegos" value={total} to="/library" />
+        <StatCard label="Horas jugadas" value={totalHours} format={formatHours} to="/library?orden=hours" />
         <StatCard
           label="Nota media"
           value={averageScore ?? '—'}
           format={formatAverage}
           hint={scored.length > 0 ? `de ${scored.length} con nota` : undefined}
+          to="/library?orden=score"
         />
-        <StatCard label="Platinos" value={platinumCount} />
-        <StatCard label="Al 100%" value={hundredCount} />
+        <StatCard label="Platinos" value={platinumCount} to="/library?logro=platino" />
+        <StatCard label="Al 100%" value={hundredCount} to="/library?logro=completo" />
       </section>
 
       <div className={styles.columns}>
@@ -90,25 +91,32 @@ export function DashboardPage() {
           </h2>
           <ul className={styles.distribution}>
             {statusCounts.map((status) => (
-              <li key={status.value} className={styles.distributionRow}>
-                <span className={styles.distributionLabel}>{status.label}</span>
-                <span className={styles.bar} aria-hidden="true">
-                  <span
-                    className={styles.barFill}
-                    data-status={status.value}
-                    style={{ width: `${(status.count / total) * 100}%` }}
-                  />
-                </span>
-                <span className={styles.distributionCount}>{status.count}</span>
+              <li key={status.value}>
+                <Link to={`/library?estado=${status.value}`} className={styles.distributionRow}>
+                  <span className={styles.distributionLabel}>{status.label}</span>
+                  <span className={styles.bar} aria-hidden="true">
+                    <span
+                      className={styles.barFill}
+                      data-status={status.value}
+                      style={{ width: `${(status.count / total) * 100}%` }}
+                    />
+                  </span>
+                  <span className={styles.distributionCount}>{status.count}</span>
+                </Link>
               </li>
             ))}
           </ul>
         </section>
 
         <section className={styles.panel} aria-labelledby="recent-heading">
-          <h2 id="recent-heading" className={styles.panelTitle}>
-            Últimos cambios
-          </h2>
+          <div className={styles.panelHeader}>
+            <h2 id="recent-heading" className={styles.panelTitle}>
+              Últimos cambios
+            </h2>
+            <Link to="/library" className={styles.panelLink}>
+              Ver todos
+            </Link>
+          </div>
           <ul className={styles.recent}>
             {recent.map((entry) => {
               const game = gameById.get(entry.externalId)

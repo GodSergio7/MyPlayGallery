@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-06 |
 | Título | Animaciones de interfaz con React Bits |
-| Versión | 0.4 |
+| Versión | 0.5 |
 | Estado | Aprobada |
 | Fecha | 2026-10-08 |
 | Autor | Responsable de producto |
@@ -19,6 +19,7 @@
 | 0.2 | 2026-10-08 | Se añade el fondo animado `CrystalizedBall` (WebGL) y la dependencia `ogl`. |
 | 0.3 | 2026-10-08 | La navegación principal pasa a ser `CardNav`: sustituye a la cabecera y a la barra inferior del móvil. |
 | 0.4 | 2026-10-09 | Se retiran `BlurText`, `CountUp`, `TiltedCard` y `AnimatedContent` (y la dependencia `motion`) para una interfaz más sobria. Se mantienen `CardNav` y `CrystalizedBall`. Las secciones de abajo describen el estado anterior de esos cuatro componentes. |
+| 0.5 | 2026-10-09 | Se añade `SpotlightCard` para las tarjetas del Inicio, que pasan a ser enlaces a la Biblioteca ya filtrada (juegos, horas, nota, platinos, 100 % y cada estado). Luz blanca muy tenue que sigue al cursor, sin destello al pulsar; tema oscuro con los colores de la app; sin dependencias nuevas. |
 
 ---
 
@@ -41,7 +42,8 @@ Ubicación: `src/shared/components/reactbits/`. Cada archivo indica su origen y 
 | `TiltedCard` | Portadas de `GameCard` y `LibraryCard` | La portada se inclina en 3D siguiendo el ratón |
 | `AnimatedContent` | Elementos de `GameGrid` (Biblioteca y Búsqueda) | Las tarjetas entran con un deslizamiento suave y escalonado al aparecer en pantalla |
 | `CrystalizedBall` | Fondo de la app y de la pantalla de acceso, a través de `AppBackground` | Bola de cristal en WebGL con borde eléctrico y partículas que reaccionan al ratón |
-| `CardNav` | Navegación principal (`AppShell`) | Barra flotante que se despliega en tres tarjetas: Mi colección, Descubrir y Cuenta |
+| `CardNav` | Navegación principal (`AppShell`) | Barra flotante que se despliega en tres tarjetas: Biblioteca, Juegos y Cuenta |
+| `SpotlightCard` | Tarjetas de cifras del Inicio (`StatCard` con `to`) | Luz tenue que sigue al cursor dentro de la tarjeta para indicar que se puede pulsar |
 
 **Estado**: `IMPLEMENTADO`.
 

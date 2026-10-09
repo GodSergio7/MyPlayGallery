@@ -31,7 +31,7 @@
 
 @media (min-width: 1024px) {
   .toolbar {
-    grid-template-columns: 2fr 1fr 1fr 1.2fr auto;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
     align-items: end;
   }
 

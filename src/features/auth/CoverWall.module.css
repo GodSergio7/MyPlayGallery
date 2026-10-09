@@ -1,0 +1,36 @@
+.wall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Rejilla algo más grande que el panel y girada, para que no se vean los bordes. */
+.grid {
+  position: absolute;
+  top: -18%;
+  left: -22%;
+  width: 150%;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  transform: rotate(-8deg);
+}
+
+.cover {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  opacity: 0.55;
+}
+
+/* Oscurece de abajo arriba y por la derecha para que el texto y el formulario se lean. */
+.shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, var(--color-bg-deep) 8%, rgba(7, 7, 15, 0.85) 38%, rgba(7, 7, 15, 0.35) 70%, rgba(7, 7, 15, 0.55) 100%),
+    linear-gradient(90deg, transparent 60%, rgba(7, 7, 15, 0.8) 100%);
+}

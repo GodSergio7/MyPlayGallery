@@ -4,6 +4,7 @@ import { Button } from '@/shared/components/Button'
 import { AppBackground } from '@/shared/components/AppBackground'
 import { Field, Input } from '@/shared/components/FormControls'
 import { LogoMark } from '@/shared/components/LogoMark'
+import { CoverWall } from './CoverWall'
 import styles from './LoginPage.module.css'
 
 type Mode = 'signIn' | 'signUp'
@@ -187,9 +188,9 @@ function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        <BrandLogo />
+        <CoverWall />
+        <BrandLogo className={styles.heroBrand} />
         <div className={styles.heroBody}>
-          <LogoMark size={160} />
           <h1 className={styles.heroTitle}>Tu biblioteca de juegos</h1>
           <p className={styles.heroText}>
             Apunta a qué juegas, cuántas horas le echas y qué te ha parecido.

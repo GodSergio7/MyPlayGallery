@@ -17,19 +17,27 @@
   justify-content: space-between;
   gap: var(--space-6);
   padding: var(--space-6) var(--space-7);
+  overflow: hidden;
   background: var(--color-bg-deep);
   border-right: var(--border-width) solid var(--color-border);
+}
+
+/* Logo y texto por encima del mosaico de portadas */
+.heroBrand,
+.heroBody {
+  position: relative;
+  z-index: 1;
 }
 
 .heroBody {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  margin-bottom: var(--space-7);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
 .heroTitle {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   font-weight: 700;
   line-height: 1.2;
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { GAME_STATUSES, type GameStatus } from '@/shared/types/domain'
 import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
@@ -48,13 +48,49 @@ function compareNullableDates(a: string | null, b: string | null): number {
   return b.localeCompare(a)
 }
 
+type Achievement = 'platino' | 'completo'
+
+const ACHIEVEMENT_OPTIONS: Array<{ value: Achievement; label: string }> = [
+  { value: 'platino', label: 'Con platino' },
+  { value: 'completo', label: 'Al 100%' },
+]
+
+const STATUS_VALUES = new Set<string>(GAME_STATUSES.map((option) => option.value))
+const SORT_VALUES = new Set<string>(SORT_OPTIONS.map((option) => option.value))
+
+// Estado, plataforma, orden y logro van en la URL (?estado=&plataforma=&orden=&logro=),
+// así el Inicio puede enlazar a la biblioteca ya filtrada.
+function readFilters(params: URLSearchParams) {
+  const status = params.get('estado') ?? ''
+  const platform = Number(params.get('plataforma'))
+  const sort = params.get('orden') ?? ''
+  const achievement = params.get('logro')
+
+  return {
+    status: STATUS_VALUES.has(status) ? (status as GameStatus) : ('all' as const),
+    platformId: Number.isInteger(platform) && platform > 0 ? platform : ('all' as const),
+    sort: SORT_VALUES.has(sort) ? (sort as SortKey) : ('recent' as const),
+    achievement: achievement === 'platino' || achievement === 'completo' ? achievement : ('all' as const),
+  }
+}
+
 export function LibraryPage() {
   const libraryState = useAsync(loadLibraryWithGames, [])
-
+  const [params, setParams] = useSearchParams()
+  const { status, platformId, sort, achievement } = readFilters(params)
   const [query, setQuery] = useState('')
-  const [status, setStatus] = useState<'all' | GameStatus>('all')
-  const [platformId, setPlatformId] = useState<'all' | number>('all')
-  const [sort, setSort] = useState<SortKey>('recent')
+
+  function setFilter(name: 'estado' | 'plataforma' | 'orden' | 'logro', value: string | null) {
+    setParams(
+      (current) => {
+        const next = new URLSearchParams(current)
+        if (value === null || value === 'all' || (name === 'orden' && value === 'recent')) next.delete(name)
+        else next.set(name, value)
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const entries = useMemo(() => libraryState.data?.entries ?? [], [libraryState.data])
   const games = useMemo(() => libraryState.data?.games ?? [], [libraryState.data])
@@ -78,6 +114,12 @@ export function LibraryPage() {
         return false
       }
       if (platformId !== 'all' && entry.platformId !== platformId) {
+        return false
+      }
+      if (achievement === 'platino' && !entry.platinum) {
+        return false
+      }
+      if (achievement === 'completo' && !entry.hundredPercent) {
         return false
       }
       if (normalized) {
@@ -106,16 +148,18 @@ export function LibraryPage() {
           return b.updatedAt.localeCompare(a.updatedAt)
       }
     })
-  }, [entries, gameById, query, status, platformId, sort])
+  }, [entries, gameById, query, status, platformId, sort, achievement])
 
   const hasActiveFilters =
-    query.trim() !== '' || status !== 'all' || platformId !== 'all' || sort !== 'recent'
+    query.trim() !== '' ||
+    status !== 'all' ||
+    platformId !== 'all' ||
+    sort !== 'recent' ||
+    achievement !== 'all'
 
   function clearFilters() {
     setQuery('')
-    setStatus('all')
-    setPlatformId('all')
-    setSort('recent')
+    setParams(new URLSearchParams(), { replace: true })
   }
 
   if (libraryState.loading) {
@@ -175,9 +219,7 @@ export function LibraryPage() {
           <Select
             id="library-status"
             value={status}
-            onChange={(event) =>
-              setStatus(event.target.value === 'all' ? 'all' : (event.target.value as GameStatus))
-            }
+            onChange={(event) => setFilter('estado', event.target.value)}
           >
             <option value="all">Todos</option>
             {GAME_STATUSES.map((option) => (
@@ -192,9 +234,7 @@ export function LibraryPage() {
           <Select
             id="library-platform"
             value={platformId === 'all' ? 'all' : String(platformId)}
-            onChange={(event) =>
-              setPlatformId(event.target.value === 'all' ? 'all' : Number(event.target.value))
-            }
+            onChange={(event) => setFilter('plataforma', event.target.value)}
           >
             <option value="all">Todas</option>
             {platforms.map((platform) => (
@@ -205,11 +245,26 @@ export function LibraryPage() {
           </Select>
         </Field>
 
+        <Field label="Logros" htmlFor="library-achievement">
+          <Select
+            id="library-achievement"
+            value={achievement}
+            onChange={(event) => setFilter('logro', event.target.value)}
+          >
+            <option value="all">Todos</option>
+            {ACHIEVEMENT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
+
         <Field label="Ordenar por" htmlFor="library-sort">
           <Select
             id="library-sort"
             value={sort}
-            onChange={(event) => setSort(event.target.value as SortKey)}
+            onChange={(event) => setFilter('orden', event.target.value)}
           >
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
