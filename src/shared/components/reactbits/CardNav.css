@@ -34,12 +34,10 @@
   height: 60px;
   padding: 0;
   overflow: hidden;
-  background: var(--glass-bg-strong);
+  background: rgba(13, 12, 30, 0.97);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   will-change: height;
 }
 
@@ -121,7 +119,7 @@
   font-weight: 600;
   color: var(--color-on-primary);
   text-decoration: none;
-  background: var(--gradient-brand);
+  background: var(--color-accent);
   border-radius: var(--radius-md);
   transition: filter 0.2s ease;
 }

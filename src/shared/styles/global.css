@@ -53,7 +53,7 @@ h3 {
 }
 
 a {
-  color: #ff6aa8;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -101,18 +101,15 @@ img {
 
 ::selection {
   color: var(--color-on-primary);
-  background: rgba(255, 61, 139, 0.6);
+  background: rgba(106, 63, 224, 0.7);
 }
 
-/* Texto con el degradado de marca */
-.text-gradient {
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Segunda palabra del nombre (MyPlay<em>Gallery</em>) */
+.brand-accent {
+  color: var(--color-primary);
 }
 
 /* Scrollbar oscura */
 * {
-  scrollbar-color: rgba(155, 77, 255, 0.45) transparent;
+  scrollbar-color: rgba(179, 155, 255, 0.35) transparent;
 }

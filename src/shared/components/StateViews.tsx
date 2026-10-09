@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { AlertIcon, GamepadIcon } from './icons'
+import { Button } from './Button'
 import styles from './StateViews.module.css'
 
 interface EmptyStateProps {
@@ -11,9 +11,6 @@ interface EmptyStateProps {
 export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
     <div className={styles.state}>
-      <span className={styles.icon}>
-        <GamepadIcon width={28} height={28} />
-      </span>
       <h2 className={styles.title}>{title}</h2>
       {description && <p className={styles.description}>{description}</p>}
       {action && <div className={styles.action}>{action}</div>}
@@ -36,23 +33,16 @@ interface ErrorStateProps {
   onRetry?: () => void
 }
 
-export function ErrorState({
-  title = 'No se ha podido cargar la información',
-  description = 'Ha ocurrido un error inesperado. Inténtalo de nuevo.',
-  onRetry,
-}: ErrorStateProps) {
+export function ErrorState({ title = 'No se ha podido cargar', description, onRetry }: ErrorStateProps) {
   return (
     <div className={styles.state} role="alert">
-      <span className={[styles.icon, styles.iconError].join(' ')}>
-        <AlertIcon width={28} height={28} />
-      </span>
       <h2 className={styles.title}>{title}</h2>
-      <p className={styles.description}>{description}</p>
+      {description && <p className={styles.description}>{description}</p>}
       {onRetry && (
         <div className={styles.action}>
-          <button type="button" className={styles.retry} onClick={onRetry}>
+          <Button variant="secondary" onClick={onRetry}>
             Reintentar
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -65,7 +55,7 @@ export function SkeletonCard() {
 
 export function GridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className={styles.skeletonGrid} role="status" aria-label="Cargando contenido">
+    <div className={styles.skeletonGrid} role="status" aria-label="Cargando">
       {Array.from({ length: count }, (_, index) => (
         <SkeletonCard key={index} />
       ))}

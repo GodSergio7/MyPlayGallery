@@ -88,7 +88,7 @@ export function EntryDetailPage() {
   }
 
   if (entryState.loading || gameState.loading || siblingsState.loading) {
-    return <LoadingState message="Cargando la experiencia…" />
+    return <LoadingState message="Cargando…" />
   }
 
   if (entryState.error || gameState.error || siblingsState.error) {
@@ -108,8 +108,7 @@ export function EntryDetailPage() {
       <>
         <BackLink />
         <EmptyState
-          title="Experiencia no encontrada"
-          description="Esta entrada ya no existe en tu biblioteca."
+          title="Esta entrada no existe"
         />
       </>
     )
@@ -148,8 +147,8 @@ export function EntryDetailPage() {
         </header>
 
         {editing && values ? (
-          <section className={styles.panel} aria-label="Editar experiencia">
-            <h2 className={styles.panelTitle}>Editar experiencia</h2>
+          <section className={styles.panel} aria-label="Editar">
+            <h2 className={styles.panelTitle}>Editar</h2>
             <EntryFields
               idPrefix="edit-entry"
               values={values}
@@ -175,7 +174,7 @@ export function EntryDetailPage() {
             </div>
           </section>
         ) : (
-          <section className={styles.panel} aria-label="Resumen de la experiencia">
+          <section className={styles.panel} aria-label="Resumen">
             {actionError && (
               <p className={styles.formError} role="alert">
                 {actionError}
@@ -211,12 +210,12 @@ export function EntryDetailPage() {
             </dl>
 
             <div className={styles.block}>
-              <h2 className={styles.blockTitle}>Reseña personal</h2>
+              <h2 className={styles.blockTitle}>Reseña</h2>
               <p className={styles.blockText}>{entry.review ?? 'Sin reseña.'}</p>
             </div>
 
             <div className={styles.block}>
-              <h2 className={styles.blockTitle}>Notas personales</h2>
+              <h2 className={styles.blockTitle}>Notas</h2>
               <p className={styles.blockText}>{entry.notes ?? 'Sin notas.'}</p>
             </div>
           </section>
@@ -225,7 +224,7 @@ export function EntryDetailPage() {
         {siblings.length > 0 && (
           <section className={styles.panel} aria-labelledby="siblings-heading">
             <h2 id="siblings-heading" className={styles.panelTitle}>
-              Otras experiencias de este juego
+              También lo tienes en
             </h2>
             <ul className={styles.siblings}>
               {siblings.map((sibling) => (
@@ -243,7 +242,7 @@ export function EntryDetailPage() {
 
       <Modal
         open={confirmOpen}
-        title="Eliminar experiencia"
+        title="Quitar de la biblioteca"
         onClose={() => setConfirmOpen(false)}
         footer={
           <>
@@ -257,8 +256,8 @@ export function EntryDetailPage() {
         }
       >
         <p>
-          ¿Seguro que quieres eliminar tu experiencia de {title} en {entry.platformName}? Esta
-          acción no se puede deshacer.
+          ¿Quitar {title} ({entry.platformName}) de tu biblioteca? No se puede
+          deshacer.
         </p>
       </Modal>
     </>

@@ -123,7 +123,7 @@ export function EntryFields({
       </div>
 
       <div className={styles.full}>
-        <Field label="Reseña personal" htmlFor={`${idPrefix}-review`}>
+        <Field label="Reseña" htmlFor={`${idPrefix}-review`}>
           <Textarea
             id={`${idPrefix}-review`}
             value={values.review}
@@ -133,7 +133,7 @@ export function EntryFields({
       </div>
 
       <div className={styles.full}>
-        <Field label="Notas personales" htmlFor={`${idPrefix}-notes`}>
+        <Field label="Notas" htmlFor={`${idPrefix}-notes`}>
           <Textarea
             id={`${idPrefix}-notes`}
             rows={3}

@@ -5,8 +5,7 @@ import { Button } from '@/shared/components/Button'
 export function NotFoundPage() {
   return (
     <EmptyState
-      title="Página no encontrada"
-      description="La dirección a la que has llegado no existe dentro de MyPlayGallery."
+      title="Esta página no existe"
       action={
         <Link to="/">
           <Button>Volver al inicio</Button>

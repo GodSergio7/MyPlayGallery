@@ -25,7 +25,7 @@ export function GameCard({ game, inLibrary = false, to }: GameCardProps) {
       className={styles.card}
       aria-label={`Ver ${game.title}`}
     >
-      <CoverImage src={game.coverUrl} title={game.title} tilt />
+      <CoverImage src={game.coverUrl} title={game.title} />
       <div className={styles.body}>
         <h3 className={styles.title}>{game.title}</h3>
         <div className={styles.metaRow}>

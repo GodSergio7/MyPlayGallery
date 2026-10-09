@@ -13,11 +13,10 @@
 
 .panel {
   padding: var(--space-4);
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
 }
 
 .panelTitle {
@@ -63,7 +62,7 @@
 }
 
 .barFill[data-status='playing'] {
-  background: var(--gradient-brand);
+  background: var(--color-accent);
 }
 
 .barFill[data-status='completed'] {
@@ -139,12 +138,6 @@
   color: var(--color-text-secondary);
 }
 
-.quick {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-top: var(--space-5);
-}
 
 @media (min-width: 480px) {
   .stats {

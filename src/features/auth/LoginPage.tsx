@@ -4,38 +4,15 @@ import { Button } from '@/shared/components/Button'
 import { AppBackground } from '@/shared/components/AppBackground'
 import { Field, Input } from '@/shared/components/FormControls'
 import { LogoMark } from '@/shared/components/LogoMark'
-import BlurText from '@/shared/components/reactbits/BlurText'
-import {
-  SearchIcon,
-  StarIcon,
-  TrophyIcon,
-} from '@/shared/components/icons'
 import styles from './LoginPage.module.css'
 
 type Mode = 'signIn' | 'signUp'
 
 const MIN_PASSWORD_LENGTH = 6
 
-const COPY: Record<
-  Mode,
-  { heading: string; subtitle: string; submit: string; submitting: string }
-> = {
-  signIn: {
-    heading: 'Bienvenido de nuevo',
-    subtitle: 'Inicia sesión para ver tu biblioteca.',
-    submit: 'Iniciar sesión',
-    submitting: 'Entrando…',
-  },
-  signUp: {
-    heading: 'Crea tu cuenta',
-    subtitle: 'Regístrate gratis y empieza tu biblioteca.',
-    submit: 'Crear cuenta',
-    submitting: 'Creando cuenta…',
-  },
-}
-
-function cx(...classes: Array<string | false | undefined>): string {
-  return classes.filter(Boolean).join(' ')
+const COPY: Record<Mode, { heading: string; submit: string; submitting: string }> = {
+  signIn: { heading: 'Entrar', submit: 'Entrar', submitting: 'Entrando…' },
+  signUp: { heading: 'Crear cuenta', submit: 'Crear cuenta', submitting: 'Creando cuenta…' },
 }
 
 export function LoginPage() {
@@ -102,23 +79,18 @@ export function LoginPage() {
     return (
       <AuthLayout>
         <div className={styles.card}>
-          <span className={styles.mailIcon} aria-hidden="true">
-            ✉
-          </span>
-          <div className={styles.intro}>
-            <h2 className={styles.heading}>Revisa tu email</h2>
-            <p className={styles.subtitle}>
-              Te hemos enviado un enlace de confirmación a <strong>{pendingEmail}</strong>.
-              Ábrelo para activar tu cuenta y después inicia sesión.
-            </p>
-          </div>
+          <h2 className={styles.heading}>Revisa tu correo</h2>
+          <p className={styles.text}>
+            Te hemos enviado un enlace a <strong>{pendingEmail}</strong>. Ábrelo para activar la cuenta y luego
+            entra con tu contraseña.
+          </p>
           <Button
             onClick={() => {
               setPendingEmail(null)
               switchMode('signIn')
             }}
           >
-            Ir a iniciar sesión
+            Volver
           </Button>
         </div>
       </AuthLayout>
@@ -134,40 +106,13 @@ export function LoginPage() {
   return (
     <AuthLayout>
       <form className={styles.card} onSubmit={handleSubmit} noValidate>
-        <div className={styles.tabs} role="tablist" aria-label="Acceso">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!isSignUp}
-            className={cx(styles.tab, !isSignUp && styles.tabActive)}
-            onClick={() => switchMode('signIn')}
-          >
-            Iniciar sesión
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={isSignUp}
-            className={cx(styles.tab, isSignUp && styles.tabActive)}
-            onClick={() => switchMode('signUp')}
-          >
-            Crear cuenta
-          </button>
-        </div>
-
-        <div className={styles.intro}>
-          <h2 className={styles.heading}>
-            <BlurText key={mode} text={copy.heading} delay={80} direction="bottom" />
-          </h2>
-          <p className={styles.subtitle}>{copy.subtitle}</p>
-        </div>
+        <h2 className={styles.heading}>{copy.heading}</h2>
 
         <Field label="Email" htmlFor="auth-email">
           <Input
             id="auth-email"
             type="email"
             autoComplete="email"
-            placeholder="tu@email.com"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -183,7 +128,6 @@ export function LoginPage() {
             id="auth-password"
             type="password"
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
-            placeholder="••••••••"
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -196,7 +140,6 @@ export function LoginPage() {
               id="auth-confirm-password"
               type="password"
               autoComplete="new-password"
-              placeholder="••••••••"
               required
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -221,7 +164,7 @@ export function LoginPage() {
             className={styles.switchButton}
             onClick={() => switchMode(isSignUp ? 'signIn' : 'signUp')}
           >
-            {isSignUp ? 'Inicia sesión' : 'Regístrate'}
+            {isSignUp ? 'Entra' : 'Regístrate'}
           </button>
         </p>
       </form>
@@ -231,10 +174,10 @@ export function LoginPage() {
 
 function BrandLogo({ className }: { className?: string }) {
   return (
-    <div className={cx(styles.brand, className)}>
-      <LogoMark size={44} />
+    <div className={[styles.brand, className].filter(Boolean).join(' ')}>
+      <LogoMark size={40} />
       <span className={styles.brandName}>
-        MyPlay<span className="text-gradient">Gallery</span>
+        MyPlay<span className="brand-accent">Gallery</span>
       </span>
     </div>
   )
@@ -243,37 +186,15 @@ function BrandLogo({ className }: { className?: string }) {
 function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.page}>
-      <section className={styles.hero} aria-hidden="true">
+      <section className={styles.hero}>
         <BrandLogo />
-
-        <div className={styles.heroArt}>
-          <LogoMark size={220} className={styles.heroLogo} />
-          <div className={styles.toast}>
-            <span className={styles.toastIcon}>
-              <TrophyIcon width={18} height={18} />
-            </span>
-            <div>
-              <p className={styles.toastTitle}>¡Platino conseguido!</p>
-              <p className={styles.toastText}>Elden Ring · hace 2 min</p>
-            </div>
-          </div>
+        <div className={styles.heroBody}>
+          <LogoMark size={160} />
+          <h1 className={styles.heroTitle}>Tu biblioteca de juegos</h1>
+          <p className={styles.heroText}>
+            Apunta a qué juegas, cuántas horas le echas y qué te ha parecido.
+          </p>
         </div>
-
-        <h1 className={styles.heroTitle}>
-          Tu colección de videojuegos, <span className="text-gradient">a otro nivel</span>
-        </h1>
-
-        <ul className={styles.features}>
-          <li>
-            <SearchIcon width={18} height={18} /> Busca en todo el catálogo de IGDB
-          </li>
-          <li>
-            <StarIcon width={18} height={18} /> Puntúa, reseña y registra tus horas
-          </li>
-          <li>
-            <TrophyIcon width={18} height={18} /> Lleva la cuenta de tus platinos y 100%
-          </li>
-        </ul>
       </section>
 
       <div className={styles.panel}>

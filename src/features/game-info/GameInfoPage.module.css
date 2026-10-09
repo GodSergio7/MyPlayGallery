@@ -69,7 +69,7 @@
 
 .title {
   font-size: clamp(28px, 5vw, 46px);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
@@ -142,7 +142,7 @@
 
 .scoreValue {
   font-size: var(--font-size-2xl);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
 }
 
@@ -199,7 +199,7 @@
 
 .sectionTitle {
   font-size: var(--font-size-xl);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .sectionNote {
@@ -228,7 +228,7 @@
   font: inherit;
   font-size: var(--font-size-sm);
   font-weight: 700;
-  color: #ff6aa8;
+  color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;
@@ -239,15 +239,14 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-4);
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
 }
 
 .cardTitle {
   font-size: var(--font-size-base);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .cardNote {
@@ -294,7 +293,7 @@
 }
 
 .duration strong {
-  font-weight: 800;
+  font-weight: 700;
   color: var(--color-text);
 }
 
@@ -351,7 +350,7 @@
 }
 
 .similarCard:hover .similarTitle {
-  color: #ff6aa8;
+  color: var(--color-primary);
 }
 
 .similarTitle {

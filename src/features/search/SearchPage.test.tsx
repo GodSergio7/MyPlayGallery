@@ -44,7 +44,7 @@ describe('SearchPage', () => {
   it('muestra el estado inicial', () => {
     renderPage()
 
-    expect(screen.getByText('Busca tu próximo juego')).toBeDefined()
+    expect(screen.getByText('Escribe el nombre de un juego')).toBeDefined()
   })
 
   it('no realiza petición con una consulta vacía', async () => {
@@ -63,7 +63,7 @@ describe('SearchPage', () => {
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     expect(requests).toBe(0)
-    expect(screen.getByText('Busca tu próximo juego')).toBeDefined()
+    expect(screen.getByText('Escribe el nombre de un juego')).toBeDefined()
   })
 
   it('muestra los resultados de IGDB', async () => {
@@ -91,7 +91,7 @@ describe('SearchPage', () => {
     await user.type(screen.getByRole('searchbox'), 'witcher')
 
     expect(
-      await screen.findByLabelText('Cargando contenido', {}, { timeout: 3000 }),
+      await screen.findByLabelText('Cargando', {}, { timeout: 3000 }),
     ).toBeDefined()
     await screen.findByText('The Witcher 3: Wild Hunt', {}, { timeout: 3000 })
   })
@@ -125,7 +125,7 @@ describe('SearchPage', () => {
     await user.type(screen.getByRole('searchbox'), 'witcher')
 
     expect(
-      await screen.findByText('No se ha podido cargar la información', {}, { timeout: 3000 }),
+      await screen.findByText('No se ha podido cargar', {}, { timeout: 3000 }),
     ).toBeDefined()
 
     await user.click(screen.getByRole('button', { name: 'Reintentar' }))

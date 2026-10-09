@@ -8,7 +8,6 @@ import { StatCard } from '@/shared/components/StatCard'
 import { Button } from '@/shared/components/Button'
 import { StatusBadge } from '@/shared/components/Badges'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
-import { ClockIcon, LibraryIcon, StarIcon, TrophyIcon } from '@/shared/components/icons'
 import styles from './DashboardPage.module.css'
 
 export function DashboardPage() {
@@ -34,13 +33,12 @@ export function DashboardPage() {
   if (entries.length === 0) {
     return (
       <>
-        <PageHeader title="Dashboard" description="Tu biblioteca de videojuegos de un vistazo." />
+        <PageHeader title="Inicio" />
         <EmptyState
-          title="Tu biblioteca está vacía"
-          description="Busca un videojuego en IGDB y añádelo para empezar a registrar tu experiencia."
+          title="Todavía no has añadido ningún juego"
           action={
             <Link to="/search">
-              <Button>Buscar y añadir</Button>
+              <Button>Añadir un juego</Button>
             </Link>
           }
         />
@@ -70,43 +68,25 @@ export function DashboardPage() {
 
   return (
     <>
-      <PageHeader
-        title="Dashboard"
-        description="Tu biblioteca de videojuegos de un vistazo."
-        actions={
-          <Link to="/search">
-            <Button>Buscar y añadir</Button>
-          </Link>
-        }
-      />
+      <PageHeader title="Inicio" />
 
-      <section className={styles.stats} aria-label="Métricas de la biblioteca">
-        <StatCard label="Entradas" value={total} icon={<LibraryIcon width={18} height={18} />} />
-        <StatCard
-          label="Horas totales"
-          value={totalHours}
-          format={formatHours}
-          icon={<ClockIcon width={18} height={18} />}
-        />
+      <section className={styles.stats} aria-label="Resumen de la biblioteca">
+        <StatCard label="Juegos" value={total} />
+        <StatCard label="Horas jugadas" value={totalHours} format={formatHours} />
         <StatCard
           label="Nota media"
           value={averageScore ?? '—'}
           format={formatAverage}
-          icon={<StarIcon width={18} height={18} />}
-          hint={scored.length > 0 ? `Sobre ${scored.length} con nota` : 'Sin notas'}
+          hint={scored.length > 0 ? `de ${scored.length} con nota` : undefined}
         />
-        <StatCard
-          label="Platinos"
-          value={platinumCount}
-          icon={<TrophyIcon width={18} height={18} />}
-        />
-        <StatCard label="Juegos al 100%" value={hundredCount} />
+        <StatCard label="Platinos" value={platinumCount} />
+        <StatCard label="Al 100%" value={hundredCount} />
       </section>
 
       <div className={styles.columns}>
         <section className={styles.panel} aria-labelledby="distribution-heading">
           <h2 id="distribution-heading" className={styles.panelTitle}>
-            Distribución por estado
+            Por estado
           </h2>
           <ul className={styles.distribution}>
             {statusCounts.map((status) => (
@@ -127,7 +107,7 @@ export function DashboardPage() {
 
         <section className={styles.panel} aria-labelledby="recent-heading">
           <h2 id="recent-heading" className={styles.panelTitle}>
-            Actividad reciente
+            Últimos cambios
           </h2>
           <ul className={styles.recent}>
             {recent.map((entry) => {
@@ -152,15 +132,6 @@ export function DashboardPage() {
           </ul>
         </section>
       </div>
-
-      <section className={styles.quick} aria-label="Accesos rápidos">
-        <Link to="/search">
-          <Button variant="secondary">Buscar en IGDB</Button>
-        </Link>
-        <Link to="/library">
-          <Button variant="secondary">Ver biblioteca</Button>
-        </Link>
-      </section>
     </>
   )
 }

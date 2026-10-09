@@ -128,22 +128,3 @@ export function ArrowUpRightIcon(props: IconProps) {
   )
 }
 
-export function AlertIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path d="M12 3 2.5 20h19Z" />
-      <path d="M12 9v5M12 17.5v.5" />
-    </Icon>
-  )
-}
-
-export function GamepadIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path d="M7 8h10a4 4 0 0 1 3.9 4.9l-.7 3.2A2.4 2.4 0 0 1 16 17.6L14.6 16H9.4L7.9 17.6a2.4 2.4 0 0 1-4.1-1.5l-.7-3.2A4 4 0 0 1 7 8Z" />
-      <path d="M8 11v3M6.5 12.5h3" />
-      <circle cx="15.5" cy="11.5" r="0.6" fill="currentColor" />
-      <circle cx="17.5" cy="13.5" r="0.6" fill="currentColor" />
-    </Icon>
-  )
-}

@@ -24,8 +24,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.hasError) {
       return (
         <ErrorState
-          title="Algo ha ido mal"
-          description="MyPlayGallery ha encontrado un error inesperado. Inténtalo de nuevo."
+          title="Algo ha fallado"
+          description="Recarga la página para volver a intentarlo."
           onRetry={this.handleRetry}
         />
       )

@@ -121,7 +121,7 @@ export function LibraryPage() {
   if (libraryState.loading) {
     return (
       <>
-        <PageHeader title="Biblioteca" description="Todas tus experiencias registradas." />
+        <PageHeader title="Biblioteca" />
         <GridSkeleton count={8} />
       </>
     )
@@ -140,13 +140,12 @@ export function LibraryPage() {
   if (entries.length === 0) {
     return (
       <>
-        <PageHeader title="Biblioteca" description="Todas tus experiencias registradas." />
+        <PageHeader title="Biblioteca" />
         <EmptyState
-          title="Todavía no has añadido juegos"
-          description="Busca un videojuego en IGDB y registra tu experiencia para verlo aquí."
+          title="Todavía no has añadido ningún juego"
           action={
             <Link to="/search">
-              <Button>Buscar y añadir</Button>
+              <Button>Añadir un juego</Button>
             </Link>
           }
         />
@@ -158,7 +157,7 @@ export function LibraryPage() {
     <>
       <PageHeader
         title="Biblioteca"
-        description={`${entries.length} ${entries.length === 1 ? 'entrada' : 'entradas'} en tu colección.`}
+        description={`${entries.length} ${entries.length === 1 ? 'juego' : 'juegos'}`}
       />
 
       <section className={styles.toolbar} aria-label="Filtros de la biblioteca">
@@ -229,8 +228,7 @@ export function LibraryPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          title="Sin coincidencias"
-          description="Ninguna entrada coincide con los filtros actuales."
+          title="Nada coincide con estos filtros"
           action={
             <Button variant="secondary" onClick={clearFilters}>
               Limpiar filtros

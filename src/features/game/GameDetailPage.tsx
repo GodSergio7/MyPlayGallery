@@ -64,7 +64,7 @@ export function GameDetailPage() {
   }
 
   if (gameState.loading || entriesState.loading) {
-    return <LoadingState message="Cargando la ficha del juego…" />
+    return <LoadingState message="Cargando…" />
   }
 
   if (gameState.error || entriesState.error) {
@@ -84,7 +84,7 @@ export function GameDetailPage() {
         <BackLink />
         <EmptyState
           title="Juego no encontrado"
-          description="Este juego no está disponible en los datos de IGDB."
+          description="IGDB no tiene este juego."
         />
       </>
     )
@@ -102,13 +102,12 @@ export function GameDetailPage() {
             <CoverImage src={game.coverUrl} title={game.title} />
           </div>
           <div className={styles.externalInfo}>
-            <span className={styles.externalTag}>Información de IGDB</span>
             <h1 id="game-info-heading" className={styles.title}>
               {game.title}
             </h1>
             <dl className={styles.meta}>
               <div>
-                <dt>Fecha de lanzamiento</dt>
+                <dt>Salida</dt>
                 <dd>{formatDate(game.released)}</dd>
               </div>
               <div>
@@ -117,7 +116,7 @@ export function GameDetailPage() {
               </div>
             </dl>
             <div>
-              <h2 className={styles.subheading}>Plataformas disponibles</h2>
+              <h2 className={styles.subheading}>Plataformas</h2>
               <ul className={styles.platformList}>
                 {game.platforms.map((platform) => (
                   <li key={platform.id}>
@@ -131,15 +130,15 @@ export function GameDetailPage() {
 
         <section className={styles.personal} aria-labelledby="personal-heading">
           <h2 id="personal-heading" className={styles.subheading}>
-            Tu experiencia
+            Añadir a tu biblioteca
           </h2>
           <p className={styles.help}>
-            Un mismo juego puede tener varias experiencias, una por plataforma.
+            Si lo juegas en varias plataformas, puedes añadir una entrada por cada una.
           </p>
 
           {entries.length > 0 && (
             <div className={styles.existing}>
-              <h3 className={styles.existingTitle}>Experiencias registradas</h3>
+              <h3 className={styles.existingTitle}>Ya lo tienes en</h3>
               <ul className={styles.existingList}>
                 {entries.map((entry) => (
                   <li key={entry.id}>
@@ -153,12 +152,10 @@ export function GameDetailPage() {
             </div>
           )}
 
-          <h3 className={styles.existingTitle}>Añadir una experiencia</h3>
-
           {existingEntry && (
             <p className={styles.warning} role="status">
-              Ya tienes una experiencia de {existingEntry.platformName}.{' '}
-              <Link to={`/library/${existingEntry.id}`}>Edítala</Link> en lugar de crear otra.
+              Ya lo tienes en {existingEntry.platformName}.{' '}
+              <Link to={`/library/${existingEntry.id}`}>Ver entrada</Link>
             </p>
           )}
 

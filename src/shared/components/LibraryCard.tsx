@@ -19,7 +19,7 @@ export function LibraryCard({ entry, game }: LibraryCardProps) {
       className={styles.card}
       aria-label={`${title}, ${entry.platformName}`}
     >
-      <CoverImage src={game?.coverUrl ?? null} title={title} tilt />
+      <CoverImage src={game?.coverUrl ?? null} title={title} />
       <div className={styles.body}>
         <h3 className={styles.title}>{title}</h3>
         <PlatformBadge name={entry.platformName} />

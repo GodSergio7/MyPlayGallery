@@ -24,14 +24,13 @@ export function SearchPage() {
   return (
     <>
       <PageHeader
-        title="Buscar videojuegos"
-        description="Consultas la base de datos de IGDB para añadir juegos a tu biblioteca."
+        title="Añadir juego"
       />
 
       <div className={styles.searchField}>
         <SearchBar
           id="igdb-search"
-          label="Buscar videojuegos en IGDB"
+          label="Nombre del juego"
           value={term}
           onChange={setTerm}
           placeholder="Buscar por título…"
@@ -41,8 +40,7 @@ export function SearchPage() {
 
       {!isSearching ? (
         <EmptyState
-          title="Busca tu próximo juego"
-          description="Escribe el título de un videojuego para ver resultados de IGDB y abrir su ficha."
+          title="Escribe el nombre de un juego"
         />
       ) : isLoading ? (
         <GridSkeleton count={6} />
@@ -51,7 +49,7 @@ export function SearchPage() {
       ) : games.length === 0 ? (
         <EmptyState
           title="Sin resultados"
-          description={`No hemos encontrado juegos para “${debounced}”. Prueba con otro término.`}
+          description={`No hay nada para “${debounced}”.`}
         />
       ) : (
         <GameGrid>

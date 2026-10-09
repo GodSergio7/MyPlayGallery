@@ -54,7 +54,6 @@ export function ExplorePage() {
     <>
       <PageHeader
         title="Explorar"
-        description="Todo el catálogo de videojuegos de IGDB. Filtra por consola, género, época o letra y ordénalo a tu gusto."
       />
 
       <section className={styles.panel} aria-label="Filtros del catálogo">
@@ -204,8 +203,7 @@ export function ExplorePage() {
         <ErrorState onRetry={browse.refetch} />
       ) : browse.games.length === 0 ? (
         <EmptyState
-          title="No hay juegos con estos filtros"
-          description="Prueba a quitar algún filtro o a buscar con otras palabras."
+          title="Nada coincide con estos filtros"
           action={
             activeCount > 0 ? (
               <Button
@@ -333,7 +331,7 @@ function LoadMore({ hasNextPage, isFetching, isError, onLoadMore }: LoadMoreProp
   }, [hasNextPage, isFetching, isError, onLoadMore])
 
   if (!hasNextPage) {
-    return <p className={styles.end}>Has llegado al final de la lista.</p>
+    return <p className={styles.end}>No hay más.</p>
   }
 
   return (

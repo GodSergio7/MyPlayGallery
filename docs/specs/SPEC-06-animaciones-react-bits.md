@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-06 |
 | Título | Animaciones de interfaz con React Bits |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobada |
 | Fecha | 2026-10-08 |
 | Autor | Responsable de producto |
@@ -18,6 +18,7 @@
 | 0.1 | 2026-10-08 | Creación inicial. Se incorporan cuatro componentes de React Bits y las dependencias `motion` y `gsap`. Refleja lo ya implementado. |
 | 0.2 | 2026-10-08 | Se añade el fondo animado `CrystalizedBall` (WebGL) y la dependencia `ogl`. |
 | 0.3 | 2026-10-08 | La navegación principal pasa a ser `CardNav`: sustituye a la cabecera y a la barra inferior del móvil. |
+| 0.4 | 2026-10-09 | Se retiran `BlurText`, `CountUp`, `TiltedCard` y `AnimatedContent` (y la dependencia `motion`) para una interfaz más sobria. Se mantienen `CardNav` y `CrystalizedBall`. Las secciones de abajo describen el estado anterior de esos cuatro componentes. |
 
 ---
 

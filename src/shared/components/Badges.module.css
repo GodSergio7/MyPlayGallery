@@ -26,7 +26,7 @@
 }
 
 .playing {
-  color: #ff6aa8;
+  color: var(--color-primary);
   border-color: rgba(255, 61, 139, 0.45);
   background: var(--color-primary-soft);
 }
@@ -48,11 +48,8 @@
 }
 
 .score {
-  font-weight: 800;
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .scoreMax {

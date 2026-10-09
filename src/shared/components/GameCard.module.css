@@ -6,11 +6,10 @@
   padding: var(--space-3);
   color: inherit;
   text-decoration: none;
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
   transition:
     border-color 0.25s ease,
     transform 0.25s ease;
@@ -18,7 +17,6 @@
 
 .card:hover {
   border-color: rgba(197, 139, 255, 0.5);
-  transform: translateY(-4px);
   text-decoration: none;
 }
 

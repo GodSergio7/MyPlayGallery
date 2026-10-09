@@ -17,10 +17,9 @@
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-5);
-  background: var(--glass-bg-strong);
+  background: rgba(13, 12, 30, 0.97);
   border: var(--border-width) solid rgba(197, 139, 255, 0.25);
   border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
   box-shadow: var(--shadow-modal);
 }
 

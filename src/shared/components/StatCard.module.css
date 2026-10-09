@@ -3,13 +3,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-5);
-  overflow: hidden;
-  background: var(--gradient-card);
+  padding: var(--space-4);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
 }
 
 .header {
@@ -27,23 +25,14 @@
 
 .icon {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  color: var(--color-on-primary);
-  background: var(--gradient-brand);
-  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
 }
 
 .value {
   font-size: var(--font-size-2xl);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-text);
 }
 
 .hint {

@@ -4,11 +4,10 @@
   gap: var(--space-4);
   padding: var(--space-4);
   margin-bottom: var(--space-4);
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
 }
 
 /* ---------- Buscador, orden y botón de filtros ---------- */
@@ -88,7 +87,7 @@
 
 .letter[aria-pressed='true'] {
   color: var(--color-on-primary);
-  background: var(--gradient-brand);
+  background: var(--color-accent);
 }
 
 /* ---------- Resumen y filtros activos ---------- */
@@ -133,7 +132,7 @@
   font-size: var(--font-size-xs);
   font-weight: 600;
   color: var(--color-text);
-  background: var(--color-secondary-soft);
+  background: var(--color-primary-soft);
   border: var(--border-width) solid rgba(197, 139, 255, 0.35);
   border-radius: var(--radius-pill);
   cursor: pointer;
@@ -149,7 +148,7 @@
   font: inherit;
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: #ff6aa8;
+  color: var(--color-primary);
   background: none;
   border: none;
   cursor: pointer;

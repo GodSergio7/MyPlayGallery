@@ -12,11 +12,8 @@
   justify-content: center;
   font-size: var(--font-size-2xl);
   font-weight: 700;
-  color: var(--color-on-primary);
-  background: var(--gradient-brand);
-  border: none;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
 }
 
-.tiltFrame {
-  overflow: visible;
-}

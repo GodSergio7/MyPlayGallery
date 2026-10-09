@@ -59,7 +59,7 @@ export function GameInfoPage() {
     return (
       <>
         {back}
-        <LoadingState message="Cargando la ficha del juego…" />
+        <LoadingState message="Cargando…" />
       </>
     )
   }
@@ -79,7 +79,7 @@ export function GameInfoPage() {
         {back}
         <EmptyState
           title="Juego no encontrado"
-          description="No hemos encontrado este juego en IGDB."
+          description="IGDB no tiene este juego."
           action={
             <Link to="/explore">
               <Button>Ir a Explorar</Button>
@@ -98,7 +98,7 @@ export function GameInfoPage() {
       <div className={styles.layout}>
         <div className={styles.main}>
           {(game.summary || game.storyline) && (
-            <Section title="Descripción" note="Texto original de IGDB, en inglés" boxed>
+            <Section title="Descripción" note="En inglés" boxed>
               {game.summary && <p className={styles.text}>{game.summary}</p>}
               {game.storyline && (
                 <>
@@ -206,7 +206,7 @@ function Hero({ game, inLibrary }: { game: GameDetails; inLibrary: boolean }) {
               <ScoreBlock label="Usuarios" score={game.scores.users} units={['voto', 'votos']} />
             </div>
           ) : (
-            <p className={styles.noScores}>Todavía no tiene notas en IGDB.</p>
+            <p className={styles.noScores}>Sin notas todavía.</p>
           )}
 
           {game.platforms.length > 0 && (
@@ -343,7 +343,7 @@ function TimeToBeat({ game }: { game: GameDetails }) {
 
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>¿Cuánto dura?</h2>
+      <h2 className={styles.cardTitle}>Duración</h2>
       <ul className={styles.durations}>
         {rows
           .filter(([, hours]) => hours !== null)
@@ -354,7 +354,7 @@ function TimeToBeat({ game }: { game: GameDetails }) {
             </li>
           ))}
       </ul>
-      <p className={styles.cardNote}>Media de los jugadores de IGDB.</p>
+      <p className={styles.cardNote}>Según los jugadores de IGDB.</p>
     </section>
   )
 }
@@ -381,7 +381,7 @@ function Links({ game }: { game: GameDetails }) {
   if (links.length === 0) return null
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>Dónde conseguirlo</h2>
+      <h2 className={styles.cardTitle}>Enlaces</h2>
       <ul className={styles.links}>
         {links.map((link) => (
           <li key={link.label}>

@@ -22,11 +22,10 @@
   display: flex;
   gap: var(--space-4);
   padding: var(--space-4);
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
 }
 
 .cover {
@@ -60,11 +59,10 @@
 
 .panel {
   padding: var(--space-4);
-  background: var(--gradient-card);
+  background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  backdrop-filter: var(--glass-blur);
 }
 
 .panelTitle {
