@@ -11,6 +11,7 @@ import { SearchPage } from '@/features/search/SearchPage'
 import { ExplorePage } from '@/features/explore/ExplorePage'
 import { GameInfoPage } from '@/features/game-info/GameInfoPage'
 import { GameDetailPage } from '@/features/game/GameDetailPage'
+import { SettingsPage } from '@/features/settings/SettingsPage'
 
 export function App() {
   return (
@@ -27,6 +28,7 @@ export function App() {
                 <Route path="explore/:gameId" element={<GameInfoPage />} />
                 <Route path="search" element={<SearchPage />} />
                 <Route path="game/:gameId" element={<GameDetailPage />} />
+                <Route path="settings" element={<SettingsPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Route>

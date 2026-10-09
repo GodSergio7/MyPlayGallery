@@ -5,3 +5,6 @@ project_id = "myplaygallery"
 # de usuario en esta fase; se abordara en SPEC-05/Auth.
 [functions.igdb-proxy]
 verify_jwt = true
+
+[functions.steam-connect]
+verify_jwt = true

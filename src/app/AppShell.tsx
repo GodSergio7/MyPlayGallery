@@ -37,7 +37,10 @@ export function AppShell() {
         background: CARD_BACKGROUND,
         textColor: '#fff',
         description: email,
-        links: [{ label: 'Cerrar sesión', onClick: () => void signOut() }],
+        links: [
+          { label: 'Ajustes', to: '/settings' },
+          { label: 'Cerrar sesión', onClick: () => void signOut() },
+        ],
       },
     ],
     [email, signOut],
