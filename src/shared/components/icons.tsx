@@ -210,3 +210,15 @@ export function ChevronDownIcon(props: IconProps) {
     </Icon>
   )
 }
+
+/** Marca de Steam simplificada (círculo con la válvula): círculo en currentColor y detalles en `detail`. */
+export function SteamGlyph({ detail = '#1b2838', ...props }: IconProps & { detail?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" {...props}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <circle cx="15.2" cy="9.2" r="3" fill="none" stroke={detail} strokeWidth="1.7" />
+      <circle cx="8.6" cy="15.2" r="2.1" fill={detail} />
+      <path d="M10.2 14 13.2 11" stroke={detail} strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  )
+}

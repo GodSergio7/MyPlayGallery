@@ -11,3 +11,7 @@ verify_jwt = true
 
 [functions.steam-library]
 verify_jwt = true
+
+# Sin JWT de usuario: es la funcion que crea la sesion (verifica la cuenta con Steam).
+[functions.steam-login]
+verify_jwt = false

@@ -5,10 +5,10 @@ import { errorMessage } from '@/data/errors'
 import type { PlatformConnection } from '@/data/supabase/connectionsRepository'
 import { Button } from '@/shared/components/Button'
 import { PageHeader } from '@/shared/components/PageHeader'
-import { AlertIcon, CheckIcon } from '@/shared/components/icons'
+import { AlertIcon, CheckIcon, SteamGlyph } from '@/shared/components/icons'
 import { formatDate } from '@/shared/lib/format'
 import { useConnectSteam, useConnections, useDisconnect } from './hooks/useConnections'
-import { readSteamReturn, steamLoginUrl } from './steam'
+import { isSteamOnlyEmail, readSteamReturn, STEAM_CONNECT_FLOW, steamLoginUrl } from '@/shared/lib/steamOpenId'
 import styles from './SettingsPage.module.css'
 
 type Notice = { tone: 'success' | 'error' | 'info'; text: string }
@@ -26,11 +26,20 @@ export function SettingsPage() {
       <PageHeader title="Ajustes" />
 
       <div className={styles.sections}>
-        <Section id="ajustes-cuenta" title="Cuenta" description="El email con el que entras en MyPlayGallery.">
+        <Section id="ajustes-cuenta" title="Cuenta" description="Cómo entras en MyPlayGallery.">
           <div className={styles.row}>
             <div className={styles.rowText}>
-              <span className={styles.rowLabel}>Email</span>
-              <span className={styles.rowValue}>{session?.user.email ?? '—'}</span>
+              {isSteamOnlyEmail(session?.user.email) ? (
+                <>
+                  <span className={styles.rowLabel}>Acceso</span>
+                  <span className={styles.rowValue}>Entras con tu cuenta de Steam</span>
+                </>
+              ) : (
+                <>
+                  <span className={styles.rowLabel}>Email</span>
+                  <span className={styles.rowValue}>{session?.user.email ?? '—'}</span>
+                </>
+              )}
             </div>
             <Button variant="secondary" size="sm" onClick={() => void signOut()}>
               Cerrar sesión
@@ -92,7 +101,7 @@ function SteamConnection() {
   const connect = useConnectSteam()
   const disconnect = useDisconnect()
   // La vuelta desde Steam se lee una sola vez, al llegar a la página.
-  const [steamReturn] = useState(() => readSteamReturn(searchParams))
+  const [steamReturn] = useState(() => readSteamReturn(searchParams, STEAM_CONNECT_FLOW))
   const [notice, setNotice] = useState<Notice | null>(() =>
     steamReturn.kind === 'cancelled' ? { tone: 'info', text: 'Has cancelado el inicio de sesión en Steam.' } : null,
   )
@@ -143,7 +152,7 @@ function SteamConnection() {
     action = (
       <Button
         size="sm"
-        onClick={() => window.location.assign(steamLoginUrl())}
+        onClick={() => window.location.assign(steamLoginUrl(STEAM_CONNECT_FLOW))}
         disabled={busy || connections.isLoading || connections.isError}
       >
         Conectar
@@ -220,12 +229,7 @@ function ConnectedAccount({ connection }: { connection: PlatformConnection }) {
 function SteamMark() {
   return (
     <span className={styles.mark} aria-hidden="true">
-      <svg viewBox="0 0 24 24" width="22" height="22">
-        <circle cx="12" cy="12" r="10" fill="#fff" />
-        <circle cx="15.2" cy="9.2" r="3" fill="none" stroke="#1b2838" strokeWidth="1.7" />
-        <circle cx="8.6" cy="15.2" r="2.1" fill="#1b2838" />
-        <path d="M10.2 14 13.2 11" stroke="#1b2838" strokeWidth="1.7" strokeLinecap="round" />
-      </svg>
+      <SteamGlyph style={{ color: '#fff' }} />
     </span>
   )
 }

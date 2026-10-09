@@ -5,6 +5,7 @@ import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav
 import { LogoMark } from '@/shared/components/LogoMark'
 import { PlusIcon } from '@/shared/components/icons'
 import { useConnections } from '@/features/settings/hooks/useConnections'
+import { isSteamOnlyEmail } from '@/shared/lib/steamOpenId'
 import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
@@ -12,7 +13,9 @@ const CARD_BACKGROUND = '#1c1a3a'
 
 export function AppShell() {
   const { session, signOut } = useAuth()
-  const email = session?.user.email
+  // Las cuentas creadas con Steam tienen un email interno: ni se muestra ni sirve de nombre.
+  const rawEmail = session?.user.email
+  const email = isSteamOnlyEmail(rawEmail) ? undefined : rawEmail
 
   const items = useMemo<CardNavItem[]>(
     () => [
@@ -38,7 +41,7 @@ export function AppShell() {
         label: 'Cuenta',
         background: CARD_BACKGROUND,
         textColor: '#fff',
-        description: email,
+        description: email ?? 'Cuenta de Steam',
         links: [
           { label: 'Ajustes', to: '/settings' },
           { label: 'Cerrar sesión', onClick: () => void signOut() },

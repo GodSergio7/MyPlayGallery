@@ -7,6 +7,8 @@ export interface AuthState {
   signIn(email: string, password: string): Promise<void>
   /** Devuelve `true` si hay que confirmar el email antes de poder entrar. */
   signUp(email: string, password: string): Promise<boolean>
+  /** Entra con la respuesta de Steam (parámetros openid.*). Si la cuenta de Steam es nueva, crea el usuario. */
+  signInWithSteam(params: Record<string, string>): Promise<void>
   signOut(): Promise<void>
 }
 

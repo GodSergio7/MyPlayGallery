@@ -15,6 +15,11 @@ const SIGN_UP_ERRORS: Record<string, string> = {
   over_request_rate_limit: 'Demasiados intentos. Inténtalo más tarde.',
 }
 
+const STEAM_SIGN_IN_ERRORS: Record<string, string> = {
+  invalid_steam_response: 'Steam no ha confirmado el inicio de sesión. Vuelve a intentarlo.',
+  upstream_error: 'No se ha podido contactar con Steam. Inténtalo dentro de un rato.',
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
   const [session, setSession] = useState<Session | null>(null)
@@ -74,6 +79,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           throw new AuthError(SIGN_UP_ERRORS.user_already_exists)
         }
         return data.session === null
+      },
+      async signInWithSteam(params) {
+        const client = getSupabaseClient()
+        // 1. La Edge Function verifica la respuesta con Steam y devuelve un token de acceso de un solo uso.
+        const { data, error, response } = await client.functions.invoke<{ tokenHash?: unknown }>('steam-login', {
+          method: 'POST',
+          body: { params },
+        })
+        if (error || typeof data?.tokenHash !== 'string') {
+          const body: unknown = await response?.json().catch(() => null)
+          const code =
+            typeof body === 'object' && body !== null
+              ? (body as { error?: { code?: unknown } }).error?.code
+              : undefined
+          throw new AuthError(
+            (typeof code === 'string' && STEAM_SIGN_IN_ERRORS[code]) ||
+              'No se ha podido entrar con Steam. Inténtalo de nuevo.',
+          )
+        }
+        // 2. Se canjea el token por la sesión (onAuthStateChange la recoge).
+        const { error: otpError } = await client.auth.verifyOtp({ token_hash: data.tokenHash, type: 'magiclink' })
+        if (otpError) {
+          throw new AuthError('No se ha podido entrar con Steam. Inténtalo de nuevo.')
+        }
       },
       async signOut() {
         await getSupabaseClient().auth.signOut()

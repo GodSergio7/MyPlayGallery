@@ -1,7 +1,8 @@
-import { useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { useAuth } from '@/app/auth/authContext'
 import Topography from '@/shared/components/reactbits/Topography'
 import { LogoMark } from '@/shared/components/LogoMark'
+import { readSteamReturn, STEAM_SIGN_IN_FLOW, steamLoginUrl } from '@/shared/lib/steamOpenId'
 import {
   AlertIcon,
   ArrowLeftIcon,
@@ -10,6 +11,7 @@ import {
   EyeOffIcon,
   LockIcon,
   MailIcon,
+  SteamGlyph,
 } from '@/shared/components/icons'
 import { CoverWall } from './CoverWall'
 import styles from './LoginPage.module.css'
@@ -35,7 +37,7 @@ const COPY: Record<Mode, { heading: string; text: string; submit: string; submit
 }
 
 export function LoginPage() {
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, signInWithSteam } = useAuth()
   const [mode, setMode] = useState<Mode>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,6 +47,30 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
+
+  // Vuelta desde Steam (botón "Continuar con Steam"): se lee una sola vez, al cargar la pantalla.
+  const [steamReturn] = useState(() =>
+    readSteamReturn(new URLSearchParams(window.location.search), STEAM_SIGN_IN_FLOW),
+  )
+  const [steamPending, setSteamPending] = useState(steamReturn.kind === 'response')
+  const [steamNotice] = useState(
+    steamReturn.kind === 'cancelled' ? 'Has cancelado el inicio de sesión en Steam.' : null,
+  )
+  const handledSteamReturn = useRef(false)
+
+  useEffect(() => {
+    if (handledSteamReturn.current || steamReturn.kind === 'none') return
+    handledSteamReturn.current = true
+    // Quita los parámetros de Steam de la URL (no deben quedarse en el historial).
+    window.history.replaceState(null, '', window.location.pathname)
+
+    if (steamReturn.kind !== 'response') return
+    // Si va bien, la sesión cambia y la app sustituye esta pantalla; solo hay que tratar el error.
+    signInWithSteam(steamReturn.params).catch((cause: unknown) => {
+      setError(cause instanceof Error ? cause.message : 'No se ha podido entrar con Steam.')
+      setSteamPending(false)
+    })
+  }, [steamReturn, signInWithSteam])
 
   const copy = COPY[mode]
   const isSignUp = mode === 'signUp'
@@ -103,6 +129,23 @@ export function LoginPage() {
       setError(cause instanceof Error ? cause.message : 'Ha ocurrido un error inesperado.')
       setSubmitting(false)
     }
+  }
+
+  if (steamPending) {
+    return (
+      <AuthLayout>
+        <div className={styles.card} role="status" aria-live="polite">
+          <span className={styles.steamBadge} aria-hidden="true">
+            <SteamGlyph width={28} height={28} style={{ color: '#fff' }} />
+          </span>
+          <div className={styles.intro}>
+            <h2 className={styles.heading}>Entrando con Steam…</h2>
+            <p className={styles.text}>Estamos comprobando tu cuenta con Steam. Solo tarda un momento.</p>
+          </div>
+          <span className={styles.spinnerLarge} aria-hidden="true" />
+        </div>
+      </AuthLayout>
+    )
   }
 
   if (pendingEmail) {
@@ -270,11 +313,34 @@ export function LoginPage() {
             {error}
           </p>
         )}
+        {steamNotice && !error && (
+          <p className={styles.tip} role="status">
+            {steamNotice}
+          </p>
+        )}
 
         <button type="submit" className={styles.submit} disabled={!canSubmit} aria-busy={submitting}>
           {submitting && <span className={styles.spinner} aria-hidden="true" />}
           {submitting ? copy.submitting : copy.submit}
         </button>
+
+        <div className={styles.divider} aria-hidden="true">
+          <span>o</span>
+        </div>
+
+        <button
+          type="button"
+          className={styles.steamButton}
+          onClick={() => window.location.assign(steamLoginUrl(STEAM_SIGN_IN_FLOW))}
+        >
+          <SteamGlyph width={20} height={20} />
+          Continuar con Steam
+        </button>
+        <p className={styles.steamNote}>
+          {isSignUp
+            ? 'Con Steam no necesitas email ni contraseña.'
+            : 'Si es tu primera vez, se crea tu cuenta al momento.'}
+        </p>
       </form>
     </AuthLayout>
   )
