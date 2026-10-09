@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { AppBackground } from '@/shared/components/AppBackground'
 import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
+import { LogoMark } from '@/shared/components/LogoMark'
 import { useAuth } from './auth/authContext'
 import styles from './AppShell.module.css'
 
@@ -52,6 +53,7 @@ export function AppShell() {
           cta={{ label: 'Añadir juego', to: '/search' }}
           logo={
             <NavLink to="/" className={styles.brand} aria-label="MyPlayGallery, inicio">
+              <LogoMark size={28} />
               <span className={styles.brandName}>
                 MyPlay<span className="brand-accent">Gallery</span>
               </span>
