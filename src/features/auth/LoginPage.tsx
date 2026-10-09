@@ -1,19 +1,37 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import { useAuth } from '@/app/auth/authContext'
-import { Button } from '@/shared/components/Button'
 import Topography from '@/shared/components/reactbits/Topography'
-import { Field, Input } from '@/shared/components/FormControls'
 import { LogoMark } from '@/shared/components/LogoMark'
+import {
+  AlertIcon,
+  ArrowLeftIcon,
+  CheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+  LockIcon,
+  MailIcon,
+} from '@/shared/components/icons'
 import { CoverWall } from './CoverWall'
 import styles from './LoginPage.module.css'
 
 type Mode = 'signIn' | 'signUp'
 
 const MIN_PASSWORD_LENGTH = 6
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const COPY: Record<Mode, { heading: string; submit: string; submitting: string }> = {
-  signIn: { heading: 'Entrar', submit: 'Entrar', submitting: 'Entrando…' },
-  signUp: { heading: 'Crear cuenta', submit: 'Crear cuenta', submitting: 'Creando cuenta…' },
+const COPY: Record<Mode, { heading: string; text: string; submit: string; submitting: string }> = {
+  signIn: {
+    heading: 'Entra en tu biblioteca',
+    text: 'Con el email y la contraseña de tu cuenta.',
+    submit: 'Entrar',
+    submitting: 'Entrando…',
+  },
+  signUp: {
+    heading: 'Crea tu biblioteca',
+    text: 'Solo necesitas un email. Te mandaremos un enlace para activarla.',
+    submit: 'Crear cuenta',
+    submitting: 'Creando cuenta…',
+  },
 }
 
 export function LoginPage() {
@@ -22,28 +40,39 @@ export function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [capsLock, setCapsLock] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
 
   const copy = COPY[mode]
   const isSignUp = mode === 'signUp'
+  const longEnough = password.length >= MIN_PASSWORD_LENGTH
+  const passwordsMatch = confirmPassword !== '' && password === confirmPassword
 
   function switchMode(next: Mode) {
+    if (next === mode) return
     setMode(next)
     setError(null)
     setPassword('')
     setConfirmPassword('')
+    setShowPassword(false)
+  }
+
+  // getModifierState solo existe en eventos de teclado: el aviso aparece al teclear.
+  function checkCapsLock(event: KeyboardEvent<HTMLInputElement>) {
+    setCapsLock(event.getModifierState('CapsLock'))
   }
 
   function validate(): string | null {
-    if (!isSignUp) {
-      return null
+    if (!EMAIL_PATTERN.test(email.trim())) {
+      return 'Revisa el email: parece que le falta algo.'
     }
-    if (password.length < MIN_PASSWORD_LENGTH) {
+    if (isSignUp && !longEnough) {
       return `La contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`
     }
-    if (password !== confirmPassword) {
+    if (isSignUp && !passwordsMatch) {
       return 'Las contraseñas no coinciden.'
     }
     return null
@@ -80,19 +109,28 @@ export function LoginPage() {
     return (
       <AuthLayout>
         <div className={styles.card}>
-          <h2 className={styles.heading}>Revisa tu correo</h2>
-          <p className={styles.text}>
-            Te hemos enviado un enlace a <strong>{pendingEmail}</strong>. Ábrelo para activar la cuenta y luego
-            entra con tu contraseña.
-          </p>
-          <Button
+          <span className={styles.mailBadge} aria-hidden="true">
+            <MailIcon width={26} height={26} />
+          </span>
+          <div className={styles.intro}>
+            <h2 className={styles.heading}>Revisa tu correo</h2>
+            <p className={styles.text}>
+              Te hemos enviado un enlace a <strong>{pendingEmail}</strong>. Ábrelo para activar la cuenta y
+              después entra con tu contraseña.
+            </p>
+          </div>
+          <p className={styles.tip}>¿No te llega? Mira en la carpeta de spam; puede tardar un par de minutos.</p>
+          <button
+            type="button"
+            className={styles.submit}
             onClick={() => {
               setPendingEmail(null)
               switchMode('signIn')
             }}
           >
-            Volver
-          </Button>
+            <ArrowLeftIcon width={18} height={18} />
+            Volver a entrar
+          </button>
         </div>
       </AuthLayout>
     )
@@ -102,74 +140,155 @@ export function LoginPage() {
     !submitting &&
     email.trim() !== '' &&
     password !== '' &&
-    (!isSignUp || confirmPassword !== '')
+    (!isSignUp || (longEnough && passwordsMatch))
 
   return (
     <AuthLayout>
-      <form className={styles.card} onSubmit={handleSubmit} noValidate>
-        <h2 className={styles.heading}>{copy.heading}</h2>
+      <form className={styles.card} onSubmit={handleSubmit} noValidate aria-labelledby="auth-heading">
+        <div className={styles.tabs} role="group" aria-label="Tipo de acceso" data-mode={mode}>
+          <span className={styles.tabIndicator} aria-hidden="true" />
+          <button
+            type="button"
+            className={styles.tab}
+            aria-pressed={!isSignUp}
+            onClick={() => switchMode('signIn')}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            className={styles.tab}
+            aria-pressed={isSignUp}
+            onClick={() => switchMode('signUp')}
+          >
+            Crear cuenta
+          </button>
+        </div>
 
-        <Field label="Email" htmlFor="auth-email">
-          <Input
-            id="auth-email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </Field>
+        <div className={styles.intro}>
+          <h2 id="auth-heading" className={styles.heading}>
+            {copy.heading}
+          </h2>
+          <p className={styles.text}>{copy.text}</p>
+        </div>
 
-        <Field
-          label="Contraseña"
-          htmlFor="auth-password"
-          hint={isSignUp ? `Mínimo ${MIN_PASSWORD_LENGTH} caracteres.` : undefined}
-        >
-          <Input
-            id="auth-password"
-            type="password"
-            autoComplete={isSignUp ? 'new-password' : 'current-password'}
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </Field>
+        <div className={styles.fields}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="auth-email">
+              Email
+            </label>
+            <div className={styles.inputWrap}>
+              <MailIcon className={styles.inputIcon} width={18} height={18} />
+              <input
+                id="auth-email"
+                className={styles.input}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                spellCheck={false}
+                placeholder="tu@email.com"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </div>
+          </div>
 
-        {isSignUp && (
-          <Field label="Repite la contraseña" htmlFor="auth-confirm-password">
-            <Input
-              id="auth-confirm-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-            />
-          </Field>
-        )}
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="auth-password">
+              Contraseña
+            </label>
+            <div className={styles.inputWrap}>
+              <LockIcon className={styles.inputIcon} width={18} height={18} />
+              <input
+                id="auth-password"
+                className={`${styles.input} ${styles.inputWithAction}`}
+                type={showPassword ? 'text' : 'password'}
+                autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                onKeyUp={checkCapsLock}
+                onKeyDown={checkCapsLock}
+                onBlur={() => setCapsLock(false)}
+                aria-describedby={isSignUp ? 'auth-rules' : undefined}
+              />
+              <button
+                type="button"
+                className={styles.inputAction}
+                onClick={() => setShowPassword((shown) => !shown)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeOffIcon width={18} height={18} /> : <EyeIcon width={18} height={18} />}
+              </button>
+            </div>
+            {capsLock && (
+              <p className={styles.capsLock} role="status">
+                <AlertIcon width={14} height={14} aria-hidden="true" />
+                Tienes activadas las mayúsculas
+              </p>
+            )}
+          </div>
+
+          {isSignUp && (
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="auth-confirm-password">
+                Repite la contraseña
+              </label>
+              <div className={styles.inputWrap}>
+                <LockIcon className={styles.inputIcon} width={18} height={18} />
+                <input
+                  id="auth-confirm-password"
+                  className={styles.input}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  onKeyUp={checkCapsLock}
+                  onKeyDown={checkCapsLock}
+                  onBlur={() => setCapsLock(false)}
+                  aria-describedby="auth-rules"
+                />
+              </div>
+            </div>
+          )}
+
+          {isSignUp && (
+            <ul id="auth-rules" className={styles.rules} aria-label="Requisitos de la contraseña">
+              <Rule met={longEnough}>Al menos {MIN_PASSWORD_LENGTH} caracteres</Rule>
+              <Rule met={passwordsMatch}>Las dos contraseñas coinciden</Rule>
+            </ul>
+          )}
+        </div>
 
         {error && (
           <p className={styles.error} role="alert">
+            <AlertIcon width={18} height={18} aria-hidden="true" />
             {error}
           </p>
         )}
 
-        <Button type="submit" disabled={!canSubmit} className={styles.submit}>
+        <button type="submit" className={styles.submit} disabled={!canSubmit} aria-busy={submitting}>
+          {submitting && <span className={styles.spinner} aria-hidden="true" />}
           {submitting ? copy.submitting : copy.submit}
-        </Button>
-
-        <p className={styles.switch}>
-          {isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
-          <button
-            type="button"
-            className={styles.switchButton}
-            onClick={() => switchMode(isSignUp ? 'signIn' : 'signUp')}
-          >
-            {isSignUp ? 'Entra' : 'Regístrate'}
-          </button>
-        </p>
+        </button>
       </form>
     </AuthLayout>
+  )
+}
+
+function Rule({ met, children }: { met: boolean; children: ReactNode }) {
+  return (
+    <li className={met ? `${styles.rule} ${styles.ruleMet}` : styles.rule}>
+      <span className={styles.ruleMark} aria-hidden="true">
+        {met && <CheckIcon width={12} height={12} strokeWidth={2.6} />}
+      </span>
+      {children}
+      <span className="visually-hidden">{met ? ' (cumplido)' : ' (pendiente)'}</span>
+    </li>
   )
 }
 

@@ -94,61 +94,358 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   padding: var(--space-5);
-  background: rgba(13, 12, 30, 0.94);
+  background: rgba(13, 12, 30, 0.95);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Pestañas Entrar / Crear cuenta: la marca se desliza a la opción elegida */
+.tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.tabIndicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background: rgba(106, 63, 224, 0.22);
+  border: var(--border-width) solid rgba(179, 155, 255, 0.35);
+  border-radius: var(--radius-sm);
+  transition: transform 0.25s ease;
+}
+
+.tabs[data-mode='signUp'] .tabIndicator {
+  transform: translateX(100%);
+}
+
+.tab {
+  position: relative;
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab:hover,
+.tab[aria-pressed='true'] {
+  color: var(--color-text);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .heading {
-  font-size: var(--font-size-xl);
+  font-size: 22px;
   font-weight: 700;
+  line-height: 1.25;
 }
 
 .text {
   font-size: var(--font-size-sm);
+  line-height: 1.5;
   color: var(--color-text-secondary);
 }
 
 .text strong {
   color: var(--color-text);
+  overflow-wrap: anywhere;
 }
 
-.error {
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
+/* ---------- Campos ---------- */
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
   font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.inputWrap {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--color-text-secondary);
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.inputWrap:focus-within .inputIcon {
+  color: var(--color-primary);
+}
+
+/* 16 px: Safari en iPhone no amplía la página al enfocar */
+.input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px 0 44px;
+  font: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: rgba(8, 8, 28, 0.7);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: rgba(157, 155, 181, 0.6);
+}
+
+.input:hover {
+  border-color: rgba(179, 155, 255, 0.35);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: rgba(179, 155, 255, 0.75);
+  box-shadow: 0 0 0 3px rgba(106, 63, 224, 0.25);
+}
+
+.inputWithAction {
+  padding-right: 52px;
+}
+
+/* Mostrar / ocultar contraseña */
+.inputAction {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.inputAction:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.inputAction:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 0;
+}
+
+.capsLock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-warning);
+}
+
+/* Requisitos de la contraseña al crear cuenta: se marcan según escribes */
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  transition: color 0.2s ease;
+}
+
+.ruleMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ruleMet {
+  color: var(--color-text);
+}
+
+.ruleMet .ruleMark {
+  color: var(--color-bg);
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+/* ---------- Mensajes y botón ---------- */
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 10px var(--space-3);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
   color: var(--color-error);
   background: var(--color-danger-soft);
-  border-radius: var(--radius-sm);
+  border: var(--border-width) solid rgba(255, 92, 122, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
   width: 100%;
-}
-
-.switch {
-  margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-.switchButton {
-  min-height: 32px;
-  padding: 0;
+  min-height: 48px;
+  padding: 0 var(--space-4);
   font: inherit;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: var(--color-primary);
-  background: none;
+  color: var(--color-on-primary);
+  background: var(--color-accent);
   border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.switchButton:hover {
-  text-decoration: underline;
+.submit:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.submit:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.submit[aria-busy='true'] {
+  opacity: 0.85;
+  cursor: progress;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Revisa tu correo ---------- */
+
+.mailBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  color: var(--color-primary);
+  background: rgba(106, 63, 224, 0.18);
+  border: var(--border-width) solid rgba(179, 155, 255, 0.3);
+  border-radius: var(--radius-lg);
+}
+
+.tip {
+  margin: 0;
+  padding: 10px var(--space-3);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabIndicator {
+    transition: none;
+  }
+
+  .spinner {
+    animation-duration: 2s;
+  }
 }
 
 /* ---------- Escritorio ---------- */
@@ -169,5 +466,9 @@
   .panel {
     justify-content: center;
     padding: var(--space-6) var(--space-4);
+  }
+
+  .card {
+    padding: var(--space-6);
   }
 }

@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.9 |
+| Versión | 0.10 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -24,6 +24,7 @@
 | 0.7 | 2026-10-09 | Interfaz más sobria y natural: un solo violeta sólido como acento (sin degradados en botones, pestañas ni números), sin efecto cristal ni texto degradado en las tarjetas, radios más pequeños, estados vacíos sin icono ni caja, y textos más cortos y directos ("Inicio" en lugar de "Dashboard", sin frases descriptivas bajo los títulos, "entrada" en lugar de "experiencia"). La pantalla de acceso pierde el eslogan, la lista de ventajas y la notificación de ejemplo. |
 | 0.8 | 2026-10-09 | Diseño en móvil (por debajo de 768 px), con el mismo estilo que en escritorio. Rejillas de portadas en 2 columnas. Inicio: "Juegos" a todo el ancho y las otras cifras en 2 × 2; "Últimos cambios" (con miniatura de la portada) antes de "Por estado". Biblioteca y Explorar: buscador arriba y filtros plegables tras un botón "Filtros (n)" en 2 × 2. Fichas de la biblioteca y de añadir: portada pequeña junto al título y botones a todo el ancho. Ficha de Explorar: la captura hace de banner con la portada encima, y la duración va justo después de la descripción. Botones de al menos 44 px de alto y campos de 16 px (Safari en iPhone no hace zoom). Se corrige el desbordamiento horizontal del Inicio. |
 | 0.9 | 2026-10-09 | Nuevo logo: un mando envuelto en llamas, en una sola tinta (lila de marca `--color-primary`). `LogoMark` es un SVG vectorizado del PNG original, centrado en 64 × 64 y con `currentColor`. Vuelve a la barra de navegación (28 px, delante de MyPlayGallery) y sigue en la pantalla de acceso. Favicon SVG y `apple-touch-icon.png` (180 px): logo blanco sobre violeta `#6a3fe0`. `theme-color` pasa a `#0b0b1a`, el fondo real. |
+| 0.10 | 2026-10-09 | Nuevo formulario de acceso: pestañas Entrar / Crear cuenta con indicador deslizante (sustituyen al enlace inferior), título y frase según el modo, campos de 48 px con icono, botón para mostrar u ocultar la contraseña, aviso de Bloq Mayús, requisitos de la contraseña marcados en vivo al registrarse (mínimo 6 caracteres y coincidencia), validación del formato del email, errores con icono y botón con indicador de carga. La pantalla "Revisa tu correo" añade un icono, el aviso de mirar en spam y "Volver a entrar". |
 
 ## Leyenda de estados de decisión
 
