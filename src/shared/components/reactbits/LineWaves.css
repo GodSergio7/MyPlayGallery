@@ -1,7 +1,5 @@
 /* Adaptado de React Bits (https://reactbits.dev) — licencia MIT + Commons Clause. */
-.crystalized-ball {
-  position: relative;
+.line-waves-container {
   width: 100%;
   height: 100%;
-  overflow: hidden;
 }
