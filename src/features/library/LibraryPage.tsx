@@ -79,6 +79,7 @@ export function LibraryPage() {
   const [params, setParams] = useSearchParams()
   const { status, platformId, sort, achievement } = readFilters(params)
   const [query, setQuery] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   function setFilter(name: 'estado' | 'plataforma' | 'orden' | 'logro', value: string | null) {
     setParams(
@@ -150,6 +151,11 @@ export function LibraryPage() {
     })
   }, [entries, gameById, query, status, platformId, sort, achievement])
 
+  // Filtros distintos del valor por defecto (sin contar la búsqueda), para el botón de móvil.
+  const activeCount = [status !== 'all', platformId !== 'all', achievement !== 'all', sort !== 'recent'].filter(
+    Boolean,
+  ).length
+
   const hasActiveFilters =
     query.trim() !== '' ||
     status !== 'all' ||
@@ -205,79 +211,96 @@ export function LibraryPage() {
       />
 
       <section className={styles.toolbar} aria-label="Filtros de la biblioteca">
-        <div className={styles.searchField}>
-          <SearchBar
-            id="library-search"
-            label="Buscar en mi biblioteca"
-            value={query}
-            onChange={setQuery}
-            placeholder="Buscar por título…"
-          />
+        <div className={styles.searchRow}>
+          <div className={styles.searchField}>
+            <SearchBar
+              id="library-search"
+              label="Buscar en mi biblioteca"
+              value={query}
+              onChange={setQuery}
+              placeholder="Buscar por título…"
+            />
+          </div>
+          <button
+            type="button"
+            className={styles.filtersToggle}
+            aria-expanded={filtersOpen}
+            aria-controls="library-filters"
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            Filtros{activeCount > 0 ? ` (${activeCount})` : ''}
+          </button>
         </div>
 
-        <Field label="Estado" htmlFor="library-status">
-          <Select
-            id="library-status"
-            value={status}
-            onChange={(event) => setFilter('estado', event.target.value)}
-          >
-            <option value="all">Todos</option>
-            {GAME_STATUSES.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <div
+          id="library-filters"
+          className={filtersOpen ? `${styles.filters} ${styles.filtersOpen}` : styles.filters}
+        >
 
-        <Field label="Plataforma" htmlFor="library-platform">
-          <Select
-            id="library-platform"
-            value={platformId === 'all' ? 'all' : String(platformId)}
-            onChange={(event) => setFilter('plataforma', event.target.value)}
-          >
-            <option value="all">Todas</option>
-            {platforms.map((platform) => (
-              <option key={platform.id} value={platform.id}>
-                {platform.name}
-              </option>
-            ))}
-          </Select>
-        </Field>
+          <Field label="Estado" htmlFor="library-status">
+            <Select
+              id="library-status"
+              value={status}
+              onChange={(event) => setFilter('estado', event.target.value)}
+            >
+              <option value="all">Todos</option>
+              {GAME_STATUSES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-        <Field label="Logros" htmlFor="library-achievement">
-          <Select
-            id="library-achievement"
-            value={achievement}
-            onChange={(event) => setFilter('logro', event.target.value)}
-          >
-            <option value="all">Todos</option>
-            {ACHIEVEMENT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
+          <Field label="Plataforma" htmlFor="library-platform">
+            <Select
+              id="library-platform"
+              value={platformId === 'all' ? 'all' : String(platformId)}
+              onChange={(event) => setFilter('plataforma', event.target.value)}
+            >
+              <option value="all">Todas</option>
+              {platforms.map((platform) => (
+                <option key={platform.id} value={platform.id}>
+                  {platform.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-        <Field label="Ordenar por" htmlFor="library-sort">
-          <Select
-            id="library-sort"
-            value={sort}
-            onChange={(event) => setFilter('orden', event.target.value)}
-          >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
+          <Field label="Logros" htmlFor="library-achievement">
+            <Select
+              id="library-achievement"
+              value={achievement}
+              onChange={(event) => setFilter('logro', event.target.value)}
+            >
+              <option value="all">Todos</option>
+              {ACHIEVEMENT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-        <div className={styles.clearWrapper}>
-          <Button variant="ghost" onClick={clearFilters} disabled={!hasActiveFilters}>
-            Limpiar filtros
-          </Button>
+          <Field label="Ordenar por" htmlFor="library-sort">
+            <Select
+              id="library-sort"
+              value={sort}
+              onChange={(event) => setFilter('orden', event.target.value)}
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
+          <div className={styles.clearWrapper}>
+            <Button variant="ghost" onClick={clearFilters} disabled={!hasActiveFilters}>
+              Limpiar filtros
+            </Button>
+          </div>
         </div>
       </section>
 

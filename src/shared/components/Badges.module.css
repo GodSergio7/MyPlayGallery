@@ -62,3 +62,16 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
+
+/* En móvil, más compactas para que quepan junto a la nota en tarjetas de media pantalla */
+@media (max-width: 767px) {
+  .badge {
+    gap: 6px;
+    padding: 2px var(--space-2);
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+}

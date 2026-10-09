@@ -25,7 +25,10 @@ export function GameCard({ game, inLibrary = false, to }: GameCardProps) {
       className={styles.card}
       aria-label={`Ver ${game.title}`}
     >
-      <CoverImage src={game.coverUrl} title={game.title} />
+      <div className={styles.coverWrap}>
+        <CoverImage src={game.coverUrl} title={game.title} />
+        {inLibrary && <span className={styles.inLibrary}>En tu biblioteca</span>}
+      </div>
       <div className={styles.body}>
         <h3 className={styles.title}>{game.title}</h3>
         <div className={styles.metaRow}>
@@ -37,7 +40,6 @@ export function GameCard({ game, inLibrary = false, to }: GameCardProps) {
             </span>
           )}
         </div>
-        {inLibrary && <span className={styles.inLibrary}>En tu biblioteca</span>}
         {game.platforms.length > 0 && (
           <ul className={styles.platforms}>
             {game.platforms.slice(0, 3).map((platform) => (

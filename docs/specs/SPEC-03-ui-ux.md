@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.7 |
+| Versión | 0.8 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -22,6 +22,7 @@
 | 0.5 | 2026-10-08 | La navegación pasa a ser un menú desplegable de tarjetas (Card Nav de React Bits, ver SPEC-06) en móvil y escritorio. Se retiran la cabecera con enlaces y la barra inferior del móvil. |
 | 0.6 | 2026-10-08 | Nuevo logo: fotos apiladas con un mando delante, en capas rellenas con el degradado de marca y sombra oscura (sin brillo) (componente `LogoMark`, SVG). Se usa en la pantalla de acceso y el favicon; la barra de navegación muestra solo el texto MyPlayGallery. |
 | 0.7 | 2026-10-09 | Interfaz más sobria y natural: un solo violeta sólido como acento (sin degradados en botones, pestañas ni números), sin efecto cristal ni texto degradado en las tarjetas, radios más pequeños, estados vacíos sin icono ni caja, y textos más cortos y directos ("Inicio" en lugar de "Dashboard", sin frases descriptivas bajo los títulos, "entrada" en lugar de "experiencia"). La pantalla de acceso pierde el eslogan, la lista de ventajas y la notificación de ejemplo. |
+| 0.8 | 2026-10-09 | Diseño en móvil (por debajo de 768 px), con el mismo estilo que en escritorio. Rejillas de portadas en 2 columnas. Inicio: "Juegos" a todo el ancho y las otras cifras en 2 × 2; "Últimos cambios" (con miniatura de la portada) antes de "Por estado". Biblioteca y Explorar: buscador arriba y filtros plegables tras un botón "Filtros (n)" en 2 × 2. Fichas de la biblioteca y de añadir: portada pequeña junto al título y botones a todo el ancho. Ficha de Explorar: la captura hace de banner con la portada encima, y la duración va justo después de la descripción. Botones de al menos 44 px de alto y campos de 16 px (Safari en iPhone no hace zoom). Se corrige el desbordamiento horizontal del Inicio. |
 
 ## Leyenda de estados de decisión
 

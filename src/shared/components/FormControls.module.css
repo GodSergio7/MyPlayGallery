@@ -72,3 +72,16 @@ textarea.control {
   height: 18px;
   accent-color: var(--color-accent);
 }
+
+/* Safari en iPhone amplía la página al enfocar campos de menos de 16 px */
+@media (max-width: 767px) {
+  .control {
+    font-size: var(--font-size-base);
+  }
+
+  /* Altura fija para que cuadre con los botones de al lado (p. ej. "Filtros") */
+  select.control {
+    height: 48px;
+    padding-block: 0;
+  }
+}

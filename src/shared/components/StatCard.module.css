@@ -2,8 +2,8 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -29,7 +29,7 @@
 }
 
 .value {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   line-height: 1.1;
   color: var(--color-text);
@@ -51,6 +51,14 @@
 
 .link:hover {
   text-decoration: none;
+}
+
+.link {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.link:active .clickable {
+  background-color: var(--color-surface-hover);
 }
 
 .link:focus-visible {
@@ -78,4 +86,15 @@
 .link:hover .arrow {
   color: var(--color-text);
   transform: translate(2px, -2px);
+}
+
+@media (min-width: 768px) {
+  .card {
+    gap: var(--space-2);
+    padding: var(--space-4);
+  }
+
+  .value {
+    font-size: var(--font-size-2xl);
+  }
 }

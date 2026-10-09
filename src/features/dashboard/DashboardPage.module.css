@@ -1,17 +1,29 @@
+/* Móvil y tablet: "Juegos" a todo el ancho y las otras cuatro cifras en 2 × 2 */
 .stats {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
   margin-bottom: var(--space-5);
 }
 
+.stats > :first-child {
+  grid-column: 1 / -1;
+}
+
+/* minmax(0, 1fr): sin él, los títulos largos ensanchan la columna más que la pantalla */
 .columns {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
 }
 
+/* En una sola columna, lo último que has tocado va antes que el reparto por estado */
+.recentPanel {
+  order: -1;
+}
+
 .panel {
+  min-width: 0;
   padding: var(--space-4);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
@@ -47,7 +59,7 @@
 
 .distributionRow {
   display: grid;
-  grid-template-columns: 120px 1fr 32px;
+  grid-template-columns: 96px minmax(0, 1fr) 24px;
   align-items: center;
   gap: var(--space-3);
   min-height: 40px;
@@ -114,7 +126,7 @@
 .recent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -123,11 +135,23 @@
 .recentItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
+  margin: 0 calc(var(--space-2) * -1);
+  padding: var(--space-2);
   color: inherit;
+  border-radius: var(--radius-md);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.recentItem:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.recentCover {
+  width: 40px;
+  flex-shrink: 0;
   border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
 }
 
 .recentItem:hover {
@@ -137,7 +161,9 @@
 
 .recentInfo {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -152,12 +178,17 @@
 .recentMeta {
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Móvil: estado encima de la fecha; en pantallas anchas, en línea */
 .recentRight {
   display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
   flex-shrink: 0;
 }
 
@@ -167,18 +198,33 @@
 }
 
 
-@media (min-width: 480px) {
-  .stats {
-    grid-template-columns: repeat(2, 1fr);
+@media (min-width: 640px) {
+  .recentRight {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .distributionRow {
+    grid-template-columns: 120px minmax(0, 1fr) 32px;
   }
 }
 
 @media (min-width: 1024px) {
   .stats {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .stats > :first-child {
+    grid-column: auto;
   }
 
   .columns {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recentPanel {
+    order: 0;
   }
 }

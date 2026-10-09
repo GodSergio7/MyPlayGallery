@@ -2,17 +2,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
   color: inherit;
   text-decoration: none;
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  transition:
-    border-color 0.25s ease,
-    transform 0.25s ease;
+  transition: border-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card:hover {
@@ -20,15 +20,28 @@
   text-decoration: none;
 }
 
+.card:active {
+  background: var(--color-surface-hover);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 .body {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  min-width: 0;
+  padding: 0 var(--space-1) var(--space-1);
 }
 
 .title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: 700;
+  line-height: 1.3;
   color: var(--color-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -37,21 +50,64 @@
   overflow: hidden;
 }
 
+/* Plataforma · horas, en una sola línea */
+.meta {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.platform {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.hours {
+  flex-shrink: 0;
+}
+
+.hours::before {
+  content: '·';
+  margin-right: var(--space-2);
+}
+
+/* Estado y nota, siempre abajo aunque el título ocupe una o dos líneas */
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: var(--space-1);
 }
 
-.stats {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-3);
+.score {
+  flex-shrink: 0;
 }
 
-.hours {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
+/* En móvil, solo la nota: el "/10" no cabe junto al estado */
+@media (max-width: 767px) {
+  .score > span > span {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .card {
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .body {
+    gap: var(--space-2);
+    padding: 0;
+  }
+
+  .title {
+    font-size: var(--font-size-base);
+  }
 }

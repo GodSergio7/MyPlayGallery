@@ -388,6 +388,87 @@
 
 /* ---------- Tablet y escritorio ---------- */
 
+/* ---------- Móvil ---------- */
+
+@media (max-width: 767px) {
+  /* La captura queda como banner arriba y la portada se monta encima */
+  .heroImage {
+    height: 220px;
+  }
+
+  .heroShade {
+    background: linear-gradient(
+      180deg,
+      rgba(10, 10, 31, 0.15) 0%,
+      rgba(10, 10, 31, 0.6) 120px,
+      var(--color-surface) 220px
+    );
+  }
+
+  .heroContent {
+    gap: var(--space-4);
+    padding: 112px var(--space-4) var(--space-4);
+  }
+
+  .cover {
+    width: 128px;
+    align-self: flex-start;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .scores {
+    max-width: none;
+  }
+
+  .score {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .scoreValue {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Una sola columna: tras la descripción va la duración (lo que más se mira en el móvil),
+   luego tráileres y capturas, y al final la ficha, lanzamientos y enlaces. */
+@media (max-width: 1023px) {
+  .layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .main,
+  .side {
+    display: contents;
+  }
+
+  .main > *,
+  .side > * {
+    min-width: 0;
+    margin-bottom: 0;
+  }
+
+  .main > * {
+    order: 2;
+  }
+
+  .main > :first-child {
+    order: 0;
+  }
+
+  .side > * {
+    order: 3;
+  }
+
+  .side > :has(.durations) {
+    order: 1;
+  }
+}
+
 @media (min-width: 768px) {
   .heroContent {
     flex-direction: row;

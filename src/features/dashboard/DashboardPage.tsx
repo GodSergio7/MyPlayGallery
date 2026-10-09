@@ -7,6 +7,7 @@ import { PageHeader } from '@/shared/components/PageHeader'
 import { StatCard } from '@/shared/components/StatCard'
 import { Button } from '@/shared/components/Button'
 import { StatusBadge } from '@/shared/components/Badges'
+import { CoverImage } from '@/shared/components/CoverImage'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
 import styles from './DashboardPage.module.css'
 
@@ -56,6 +57,7 @@ export function DashboardPage() {
       : null
   const platinumCount = entries.filter((entry) => entry.platinum).length
   const hundredCount = entries.filter((entry) => entry.hundredPercent).length
+  const playingCount = entries.filter((entry) => entry.status === 'playing').length
 
   const statusCounts = GAME_STATUSES.map((status) => ({
     ...status,
@@ -71,7 +73,12 @@ export function DashboardPage() {
       <PageHeader title="Inicio" />
 
       <section className={styles.stats} aria-label="Resumen de la biblioteca">
-        <StatCard label="Juegos" value={total} to="/library" />
+        <StatCard
+          label="Juegos"
+          value={total}
+          hint={playingCount > 0 ? `${playingCount} jugando ahora` : undefined}
+          to="/library"
+        />
         <StatCard label="Horas jugadas" value={totalHours} format={formatHours} to="/library?orden=hours" />
         <StatCard
           label="Nota media"
@@ -108,7 +115,7 @@ export function DashboardPage() {
           </ul>
         </section>
 
-        <section className={styles.panel} aria-labelledby="recent-heading">
+        <section className={`${styles.panel} ${styles.recentPanel}`} aria-labelledby="recent-heading">
           <div className={styles.panelHeader}>
             <h2 id="recent-heading" className={styles.panelTitle}>
               Últimos cambios
@@ -123,6 +130,11 @@ export function DashboardPage() {
               return (
                 <li key={entry.id}>
                   <Link to={`/library/${entry.id}`} className={styles.recentItem}>
+                    <CoverImage
+                      src={game?.coverUrl ?? null}
+                      title={game?.title ?? 'Juego desconocido'}
+                      className={styles.recentCover}
+                    />
                     <span className={styles.recentInfo}>
                       <span className={styles.recentTitle}>
                         {game?.title ?? 'Juego desconocido'}

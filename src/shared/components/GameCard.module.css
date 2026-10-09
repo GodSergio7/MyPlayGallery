@@ -2,17 +2,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-3);
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
   color: inherit;
   text-decoration: none;
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  transition:
-    border-color 0.25s ease,
-    transform 0.25s ease;
+  transition: border-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card:hover {
@@ -20,20 +20,46 @@
   text-decoration: none;
 }
 
+.card:active {
+  background: var(--color-surface-hover);
+}
+
 .card:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
+.coverWrap {
+  position: relative;
+}
+
+/* Sobre la esquina inferior de la portada: no suma altura a la tarjeta */
+.inLibrary {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  padding: 2px var(--space-2);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-success);
+  background: rgba(8, 8, 24, 0.88);
+  border: var(--border-width) solid rgba(62, 230, 168, 0.4);
+  border-radius: var(--radius-pill);
+}
+
 .body {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  min-width: 0;
+  padding: 0 var(--space-1) var(--space-1);
 }
 
 .title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: 700;
+  line-height: 1.3;
   color: var(--color-text);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -47,16 +73,9 @@
   color: var(--color-text-secondary);
 }
 
-.platforms {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
+/* Fecha y nota abajo, alineadas en toda la fila aunque los títulos ocupen distinto */
 .metaRow {
+  margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -72,13 +91,36 @@
   color: var(--color-warning);
 }
 
-.inLibrary {
-  align-self: flex-start;
-  padding: 2px var(--space-2);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--color-success);
-  background: rgba(62, 230, 168, 0.1);
-  border: var(--border-width) solid rgba(62, 230, 168, 0.35);
-  border-radius: var(--radius-pill);
+/* En móvil no hay sitio para las plataformas: están en la ficha */
+.platforms {
+  display: none;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .card {
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .body {
+    gap: var(--space-2);
+    padding: 0;
+  }
+
+  .title {
+    font-size: var(--font-size-base);
+  }
+
+  .platforms {
+    display: flex;
+  }
+
+  .inLibrary {
+    font-size: var(--font-size-xs);
+  }
 }

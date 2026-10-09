@@ -115,7 +115,7 @@ export function GameDetailPage() {
                 <dd>{game.genres.join(', ')}</dd>
               </div>
             </dl>
-            <div>
+            <div className={styles.platforms}>
               <h2 className={styles.subheading}>Plataformas</h2>
               <ul className={styles.platformList}>
                 {game.platforms.map((platform) => (

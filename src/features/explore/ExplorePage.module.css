@@ -1,8 +1,8 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-3);
   margin-bottom: var(--space-4);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
@@ -12,19 +12,21 @@
 
 /* ---------- Buscador, orden y botón de filtros ---------- */
 
+/* Móvil: buscador a lo ancho; debajo, orden y botón de filtros en la misma fila */
 .topRow {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
   align-items: end;
 }
 
 .search {
+  grid-column: 1 / -1;
   min-width: 0;
 }
 
 .filtersToggle {
-  min-height: 44px;
+  min-height: 48px;
   padding: 0 var(--space-4);
   font: inherit;
   font-size: var(--font-size-sm);
@@ -34,6 +36,7 @@
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .filtersToggle[aria-expanded='true'] {
@@ -44,7 +47,7 @@
 
 .filters {
   display: none;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
 }
 
@@ -183,8 +186,18 @@
 /* ---------- Tablet y escritorio ---------- */
 
 @media (min-width: 768px) {
+  .panel {
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
   .topRow {
     grid-template-columns: minmax(0, 1fr) 220px;
+    gap: var(--space-3);
+  }
+
+  .search {
+    grid-column: auto;
   }
 
   .filtersToggle {

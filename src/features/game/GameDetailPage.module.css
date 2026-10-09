@@ -2,7 +2,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  min-height: 44px;
+  margin-bottom: var(--space-2);
   font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
 }
@@ -27,32 +28,48 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Móvil: portada pequeña junto al título y los datos; plataformas debajo, a lo ancho */
 .external {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-4);
+  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-areas:
+    'cover title'
+    'cover meta'
+    'platforms platforms';
+  column-gap: var(--space-4);
+  row-gap: var(--space-3);
   align-content: start;
 }
 
 .cover {
+  grid-area: cover;
   width: 100%;
-  max-width: 220px;
 }
 
 .externalInfo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
+  display: contents;
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  grid-area: title;
+  align-self: end;
+  font-size: var(--font-size-lg);
+  line-height: 1.2;
+}
+
+.meta {
+  grid-area: meta;
+  align-self: start;
+}
+
+.platforms {
+  grid-area: platforms;
 }
 
 .meta {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   margin: 0;
 }
 
@@ -135,6 +152,41 @@
   display: flex;
   justify-content: flex-end;
   margin-top: var(--space-4);
+}
+
+/* En móvil, el botón principal a todo el ancho, al alcance del pulgar */
+@media (max-width: 767px) {
+  .actions > * {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .external {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: none;
+    gap: var(--space-4);
+  }
+
+  .cover {
+    grid-area: auto;
+    max-width: 220px;
+  }
+
+  .externalInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--font-size-xl);
+  }
+
+  .meta {
+    gap: var(--space-3);
+  }
 }
 
 @media (min-width: 1024px) {

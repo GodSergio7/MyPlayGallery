@@ -126,9 +126,14 @@ const CardNav = ({
       const newTl = createTimeline();
       if (!newTl) return;
 
-      if (isExpanded) {
+      // Se decide con isHamburgerOpen (lo que quiere el usuario) y no con isExpanded, que sigue
+      // en true mientras se cierra: al entrar en "Añadir juego" el buscador abre el teclado del
+      // móvil, la ventana cambia de tamaño a mitad del cierre y el menú volvía a desplegarse.
+      if (isHamburgerOpen) {
         gsap.set(navRef.current, { height: calculateHeight() });
         newTl.progress(1);
+      } else {
+        setIsExpanded(false);
       }
       tlRef.current = newTl;
     };
@@ -136,7 +141,7 @@ const CardNav = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isExpanded]);
+  }, [isHamburgerOpen]);
 
   const openMenu = () => {
     const tl = tlRef.current;

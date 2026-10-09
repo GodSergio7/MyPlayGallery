@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Game, LibraryEntry } from '@/shared/types/domain'
 import { formatHours } from '@/shared/lib/format'
 import { CoverImage } from './CoverImage'
-import { PlatformBadge, Score, StatusBadge } from './Badges'
+import { Score, StatusBadge } from './Badges'
 import styles from './LibraryCard.module.css'
 
 interface LibraryCardProps {
@@ -22,15 +22,19 @@ export function LibraryCard({ entry, game }: LibraryCardProps) {
       <CoverImage src={game?.coverUrl ?? null} title={title} />
       <div className={styles.body}>
         <h3 className={styles.title}>{title}</h3>
-        <PlatformBadge name={entry.platformName} />
+        <p className={styles.meta}>
+          <span className={styles.platform}>{entry.platformName}</span>
+          {entry.hoursPlayed !== null && (
+            <span className={styles.hours}>{formatHours(entry.hoursPlayed)}</span>
+          )}
+        </p>
         <div className={styles.footer}>
           <StatusBadge status={entry.status} />
-          <div className={styles.stats}>
-            {entry.score !== null && <Score value={entry.score} />}
-            {entry.hoursPlayed !== null && (
-              <span className={styles.hours}>{formatHours(entry.hoursPlayed)}</span>
-            )}
-          </div>
+          {entry.score !== null && (
+            <span className={styles.score}>
+              <Score value={entry.score} />
+            </span>
+          )}
         </div>
       </div>
     </Link>

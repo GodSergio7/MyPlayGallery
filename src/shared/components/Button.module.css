@@ -70,3 +70,15 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* En pantallas táctiles, al menos 44 px de alto para pulsar con el dedo */
+@media (max-width: 767px) {
+  .md,
+  .sm {
+    min-height: 44px;
+  }
+
+  .button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
