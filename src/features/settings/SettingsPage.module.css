@@ -190,3 +190,44 @@
     padding-top: var(--space-3);
   }
 }
+
+.actionLink:hover {
+  text-decoration: none;
+}
+
+/* Última lectura y "Desconectar", en segundo plano bajo la fila de Steam */
+.connectionFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 var(--space-4) var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.textButton {
+  min-height: 32px;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.textButton:hover:not(:disabled) {
+  color: var(--color-error);
+}
+
+/* Zona de pruebas (solo en desarrollo): borde discontinuo para que no se confunda con un ajuste real */
+.devSection .sectionTitle {
+  color: var(--color-warning);
+}
+
+.devCard {
+  border-style: dashed;
+  border-color: rgba(240, 192, 96, 0.45);
+}

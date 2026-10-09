@@ -1,11 +1,14 @@
 import type { Game, LibraryEntry, LibraryEntryInput } from '@/shared/types/domain'
 import {
+  createEntries,
   createEntry,
   deleteEntry,
   getEntry,
   listEntries,
   listEntriesByGame,
   updateEntry,
+  updateEntryFromSteam,
+  type SteamEntryPatch,
 } from './supabase/libraryRepository'
 import { igdbGamesRepository, type IgdbGamesRepository } from './igdb/repository'
 
@@ -18,6 +21,10 @@ export interface LibraryRepository {
   create(input: LibraryEntryInput): Promise<LibraryEntry>
   update(id: string, input: LibraryEntryInput): Promise<LibraryEntry | undefined>
   remove(id: string): Promise<void>
+  /** Alta de varias entradas a la vez; ignora las que ya existen. Devuelve cuántas se han creado. */
+  createMany(inputs: LibraryEntryInput[]): Promise<number>
+  /** Actualiza solo horas, 100% o estado (sincronización con Steam). */
+  updateFromSteam(id: string, patch: SteamEntryPatch): Promise<void>
 }
 
 export interface LibraryWithGames {
@@ -34,6 +41,8 @@ export const libraryRepository: LibraryRepository = {
   create: createEntry,
   update: updateEntry,
   remove: deleteEntry,
+  createMany: createEntries,
+  updateFromSteam: updateEntryFromSteam,
 }
 
 export async function loadLibraryWithGames(): Promise<LibraryWithGames> {

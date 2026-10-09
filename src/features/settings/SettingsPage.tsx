@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/app/auth/authContext'
 import { errorMessage } from '@/data/errors'
 import type { PlatformConnection } from '@/data/supabase/connectionsRepository'
@@ -12,6 +12,11 @@ import { readSteamReturn, steamLoginUrl } from './steam'
 import styles from './SettingsPage.module.css'
 
 type Notice = { tone: 'success' | 'error' | 'info'; text: string }
+
+// Zona de pruebas: solo con `npm run dev`. En producción DEV es false y el import desaparece del bundle.
+const DevTools = import.meta.env.DEV
+  ? lazy(() => import('./DevTools').then((module) => ({ default: module.DevTools })))
+  : null
 
 export function SettingsPage() {
   const { session, signOut } = useAuth()
@@ -44,6 +49,12 @@ export function SettingsPage() {
             biblioteca, así que de momento no se pueden conectar. Si alguna la abre, aparecerá aquí.
           </p>
         </Section>
+
+        {DevTools && (
+          <Suspense fallback={null}>
+            <DevTools />
+          </Suspense>
+        )}
       </div>
     </>
   )
@@ -99,7 +110,7 @@ function SteamConnection() {
       onSuccess: () =>
         setNotice({
           tone: 'success',
-          text: 'Steam conectado. La importación de juegos llegará en la próxima actualización.',
+          text: 'Steam conectado. Ya puedes importar tus juegos.',
         }),
       onError: (error) => setNotice({ tone: 'error', text: errorMessage(error) }),
     })
@@ -124,9 +135,9 @@ function SteamConnection() {
     )
   } else if (steam) {
     action = (
-      <Button variant="ghost" size="sm" onClick={handleDisconnect} disabled={busy}>
-        {disconnect.isPending ? 'Desconectando…' : 'Desconectar'}
-      </Button>
+      <Link to="/settings/steam" className={styles.actionLink}>
+        <Button size="sm">Importar juegos</Button>
+      </Link>
     )
   } else {
     action = (
@@ -156,6 +167,19 @@ function SteamConnection() {
         </div>
         <div className={styles.rowAction}>{action}</div>
       </div>
+
+      {steam && (
+        <div className={styles.connectionFooter}>
+          <span>
+            {steam.lastSyncedAt
+              ? `Última lectura de Steam: ${formatDate(steam.lastSyncedAt)}`
+              : 'Todavía no has importado nada de Steam.'}
+          </span>
+          <button type="button" className={styles.textButton} onClick={handleDisconnect} disabled={busy}>
+            {disconnect.isPending ? 'Desconectando…' : 'Desconectar'}
+          </button>
+        </div>
+      )}
 
       {notice && (
         <p className={`${styles.notice} ${styles[notice.tone]}`} role={notice.tone === 'error' ? 'alert' : 'status'}>

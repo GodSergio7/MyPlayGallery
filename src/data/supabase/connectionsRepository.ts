@@ -42,11 +42,25 @@ function mapRow(row: ConnectionRow): PlatformConnection {
   }
 }
 
-// Mensajes en español para los códigos de error de steam-connect.
+// Mensajes en español para los códigos de error de las funciones de Steam.
 const STEAM_ERRORS: Record<string, string> = {
   invalid_steam_response: 'Steam no ha confirmado el inicio de sesión. Vuelve a intentarlo.',
   already_linked: 'Esa cuenta de Steam ya está conectada a otro usuario de MyPlayGallery.',
   upstream_error: 'No se ha podido contactar con Steam. Inténtalo dentro de un rato.',
+  not_connected: 'Primero conecta tu cuenta de Steam en Ajustes.',
+  private_profile:
+    'Steam no deja ver tus juegos. En tu perfil de Steam, ve a Privacidad y pon "Detalles de juego" en Público.',
+}
+
+/** Lee el código de error que devuelven las funciones de Steam y lo traduce. */
+async function steamFunctionError(response: Response | undefined): Promise<DataError> {
+  const body: unknown = await response?.json().catch(() => null)
+  const code =
+    typeof body === 'object' && body !== null ? (body as { error?: { code?: unknown } }).error?.code : undefined
+  if (typeof code === 'string' && STEAM_ERRORS[code]) {
+    return new DataError('badRequest', STEAM_ERRORS[code])
+  }
+  return response ? dataErrorFromStatus(response.status) : new DataError('network')
 }
 
 export async function listConnections(): Promise<PlatformConnection[]> {
@@ -78,15 +92,7 @@ export async function connectSteam(params: Record<string, string>): Promise<Plat
   })
 
   if (error) {
-    const body: unknown = await response?.json().catch(() => null)
-    const code =
-      typeof body === 'object' && body !== null
-        ? (body as { error?: { code?: unknown } }).error?.code
-        : undefined
-    if (typeof code === 'string' && STEAM_ERRORS[code]) {
-      throw new DataError('badRequest', STEAM_ERRORS[code])
-    }
-    throw response ? dataErrorFromStatus(response.status) : new DataError('network')
+    throw await steamFunctionError(response)
   }
 
   const parsed = z.object({ connection: ConnectionRowSchema }).safeParse(data)
@@ -94,4 +100,50 @@ export async function connectSteam(params: Record<string, string>): Promise<Plat
     throw new DataError('invalidResponse')
   }
   return mapRow(parsed.data.connection)
+}
+
+// ---------------------------------------------------------------- Biblioteca de Steam
+
+export interface SteamOwnedGame {
+  appId: number
+  name: string
+  minutes: number
+  lastPlayedAt: string | null
+  /** Juego de IGDB que corresponde a este appid, o null si IGDB no lo tiene. */
+  igdbId: number | null
+  /** Logros conseguidos y totales; null si el juego no tiene logros o no se han podido leer. */
+  achievements: { unlocked: number; total: number } | null
+}
+
+const SteamLibrarySchema = z.object({
+  games: z.array(
+    z.object({
+      appId: z.number().int(),
+      name: z.string(),
+      minutes: z.number().nonnegative(),
+      lastPlayedAt: z.string().nullable(),
+      igdbId: z.number().int().nullable(),
+      achievements: z
+        .object({ unlocked: z.number().int().nonnegative(), total: z.number().int().positive() })
+        .nullable(),
+    }),
+  ),
+  syncedAt: z.string(),
+})
+
+/** Pide a la Edge Function steam-library los juegos de Steam emparejados con IGDB. */
+export async function readSteamLibrary(): Promise<{ games: SteamOwnedGame[]; syncedAt: string }> {
+  const { data, error, response } = await getSupabaseClient().functions.invoke<unknown>('steam-library', {
+    method: 'POST',
+  })
+
+  if (error) {
+    throw await steamFunctionError(response)
+  }
+
+  const parsed = SteamLibrarySchema.safeParse(data)
+  if (!parsed.success) {
+    throw new DataError('invalidResponse')
+  }
+  return parsed.data
 }

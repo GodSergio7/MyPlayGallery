@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-08 |
 | Título | Página de Ajustes y conexión de cuentas de plataformas (Steam) |
-| Versión | 0.1 |
+| Versión | 0.3 |
 | Estado | Aprobada |
 | Fecha | 2026-10-09 |
 | Autor | Responsable de producto |
@@ -16,6 +16,8 @@
 | Versión | Fecha | Descripción |
 | --- | --- | --- |
 | 0.1 | 2026-10-09 | Creación inicial. Página `/settings` con las secciones Cuenta y Cuentas conectadas. Conexión de Steam con su inicio de sesión oficial (OpenID 2.0), verificada en la Edge Function `steam-connect`. La importación de juegos queda para la fase 2. |
+| 0.2 | 2026-10-09 | Fase 2: importación de la biblioteca de Steam. Edge Function `steam-library` (Steam Web API + emparejado con IGDB por `external_game_source`), pantalla de revisión `/settings/steam`, alta múltiple y actualización de horas. |
+| 0.3 | 2026-10-09 | Logros de Steam: "Completado" solo cuando se tienen todos los logros (y entonces también "Al 100%"). Los juegos que ya estaban en PC se ponen al día si Steam tiene más horas o todos los logros. Sin logros completos, nunca se propone Completado. |
 
 ---
 
@@ -26,7 +28,7 @@ Nueva página **Ajustes** (`/settings`), accesible desde la tarjeta **Cuenta** d
 - **Cuenta**: el email de la sesión y el botón de cerrar sesión.
 - **Cuentas conectadas**: conectar o desconectar la cuenta de Steam.
 
-**Estado**: `IMPLEMENTADO` (fase 1).
+**Estado**: `IMPLEMENTADO` (fases 1 y 2).
 
 ## 2. Plataformas
 
@@ -90,12 +92,51 @@ Nueva tabla `platform_connections` (migración `20261009000000_platform_connecti
 - Mientras se verifica la vuelta de Steam, el botón muestra "Comprobando…".
 - Los avisos (conectado, cancelado, error) aparecen debajo de la fila.
 
-## 6. Fase 2 (pendiente)
+## 6. Fase 2: importar la biblioteca
 
-Importar la biblioteca de Steam. Requiere la clave de la Steam Web API como secreto de la Edge Function, nunca en el cliente ni en Vercel.
+La clave de la Steam Web API está guardada como secreto `STEAM_API_KEY` de las Edge Functions, nunca en el cliente ni en Vercel.
 
-- `IPlayerService/GetOwnedGames` con `include_appinfo=1`: juegos y minutos jugados. El perfil debe tener los detalles de juego en público.
-- Emparejar cada `appid` con IGDB mediante `external_games` (categoría Steam).
-- Pantalla de revisión antes de guardar: el usuario marca qué juegos importar. Plataforma PC, horas de Steam, estado propuesto según las horas.
-- Botón **Actualizar desde Steam** que rellena `last_synced_at`.
-- Opcional: logros (`GetPlayerAchievements`) para marcar los juegos al 100%.
+### Edge Function `steam-library`
+
+1. Saca el usuario del JWT y busca su conexión de Steam. Si no tiene, devuelve `not_connected`.
+2. Llama a `IPlayerService/GetOwnedGames` con `include_appinfo=1` e `include_played_free_games=1`: appid, nombre, minutos jugados y última partida. Si Steam no devuelve la lista (perfil con los detalles de juego en privado), devuelve `private_profile`.
+3. Empareja cada appid con IGDB mediante `external_games` con `external_game_source = 1` (Steam), en lotes de 250. El campo antiguo `category` ya no devuelve resultados.
+4. Para los juegos jugados con ficha en IGDB (los más jugados primero, hasta 400), pide los logros con `ISteamUserStats/GetPlayerAchievements`, 8 peticiones a la vez y 6 s de límite por juego. Si un juego no tiene logros o Steam falla, ese juego queda "sin datos" y la importación sigue.
+5. Guarda la fecha en `last_synced_at` y devuelve `{ games: [{ appId, name, minutes, lastPlayedAt, igdbId, achievements: { unlocked, total } | null }], syncedAt }`.
+
+No escribe en la biblioteca: lo decide el usuario en la pantalla de revisión.
+
+### Plan de importación (`steamImport.ts`, con tests)
+
+- **Sin ficha**: appid sin juego en IGDB (herramientas, bandas sonoras, demos). Solo se listan.
+- Si varios appid son el mismo juego de IGDB, se queda el más jugado.
+- **Nuevos**: juegos que no están en la biblioteca **en PC** (`platform_id` 6). Si lo tienes en otra plataforma, se añade también en PC.
+- **Poner al día**: ya están en PC, pero Steam tiene más horas o todos los logros (y en la biblioteca aún no está al 100%). Con todos los logros se marcan "Al 100%" y "Completado".
+- **Al día**: el resto.
+- Horas = minutos / 60, redondeadas a una décima.
+- Estado propuesto. **Completado solo con todos los logros**, porque Steam no informa de si has terminado la historia:
+
+| Lo que dice Steam | Estado | Al 100% |
+| --- | --- | --- |
+| 0 minutos | Pendiente | No |
+| Todos los logros | Completado | Sí |
+| Jugado en los últimos 30 días | Jugando | No |
+| El resto (también los juegos sin logros) | Abandonado | No |
+
+### Pantalla `/settings/steam`
+
+- Resumen: juegos en la cuenta, nuevos, con más horas en Steam y ya al día.
+- **Juegos nuevos**: casilla, portada de IGDB, título, horas, logros (trofeo con conseguidos/total, en verde si están todos) y estado (editable). Vienen marcados los que tienen horas. Buscador y "Marcar todos" / "Desmarcar".
+- **Poner al día**: horas actuales → horas de Steam y/o "Todos los logros: Completado y al 100%", marcadas por defecto.
+- **Sin ficha en IGDB**: plegado, solo los nombres.
+- Barra fija abajo con el recuento ("4 juegos y 1 actualización") y el botón **Importar**.
+- Guardado: un solo `upsert` con `ignoreDuplicates` para los nuevos y una actualización de `hours_played` por cada juego con horas nuevas.
+- Al terminar: resumen y botón "Ver mi biblioteca".
+
+### En Ajustes
+
+Con Steam conectado, la fila muestra **Importar juegos**. Debajo aparecen la fecha de la última lectura y "Desconectar".
+
+### Pendiente
+
+- Comparar las horas con la duración de IGDB para proponer Completado en juegos terminados sin todos los logros.

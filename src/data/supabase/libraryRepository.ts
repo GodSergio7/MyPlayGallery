@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { LibraryEntry, LibraryEntryInput } from '@/shared/types/domain'
+import type { GameStatus, LibraryEntry, LibraryEntryInput } from '@/shared/types/domain'
 import { DataError } from '@/data/errors'
 import { getSupabaseClient } from './client'
 
@@ -171,4 +171,62 @@ export async function deleteEntry(id: string): Promise<void> {
   if (error) {
     throw toDataError(error)
   }
+}
+
+/**
+ * Alta de varias entradas en una sola petición (importación de Steam).
+ * Las que ya existen (mismo juego y plataforma) se ignoran en lugar de fallar.
+ * Devuelve cuántas se han creado.
+ */
+export async function createEntries(inputs: LibraryEntryInput[]): Promise<number> {
+  if (inputs.length === 0) {
+    return 0
+  }
+
+  const { data, error } = await getSupabaseClient()
+    .from(TABLE)
+    .upsert(inputs.map(toRow), { onConflict: 'user_id,external_id,platform_id', ignoreDuplicates: true })
+    .select('id')
+
+  if (error) {
+    throw toDataError(error)
+  }
+  return Array.isArray(data) ? data.length : 0
+}
+
+/** Lo que la sincronización con Steam puede cambiar en una entrada existente. */
+export interface SteamEntryPatch {
+  hoursPlayed?: number
+  hundredPercent?: boolean
+  status?: GameStatus
+}
+
+/** Actualiza solo los campos indicados (sincronización con Steam); el resto de la entrada no se toca. */
+export async function updateEntryFromSteam(id: string, patch: SteamEntryPatch): Promise<void> {
+  const row: Record<string, unknown> = {}
+  if (patch.hoursPlayed !== undefined) row.hours_played = patch.hoursPlayed
+  if (patch.hundredPercent !== undefined) row.hundred_percent = patch.hundredPercent
+  if (patch.status !== undefined) row.status = patch.status
+  if (Object.keys(row).length === 0) return
+
+  const { error } = await getSupabaseClient().from(TABLE).update(row).eq('id', id)
+
+  if (error) {
+    throw toDataError(error)
+  }
+}
+
+/**
+ * Borra todas las entradas del usuario (RLS limita el borrado a las suyas).
+ * Solo lo usa la zona de pruebas de Ajustes, que existe únicamente en desarrollo.
+ * Devuelve cuántas se han borrado.
+ */
+export async function deleteAllEntries(): Promise<number> {
+  // Supabase exige un filtro en los delete: este coincide con todas las filas.
+  const { data, error } = await getSupabaseClient().from(TABLE).delete().not('id', 'is', null).select('id')
+
+  if (error) {
+    throw toDataError(error)
+  }
+  return Array.isArray(data) ? data.length : 0
 }
