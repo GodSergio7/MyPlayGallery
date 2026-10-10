@@ -1,5 +1,6 @@
 .button {
   position: relative;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -81,4 +82,9 @@
   .button {
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/* ButtonLink: sin subrayado al pasar el ratón */
+a.button:hover {
+  text-decoration: none;
 }

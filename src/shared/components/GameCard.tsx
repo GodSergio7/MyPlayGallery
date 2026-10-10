@@ -23,10 +23,9 @@ export function GameCard({ game, inLibrary = false, to }: GameCardProps) {
       // La página de destino usa esta ruta para el enlace de volver (conserva búsqueda y filtros).
       state={{ from: location.pathname + location.search }}
       className={styles.card}
-      aria-label={`Ver ${game.title}`}
     >
       <div className={styles.coverWrap}>
-        <CoverImage src={game.coverUrl} title={game.title} />
+        <CoverImage src={game.coverUrl} title={game.title} decorative />
         {inLibrary && <span className={styles.inLibrary}>En tu biblioteca</span>}
       </div>
       <div className={styles.body}>

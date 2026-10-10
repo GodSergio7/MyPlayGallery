@@ -35,6 +35,11 @@
   letter-spacing: -0.01em;
 }
 
+/* Recibe el foco al cambiar de página (T-17); sin contorno, porque no es un control */
+.main:focus {
+  outline: none;
+}
+
 .main {
   flex: 1;
   padding: var(--space-6) 0 var(--space-6);

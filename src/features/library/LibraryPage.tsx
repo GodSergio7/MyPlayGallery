@@ -1,12 +1,11 @@
-import { useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { GAME_STATUSES, type GameStatus } from '@/shared/types/domain'
-import { loadLibraryWithGames } from '@/data/repository'
-import { useAsync } from '@/shared/hooks/useAsync'
+import { useLibraryWithGames } from '@/features/library/hooks/useLibrary'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { IgdbNotice } from '@/shared/components/IgdbNotice'
 import { SearchBar } from '@/shared/components/SearchBar'
-import { Button } from '@/shared/components/Button'
+import { Button, ButtonLink } from '@/shared/components/Button'
 import { GameGrid } from '@/shared/components/GameGrid'
 import { LibraryCard } from '@/shared/components/LibraryCard'
 import { EmptyState, ErrorState, GridSkeleton } from '@/shared/components/StateViews'
@@ -14,6 +13,7 @@ import { ClearFiltersButton, FilterRow, PillSelect, ViewToggle } from '@/shared/
 import { useViewMode } from '@/shared/hooks/useViewMode'
 import { LibraryListRow } from './LibraryListRow'
 import styles from './LibraryPage.module.css'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 type SortKey = 'recent' | 'score' | 'hours' | 'started' | 'title'
 
@@ -81,13 +81,16 @@ function readFilters(params: URLSearchParams) {
 const VIEW_STORAGE_KEY = 'myplaygallery.library.view'
 
 export function LibraryPage() {
-  const libraryState = useAsync(loadLibraryWithGames, [])
+  useDocumentTitle('Biblioteca')
+  const libraryState = useLibraryWithGames()
   const [params, setParams] = useSearchParams()
   const { status, platformId, sort, achievement } = readFilters(params)
-  const [query, setQuery] = useState('')
+  // La búsqueda también va en la URL (?q=), como los filtros: se conserva al volver de un juego (T-18).
+  const query = params.get('q') ?? ''
+  const setQuery = (value: string) => setFilter('q', value.trim() === '' ? null : value)
   const [view, setView] = useViewMode(VIEW_STORAGE_KEY)
 
-  function setFilter(name: 'estado' | 'plataforma' | 'orden' | 'logro', value: string | null) {
+  function setFilter(name: 'estado' | 'plataforma' | 'orden' | 'logro' | 'q', value: string | null) {
     setParams(
       (current) => {
         const next = new URLSearchParams(current)
@@ -155,11 +158,10 @@ export function LibraryPage() {
     query.trim() !== '' || status !== 'all' || platformId !== 'all' || sort !== 'recent' || achievement !== 'all'
 
   function clearFilters() {
-    setQuery('')
     setParams(new URLSearchParams(), { replace: true })
   }
 
-  if (libraryState.loading) {
+  if (libraryState.isPending) {
     return (
       <>
         <PageHeader title="Biblioteca" />
@@ -168,11 +170,11 @@ export function LibraryPage() {
     )
   }
 
-  if (libraryState.error) {
+  if (libraryState.isError) {
     return (
       <ErrorState
         onRetry={() => {
-          libraryState.reload()
+          void libraryState.refetch()
         }}
       />
     )
@@ -185,9 +187,7 @@ export function LibraryPage() {
         <EmptyState
           title="Todavía no has añadido ningún juego"
           action={
-            <Link to="/search">
-              <Button>Añadir un juego</Button>
-            </Link>
+            <ButtonLink to="/search">Añadir un juego</ButtonLink>
           }
         />
       </>
@@ -199,7 +199,7 @@ export function LibraryPage() {
   return (
     <>
       <PageHeader title="Biblioteca" description={description} />
-      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => libraryState.reload()} />}
+      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => void libraryState.refetch()} />}
 
       <section className={styles.toolbar} aria-label="Filtros de la biblioteca">
         <div className={styles.topRow}>

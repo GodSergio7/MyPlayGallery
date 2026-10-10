@@ -2,9 +2,10 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import type { GameDetails, GameScore } from '@/shared/types/domain'
 import { formatDate } from '@/shared/lib/format'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 import { CoverImage } from '@/shared/components/CoverImage'
 import { PlatformBadge } from '@/shared/components/Badges'
-import { Button } from '@/shared/components/Button'
+import { ButtonLink } from '@/shared/components/Button'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
 import { ArrowLeftIcon, ArrowUpRightIcon, StarIcon } from '@/shared/components/icons'
 import { useLibraryGameIds } from '@/features/explore/hooks/useGameBrowse'
@@ -39,14 +40,7 @@ export function GameInfoPage() {
     window.scrollTo({ top: 0 })
   }, [id])
 
-  useEffect(() => {
-    if (!game) return undefined
-    const previous = document.title
-    document.title = `${game.title} · MyPlayGallery`
-    return () => {
-      document.title = previous
-    }
-  }, [game])
+  useDocumentTitle(game?.title ?? 'Explorar')
 
   const back = (
     <Link to={backTo} className={styles.back}>
@@ -81,9 +75,7 @@ export function GameInfoPage() {
           title="Juego no encontrado"
           description="IGDB no tiene este juego."
           action={
-            <Link to="/explore">
-              <Button>Ir a Explorar</Button>
-            </Link>
+            <ButtonLink to="/explore">Ir a Explorar</ButtonLink>
           }
         />
       </>

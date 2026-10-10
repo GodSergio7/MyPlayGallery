@@ -233,4 +233,4 @@ El proyecto se desarrolla a partir de especificaciones escritas, en `docs/specs/
 - **Datos e imágenes de juegos**: [IGDB](https://www.igdb.com), servicio de Twitch. Su API es gratuita para uso no comercial.
 - **Steam** y su logotipo son marcas de Valve Corporation. MyPlayGallery no está afiliada a Valve.
 - **[React Bits](https://reactbits.dev)**: los componentes de `src/shared/components/reactbits/` están adaptados de React Bits, con licencia **MIT + Commons Clause**. Permite usarlos y modificarlos, **pero no vender el software**. Cada archivo indica su origen y los cambios hechos.
-- **Tipografía**: [Poppins](https://fonts.google.com/specimen/Poppins), de Google Fonts (licencia OFL).
+- **Tipografía**: [Poppins](https://fonts.google.com/specimen/Poppins) (licencia OFL), servida desde la propia web con [Fontsource](https://fontsource.org), sin peticiones a Google.

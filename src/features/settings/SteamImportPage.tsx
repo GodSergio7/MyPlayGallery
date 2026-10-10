@@ -5,7 +5,7 @@ import { gamesRepository, libraryRepository } from '@/data/repository'
 import { errorMessage } from '@/data/errors'
 import { readSteamLibrary } from '@/data/supabase/connectionsRepository'
 import { GAME_STATUSES, type Game, type GameStatus, type LibraryEntryInput } from '@/shared/types/domain'
-import { Button } from '@/shared/components/Button'
+import { Button, ButtonLink } from '@/shared/components/Button'
 import { CoverImage } from '@/shared/components/CoverImage'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
@@ -21,8 +21,10 @@ import {
   type NewGame,
 } from './steamImport'
 import styles from './SteamImportPage.module.css'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 export function SteamImportPage() {
+  useDocumentTitle('Importar desde Steam')
   const steam = useQuery({
     queryKey: ['steam', 'library'],
     queryFn: readSteamLibrary,
@@ -141,9 +143,7 @@ function ImportReview({ plan }: { plan: ImportPlan }) {
         </span>
         <h2 className={styles.doneTitle}>Importación terminada</h2>
         <p className={styles.doneText}>{summaryText(created, updated)}</p>
-        <Link to="/library">
-          <Button>Ver mi biblioteca</Button>
-        </Link>
+        <ButtonLink to="/library">Ver mi biblioteca</ButtonLink>
       </div>
     )
   }
@@ -158,9 +158,7 @@ function ImportReview({ plan }: { plan: ImportPlan }) {
             : 'Todos tus juegos de Steam ya están en tu biblioteca con sus horas.'
         }
         action={
-          <Link to="/library">
-            <Button variant="secondary">Ver mi biblioteca</Button>
-          </Link>
+          <ButtonLink to="/library" variant="secondary">Ver mi biblioteca</ButtonLink>
         }
       />
     )

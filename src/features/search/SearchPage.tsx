@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { SearchBar } from '@/shared/components/SearchBar'
 import { GameGrid } from '@/shared/components/GameGrid'
@@ -10,13 +12,27 @@ import styles from './SearchPage.module.css'
 const DEBOUNCE_MS = 350
 
 export function SearchPage() {
-  const [term, setTerm] = useState('')
-  const [debounced, setDebounced] = useState('')
+  useDocumentTitle('Añadir juego')
+  // Lo buscado va en la URL (?q=): al volver de un juego se recupera la búsqueda (T-18).
+  const [params, setParams] = useSearchParams()
+  const debounced = params.get('q') ?? ''
+  const [term, setTerm] = useState(debounced)
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebounced(term), DEBOUNCE_MS)
+    if (term === debounced) return undefined
+    const timer = setTimeout(() => {
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current)
+          if (term.trim()) next.set('q', term)
+          else next.delete('q')
+          return next
+        },
+        { replace: true },
+      )
+    }, DEBOUNCE_MS)
     return () => clearTimeout(timer)
-  }, [term])
+  }, [term, debounced, setParams])
 
   const isSearching = debounced.trim() !== ''
   const { games, isLoading, isError, refetch } = useGameSearch(debounced)

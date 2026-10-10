@@ -148,7 +148,7 @@
 }
 
 .tab:hover,
-.tab[aria-pressed='true'] {
+.tab[aria-selected='true'] {
   color: var(--color-text);
 }
 
@@ -561,4 +561,28 @@
   .spinnerLarge {
     animation-duration: 2.4s;
   }
+}
+
+/* Reenviar el correo de confirmación (email sin confirmar) */
+.resend {
+  align-self: flex-start;
+  min-height: 36px;
+  margin-top: calc(var(--space-2) * -1);
+  padding: 0;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.resend:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.resend:disabled {
+  color: var(--color-text-secondary);
+  cursor: default;
 }

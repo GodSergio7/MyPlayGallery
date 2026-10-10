@@ -211,12 +211,12 @@ async function getAccessToken(): Promise<string> {
     return cachedToken.token
   }
   const { clientId, clientSecret } = twitchCredentials()
-  const url = new URL(TWITCH_TOKEN_URL)
-  url.searchParams.set('client_id', clientId)
-  url.searchParams.set('client_secret', clientSecret)
-  url.searchParams.set('grant_type', 'client_credentials')
-
-  const response = await fetchWithTimeout(url, { method: 'POST' })
+  // El secreto va en el cuerpo, no en la URL: las URL pueden quedar en registros intermedios (T-35).
+  const response = await fetchWithTimeout(TWITCH_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, grant_type: 'client_credentials' }),
+  })
   const payload: unknown = await response.json().catch(() => null)
   if (!response.ok || !isRecord(payload) || typeof payload.access_token !== 'string' || typeof payload.expires_in !== 'number') {
     throw new UpstreamError('twitch token failed')

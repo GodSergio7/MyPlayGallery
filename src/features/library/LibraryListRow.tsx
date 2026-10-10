@@ -16,8 +16,8 @@ export function LibraryListRow({ entry, game }: LibraryListRowProps) {
   const title = game?.title ?? 'Juego desconocido'
 
   return (
-    <Link to={`/library/${entry.id}`} className={styles.row} aria-label={`${title}, ${entry.platformName}`}>
-      <CoverImage src={game?.coverUrl ?? null} title={title} className={styles.cover} />
+    <Link to={`/library/${entry.id}`} className={styles.row}>
+      <CoverImage src={game?.coverUrl ?? null} title={title} className={styles.cover} decorative />
 
       <span className={styles.main}>
         <span className={styles.title}>{title}</span>

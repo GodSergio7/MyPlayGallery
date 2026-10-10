@@ -22,17 +22,6 @@ function Icon({ children, ...props }: IconProps & { children: ReactNode }) {
   )
 }
 
-export function LibraryIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <rect x="3" y="3" width="7" height="7" rx="1.5" />
-      <rect x="14" y="3" width="7" height="7" rx="1.5" />
-      <rect x="3" y="14" width="7" height="7" rx="1.5" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" />
-    </Icon>
-  )
-}
-
 export function SearchIcon(props: IconProps) {
   return (
     <Icon {...props}>
@@ -58,30 +47,12 @@ export function StarIcon(props: IconProps) {
   )
 }
 
-export function ClockIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </Icon>
-  )
-}
-
 export function TrophyIcon(props: IconProps) {
   return (
     <Icon {...props}>
       <path d="M7 4h10v4a5 5 0 0 1-10 0Z" />
       <path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3" />
       <path d="M12 13v4M8.5 21h7M10 17h4" />
-    </Icon>
-  )
-}
-
-export function CalendarIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <rect x="3.5" y="5" width="17" height="16" rx="2" />
-      <path d="M3.5 10h17M8 3v4M16 3v4" />
     </Icon>
   )
 }

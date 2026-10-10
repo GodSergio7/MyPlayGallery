@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-02 |
 | Título | Modelo de datos de Supabase |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -18,6 +18,7 @@
 | 0.1 | 2026-09-16 | Creación inicial. Modelo de datos de Supabase. |
 | 0.2 | 2026-09-16 | Resueltas las decisiones pendientes del modelo: sin tablas `games`/`platforms`/`profiles`, `status` con `CHECK`, horas `numeric(6,1)`, booleanos, trigger de `updated_at` y eliminación de `rawg_slug`. Ajustados índices. |
 | 0.3 | 2026-10-08 | Enmienda por SPEC-05: producto multiusuario con registro abierto (el modelo no cambia: `user_id` + RLS ya aislaban los datos). Por la migración a IGDB (SPEC-04 v0.4), la columna `rawg_id` se implementa como `external_id` y los `platform_id` son de IGDB. El modelo está implementado en `supabase/migrations/20261008000000_library_entries.sql`. |
+| 0.4 | 2026-10-10 | **Límite de tamaño de textos (T-21)**: `review` y `notes` de `library_entries` admiten como mucho 5.000 caracteres (restricciones `library_entries_review_length` y `library_entries_notes_length`, migración `20261010010000`). El formulario lo comprueba antes de guardar y muestra un contador al acercarse al límite. Nuevas tablas de otras SPEC: `platform_connections` (SPEC-08) y `api_rate_limits` (SPEC-04 v0.5). |
 
 ## Leyenda de estados de decisión
 

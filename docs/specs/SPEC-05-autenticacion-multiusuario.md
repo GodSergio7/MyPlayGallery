@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-05 |
 | Título | Autenticación, registro y persistencia multiusuario |
-| Versión | 0.1 |
+| Versión | 0.2 |
 | Estado | Aprobada |
 | Fecha | 2026-10-08 |
 | Autor | Responsable de producto |
@@ -17,6 +17,7 @@
 | Versión | Fecha | Descripción |
 | --- | --- | --- |
 | 0.1 | 2026-10-08 | Creación inicial. El producto pasa de monousuario a **multiusuario con registro abierto**. Se documentan la persistencia real en Supabase, el inicio de sesión, el registro, el cierre de sesión y la configuración necesaria del proyecto de Supabase. Refleja lo ya implementado. |
+| 0.2 | 2026-10-10 | Puesta al día (T-40): `igdb-proxy` exige sesión de usuario y limita las peticiones (T-01); ya no existe el plugin de desarrollo (T-20); mensajes de email sin confirmar con reenvío del correo y de enlace caducado (T-24); URL pública decidida; entrar con Steam (SPEC-09). |
 
 ## Leyenda de estados de decisión
 
@@ -114,9 +115,9 @@ El **modelo de datos no cambia en lo esencial**: `library_entries` ya tenía `us
 
 ## 6. Edge Function `igdb-proxy`
 
-- Se despliega en el proyecto de Supabase con `verify_jwt = true`.
+- Se despliega en el proyecto de Supabase con `verify_jwt = true` y, además, **la función comprueba que el token sea de un usuario con sesión** (la clave pública sola recibe `401`) y limita a 300 peticiones por minuto y usuario (SPEC-04 v0.5, T-01).
 - Con sesión iniciada, `supabase-js` envía el token del usuario, así que la búsqueda en IGDB funciona igual para cualquier usuario registrado.
-- En desarrollo local sin Supabase, el plugin `vite/igdbDevProxy.ts` sigue pudiendo servir la función desde el servidor de Vite.
+- Ya no hay plugin de desarrollo (`vite/igdbDevProxy.ts` eliminado, T-20): en local también se usa el proyecto real de Supabase.
 
 **Estado**: `IMPLEMENTADO`.
 
@@ -146,8 +147,14 @@ Estos ajustes se hacen en el panel de Supabase, no en el código:
 ## 9. Decisiones pendientes
 
 - `PENDING` — Recuperación de contraseña.
-- `PENDING` — Proveedor SMTP propio para producción.
-- `PENDING` — URL pública de producción (afecta a Site URL, Redirect URLs y `ALLOWED_ORIGINS`).
+- `PENDING` — Proveedor SMTP propio para producción (tarea T-23, se configura en el panel de Supabase).
+- `RESUELTO` — URL pública de producción: `https://myplaygallery.vercel.app` (Site URL, Redirect URLs y `ALLOWED_ORIGINS` configurados).
+
+## 10. Mensajes de la pantalla de acceso (v0.2, T-24)
+
+- **Email sin confirmar**: al entrar, en lugar de "No se ha podido iniciar sesión", se explica que falta confirmar el email y aparece **"Reenviar el correo de confirmación"** (`auth.resend`, tipo `signup`).
+- **Enlace del correo caducado o ya usado**: Supabase vuelve con `#error=…&error_code=otp_expired`; la pantalla de acceso lo explica y limpia la URL.
+- **Entrar con Steam**: ver SPEC-09.
 
 ## Estado de aprobación
 

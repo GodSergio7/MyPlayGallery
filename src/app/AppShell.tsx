@@ -1,5 +1,5 @@
-import { Suspense, useMemo } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Suspense, useEffect, useMemo, useRef } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { AppBackground } from '@/shared/components/AppBackground'
 import { LoadingState } from '@/shared/components/StateViews'
 import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
@@ -52,6 +52,20 @@ export function AppShell() {
     [email, signOut],
   )
 
+  // Al cambiar de página (no al cambiar solo los filtros de la URL): arriba del todo y el foco al
+  // contenido, para que el teclado y los lectores de pantalla empiecen por la página nueva (T-17).
+  const { pathname } = useLocation()
+  const mainRef = useRef<HTMLElement | null>(null)
+  const firstRender = useRef(true)
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    window.scrollTo({ top: 0 })
+    mainRef.current?.focus({ preventScroll: true })
+  }, [pathname])
+
   return (
     <div className={styles.shell}>
       <AppBackground />
@@ -78,7 +92,7 @@ export function AppShell() {
         />
       </div>
 
-      <main className={styles.main}>
+      <main ref={mainRef} className={styles.main} tabIndex={-1}>
         <div className={styles.container}>
           <Suspense fallback={<LoadingState message="Cargando…" />}>
             <Outlet />
@@ -89,7 +103,12 @@ export function AppShell() {
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
           <span>MyPlayGallery</span>
-          <span>Datos de juegos por IGDB</span>
+          <span>
+            Datos e imágenes de juegos por{' '}
+            <a href="https://www.igdb.com" target="_blank" rel="noreferrer">
+              IGDB
+            </a>
+          </span>
         </div>
       </footer>
     </div>

@@ -1,15 +1,14 @@
-import { Link } from 'react-router-dom'
 import { EmptyState } from '@/shared/components/StateViews'
-import { Button } from '@/shared/components/Button'
+import { ButtonLink } from '@/shared/components/Button'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 export function NotFoundPage() {
+  useDocumentTitle('Página no encontrada')
   return (
     <EmptyState
       title="Esta página no existe"
       action={
-        <Link to="/">
-          <Button>Volver al inicio</Button>
-        </Link>
+        <ButtonLink to="/">Volver al inicio</ButtonLink>
       }
     />
   )

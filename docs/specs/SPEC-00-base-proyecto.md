@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-00 |
 | Título | Base del proyecto |
-| Versión | 0.4 |
+| Versión | 0.5 |
 | Estado | Aprobado |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -18,6 +18,18 @@
 | 0.2 | 2026-09-16 | Definidas puntuación (0–10, pasos de 0.5), estados fijos, precisión de fechas (día/mes/año) y plataformas derivadas de RAWG. |
 | 0.3 | 2026-09-16 | Nombre canónico confirmado como MyPlayGallery. Documento aprobado. |
 | 0.4 | 2026-10-08 | Enmienda por SPEC-05: el producto deja de ser monousuario y pasa a ser multiusuario con registro abierto; cada usuario tiene su propia biblioteca. |
+| 0.5 | 2026-10-10 | Puesta al día (T-40): la fuente de datos de juegos es **IGDB** (no RAWG) desde SPEC-04 v0.4; se añaden Explorar, la ficha de cada juego, Ajustes, la conexión e importación de Steam y entrar con Steam (SPEC-07 a SPEC-09). Ver "Estado actual". |
+
+---
+
+## Estado actual (2026-10-10)
+
+> Las secciones de abajo conservan la redacción original. Donde digan otra cosa, manda esto:
+
+- **Datos de juegos: IGDB**, a través de la Edge Function `igdb-proxy` (SPEC-04). Toda mención a **RAWG** es histórica: RAWG se sustituyó por IGDB en la SPEC-04 v0.4. Las plataformas de cada juego también salen de IGDB.
+- **Multiusuario** con registro abierto y biblioteca privada por usuario (SPEC-05).
+- **Funcionalidades añadidas después de esta SPEC**: Explorar el catálogo y ficha de cada juego (SPEC-07), Ajustes con la conexión de Steam e importación de la biblioteca con horas y logros (SPEC-08) y entrar con Steam (SPEC-09).
+- La pantalla "Dashboard" se llama **Inicio** en la interfaz.
 
 ---
 

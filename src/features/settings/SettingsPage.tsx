@@ -1,15 +1,16 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/app/auth/authContext'
 import { errorMessage } from '@/data/errors'
 import type { PlatformConnection } from '@/data/supabase/connectionsRepository'
-import { Button } from '@/shared/components/Button'
+import { Button, ButtonLink } from '@/shared/components/Button'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { AlertIcon, CheckIcon, SteamGlyph } from '@/shared/components/icons'
 import { formatDate } from '@/shared/lib/format'
 import { useConnectSteam, useConnections, useDisconnect } from './hooks/useConnections'
 import { isSteamOnlyEmail, readSteamReturn, STEAM_CONNECT_FLOW, steamLoginUrl } from '@/shared/lib/steamOpenId'
 import styles from './SettingsPage.module.css'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 type Notice = { tone: 'success' | 'error' | 'info'; text: string }
 
@@ -19,6 +20,7 @@ const DevTools = import.meta.env.DEV
   : null
 
 export function SettingsPage() {
+  useDocumentTitle('Ajustes')
   const { session, signOut } = useAuth()
 
   return (
@@ -144,9 +146,7 @@ function SteamConnection() {
     )
   } else if (steam) {
     action = (
-      <Link to="/settings/steam" className={styles.actionLink}>
-        <Button size="sm">Importar juegos</Button>
-      </Link>
+      <ButtonLink to="/settings/steam" size="sm">Importar juegos</ButtonLink>
     )
   } else {
     action = (

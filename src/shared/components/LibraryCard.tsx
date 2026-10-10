@@ -17,9 +17,8 @@ export function LibraryCard({ entry, game }: LibraryCardProps) {
     <Link
       to={`/library/${entry.id}`}
       className={styles.card}
-      aria-label={`${title}, ${entry.platformName}`}
     >
-      <CoverImage src={game?.coverUrl ?? null} title={title} />
+      <CoverImage src={game?.coverUrl ?? null} title={title} decorative />
       <div className={styles.body}>
         <h3 className={styles.title}>{title}</h3>
         <p className={styles.meta}>

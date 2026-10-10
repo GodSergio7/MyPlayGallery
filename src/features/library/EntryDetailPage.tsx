@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { gamesRepository, libraryRepository } from '@/data/repository'
+import { libraryRepository } from '@/data/repository'
 import { errorMessage } from '@/data/errors'
-import { useAsync } from '@/shared/hooks/useAsync'
 import type { Game, LibraryEntry, Platform } from '@/shared/types/domain'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
@@ -15,8 +14,13 @@ import { EntryFields } from '@/features/library/EntryForm'
 import {
   formFromEntry,
   formToInput,
+  hasErrors,
+  validateEntryForm,
+  type EntryFormErrors,
   type EntryFormValues,
 } from '@/features/library/entryFormValues'
+import { useEntriesByGame, useEntry, useGame, useInvalidateLibrary } from '@/features/library/hooks/useLibrary'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 import styles from './EntryDetailPage.module.css'
 
 export function EntryDetailPage() {
@@ -29,42 +33,51 @@ export function EntryDetailPage() {
 function EntryDetail({ id }: { id: string }) {
   const navigate = useNavigate()
 
-  const entryState = useAsync(() => libraryRepository.getById(id), [id])
-  const entry = entryState.data
-
-  const gameState = useAsync(
-    () => (entry ? gamesRepository.getById(entry.externalId) : Promise.resolve(undefined)),
-    [entry?.externalId],
-  )
-  const siblingsState = useAsync(
-    () => (entry ? libraryRepository.listByGame(entry.externalId) : Promise.resolve([])),
-    [entry?.externalId],
-  )
+  const invalidateLibrary = useInvalidateLibrary()
+  const entryQuery = useEntry(id)
+  const entry = entryQuery.data ?? undefined
+  const gameQuery = useGame(entry?.externalId)
+  const siblingsQuery = useEntriesByGame(entry?.externalId)
 
   const [editing, setEditing] = useState(false)
   const [values, setValues] = useState<EntryFormValues | null>(null)
+  const [formErrors, setFormErrors] = useState<EntryFormErrors>({})
   const [saving, setSaving] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   // Si IGDB falla, la entrada se sigue viendo y editando ("Juego desconocido"): tus datos están en Supabase.
-  const game = gameState.error ? undefined : gameState.data
-  const gameUnavailable = Boolean(gameState.error)
-  const siblings = (siblingsState.data ?? []).filter((item) => item.id !== id)
+  const game = gameQuery.isError ? undefined : (gameQuery.data ?? undefined)
+  const gameUnavailable = gameQuery.isError
+  const siblings = (siblingsQuery.data ?? []).filter((item) => item.id !== id)
+
+  useDocumentTitle(game?.title ?? (entry ? 'Juego de tu biblioteca' : undefined))
 
   function startEdit() {
     if (entry) {
       setValues(formFromEntry(entry))
+      setFormErrors({})
       setEditing(true)
     }
   }
 
   function updateForm(patch: Partial<EntryFormValues>) {
     setValues((current) => (current ? { ...current, ...patch } : current))
+    // El error de un campo desaparece en cuanto se corrige
+    setFormErrors((current) => {
+      const next = { ...current }
+      for (const key of Object.keys(patch)) delete next[key as keyof EntryFormErrors]
+      return next
+    })
   }
 
   async function handleSave() {
     if (!values || !entry) {
+      return
+    }
+    const errors = validateEntryForm(values)
+    setFormErrors(errors)
+    if (hasErrors(errors)) {
       return
     }
 
@@ -76,7 +89,7 @@ function EntryDetail({ id }: { id: string }) {
         externalId: entry.externalId,
       })
       setEditing(false)
-      entryState.reload()
+      await invalidateLibrary()
     } catch (error) {
       setActionError(errorMessage(error))
     } finally {
@@ -88,6 +101,7 @@ function EntryDetail({ id }: { id: string }) {
     setActionError(null)
     try {
       await libraryRepository.remove(id)
+      void invalidateLibrary()
       navigate('/library')
     } catch (error) {
       setConfirmOpen(false)
@@ -95,17 +109,16 @@ function EntryDetail({ id }: { id: string }) {
     }
   }
 
-  if (entryState.loading || gameState.loading || siblingsState.loading) {
+  if (entryQuery.isPending || (entry && (gameQuery.isPending || siblingsQuery.isPending))) {
     return <LoadingState message="Cargando…" />
   }
 
-  if (entryState.error || siblingsState.error) {
+  if (entryQuery.isError || siblingsQuery.isError) {
     return (
       <ErrorState
         onRetry={() => {
-          entryState.reload()
-          gameState.reload()
-          siblingsState.reload()
+          void entryQuery.refetch()
+          void siblingsQuery.refetch()
         }}
       />
     )
@@ -158,7 +171,7 @@ function EntryDetail({ id }: { id: string }) {
           <p className={styles.notice} role="status">
             No se ha podido cargar la información del juego desde IGDB. Tus datos están a salvo y puedes
             editarlos; el título y la portada volverán cuando IGDB responda.{' '}
-            <button type="button" className={styles.noticeAction} onClick={() => gameState.reload()}>
+            <button type="button" className={styles.noticeAction} onClick={() => void gameQuery.refetch()}>
               Reintentar
             </button>
           </p>
@@ -172,6 +185,7 @@ function EntryDetail({ id }: { id: string }) {
               values={values}
               platforms={platformOptions(entry, game)}
               onChange={updateForm}
+              errors={formErrors}
             />
             {actionError && (
               <p className={styles.formError} role="alert">

@@ -24,6 +24,7 @@ import {
 import { useGameBrowse, useLibraryGameIds } from './hooks/useGameBrowse'
 import { ExploreListRow } from './ExploreListRow'
 import styles from './ExplorePage.module.css'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 const SEARCH_DEBOUNCE_MS = 350
 const numberFormat = new Intl.NumberFormat('es-ES')
@@ -32,6 +33,7 @@ const DEFAULT_SORT: GameBrowseSort = 'popular'
 const VIEW_STORAGE_KEY = 'myplaygallery.explore.view'
 
 export function ExplorePage() {
+  useDocumentTitle('Explorar')
   const { filters, update, clear } = useExploreFilters()
   const browse = useGameBrowse(toBrowseFilters(filters))
   const libraryIds = useLibraryGameIds()

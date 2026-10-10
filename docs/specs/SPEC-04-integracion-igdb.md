@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-04 |
 | Título | Integración de IGDB (datos externos de videojuegos) |
-| Versión | 0.5 |
+| Versión | 0.6 |
 | Estado | Aprobada |
 | Fecha | 2026-09-17 |
 | Autor | Responsable de producto |
@@ -20,6 +20,7 @@
 | 0.3 | 2026-09-16 | Cierre documental de las Fases 1–3. SPEC-04 pasa a **Aprobada**. Se añade "Estado de implementación" y se alinean las secciones con el estado real (incluida la eliminación de `VITE_RAWG_PROXY_URL`). |
 | 0.4 | 2026-09-17 | **Migración del proveedor externo de RAWG a IGDB.** La fuente externa pasa a ser la API de IGDB, consumida a través de la Edge Function `igdb-proxy`, que obtiene un access token de Twitch (OAuth2 Client Credentials) y lo reutiliza mientras es válido. Se sustituyen los tipos `Rawg*` por `Igdb*`, `rawgGamesRepository` por `igdbGamesRepository`, `invokeRawgProxy` por `invokeIgdbProxy` y la Edge Function `rawg-proxy` por `igdb-proxy`. El identificador de dominio `rawgId` pasa a `externalId` y la ruta `/game/:rawgId` a `/game/:gameId`. Se eliminan `RAWG_API_KEY` y las referencias activas a RAWG. Se mantienen sin cambios la arquitectura, la abstracción `GamesRepository`, TanStack Query, la UI/UX y el alcance de SPEC-04. |
 | 0.5 | 2026-10-10 | **Enmienda (T-01): `igdb-proxy` exige sesión de usuario y limita las peticiones.** Ya no basta la clave pública: la función valida el JWT con `auth.getUser` (el usuario de cada token se recuerda 60 s) y responde `401 unauthorized` sin sesión. Límite de **300 peticiones por minuto y usuario**, contado en Postgres (tabla `api_rate_limits` y función `hit_rate_limit`, migración `20261010000000`, solo ejecutable con la clave de servicio) para que valga para todas las copias de la función; al superarlo responde `429 rate_limited` con `Retry-After: 60`. Si el contador falla, no se bloquea al usuario. Sustituye a lo dicho más abajo de una función "sin Auth de usuario". **Además (T-03):** si IGDB falla, la biblioteca se sigue mostrando con "Juego desconocido" y un aviso, en lugar de una pantalla de error. |
+| 0.6 | 2026-10-10 | Puesta al día (T-40, T-41): Fase 4 completada (`/game/:gameId` con TanStack Query, id no válido → "Juego no encontrado", juegos sin plataformas en IGDB); validación de rutas extraída a `routes.ts` con tests (T-22); el secreto de Twitch viaja en el cuerpo de la petición del token (T-35). **Atribución decidida (T-41)**: el pie dice "Datos e imágenes de juegos por IGDB" con enlace a https://www.igdb.com, y la ficha de cada juego enlaza también a IGDB. |
 
 ## Leyenda de estados de decisión
 
@@ -50,7 +51,7 @@
 | Fase 1 | Infraestructura de datos externos + Edge Function (`rawg-proxy`, sustituida en la v0.4 por `igdb-proxy`): proxy seguro, secretos, CORS, errores, timeout, `.env.example` | **Completada** |
 | Fase 2 | Adaptación de datos externos (`Rawg*` → `Igdb*` + Zod + mapper → `Game` + repositorio, con tests) | **Completada** |
 | Fase 3 | TanStack Query + búsqueda real en `/search` (`QueryProvider`, `useGameSearch`, tests) | **Completada** |
-| Fase 4 | Detalle `/game/:gameId` con TanStack Query y elementos pendientes | **Pendiente** |
+| Fase 4 | Detalle `/game/:gameId` con TanStack Query y elementos pendientes | **Completada** (v0.6) |
 
 Detalles implementados tras la migración a IGDB (v0.4):
 
@@ -63,11 +64,11 @@ Detalles implementados tras la migración a IGDB (v0.4):
 - Sin paginación; primera página; máximo **20 resultados** (`limit 20` aplicado en la Edge Function).
 - Estados de la búsqueda: inicial, loading (skeletons), resultados, sin resultados y error + retry.
 - `retry` limitado a errores recuperables (`network`, `upstreamError`, `timeout`, `rateLimited`; máximo 2); no se reintentan `badRequest`, `notFound` ni `invalidResponse`.
-- La capa de datos `getById` apunta a IGDB. La página `/game/:gameId` **todavía no se ha migrado a TanStack Query** (sigue usando `useAsync`); su migración corresponde a la Fase 4.
-- Dashboard y Library continúan usando datos **mock** (`gamesRepository.list()` y `libraryRepository.*`).
+- La capa de datos `getById` apunta a IGDB. La página `/game/:gameId` usa TanStack Query (`useGame`, `useEntriesByGame`) desde la v0.6.
+- Inicio y Biblioteca leen la biblioteca real de Supabase (SPEC-05) con TanStack Query; los datos mock ya no existen.
 - El modelo de dominio `Game` usa `externalId` (neutro, no acoplado al proveedor). `LibraryEntry` también usa `externalId`.
 - La ruta de detalle es `/game/:gameId`.
-- **Pendiente de decisión de producto**: requisitos de atribución de IGDB/Twitch en la UI (§14). El footer muestra ahora "Datos de juegos por IGDB" como texto plano.
+- Atribución de IGDB decidida en la v0.6 (§14): enlace a https://www.igdb.com en el pie.
 
 Validación al cierre de la migración (v0.4): `npm test` → **42/42 OK**; `npm run build` → OK; `npm run lint` → 0 errores / 0 warnings; `tsc -p tsconfig.app.json --noEmit` y `tsc -p tsconfig.node.json --noEmit` → OK.
 
@@ -446,11 +447,11 @@ Reglas:
 
 ## 14. Atribución de IGDB
 
-- El footer existente muestra ahora **"Datos de juegos por IGDB"** (texto plano), sin rediseño.
+- El pie muestra **"Datos e imágenes de juegos por IGDB"**, con **IGDB** enlazado a `https://www.igdb.com` (se abre en otra pestaña). La ficha de cada juego termina con "Datos e imágenes de IGDB" enlazado.
 - A diferencia de RAWG, la página de documentación de IGDB no detalla un requisito explícito de hipervínculo activo equivalente. El uso de datos de IGDB está sujeto al **Twitch Developer Service Agreement**.
-- **PENDING de decisión de producto**: si se exige (o se desea) un enlace activo a `https://www.igdb.com` y/o la mención a Twitch en el footer. **No se ha tomado esta decisión unilateralmente.**
+- **Decisión (v0.6, T-41)**: enlace activo a IGDB en el pie y en la ficha. No se menciona Twitch aparte: IGDB es su servicio y el enlace lleva a su web. El README lo recoge en "Créditos y licencias de terceros".
 
-**Estado**: `PENDING` (contenido mínimo del footer ya actualizado).
+**Estado**: `IMPLEMENTADO`.
 
 ---
 

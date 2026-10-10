@@ -1,33 +1,34 @@
 import { Link } from 'react-router-dom'
-import { GAME_STATUSES } from '@/shared/types/domain'
-import { loadLibraryWithGames } from '@/data/repository'
-import { useAsync } from '@/shared/hooks/useAsync'
+import { useLibraryWithGames } from '@/features/library/hooks/useLibrary'
 import { formatAverage, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
 import { IgdbNotice } from '@/shared/components/IgdbNotice'
 import { StatCard } from '@/shared/components/StatCard'
-import { Button } from '@/shared/components/Button'
+import { ButtonLink } from '@/shared/components/Button'
 import { CoverImage } from '@/shared/components/CoverImage'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
+import { libraryStats } from './libraryStats'
 import { mostPlayed } from './mostPlayed'
 import styles from './DashboardPage.module.css'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 
 const TOP_GAMES = 3
 // Escala fija de la barra de horas: de 0 a 1000 h (a partir de ahí, llena).
 const BAR_MAX_HOURS = 1000
 
 export function DashboardPage() {
-  const libraryState = useAsync(loadLibraryWithGames, [])
+  useDocumentTitle('Inicio')
+  const libraryState = useLibraryWithGames()
 
-  if (libraryState.loading) {
+  if (libraryState.isPending) {
     return <LoadingState message="Cargando tu biblioteca…" />
   }
 
-  if (libraryState.error) {
+  if (libraryState.isError) {
     return (
       <ErrorState
         onRetry={() => {
-          libraryState.reload()
+          void libraryState.refetch()
         }}
       />
     )
@@ -43,9 +44,7 @@ export function DashboardPage() {
         <EmptyState
           title="Todavía no has añadido ningún juego"
           action={
-            <Link to="/search">
-              <Button>Añadir un juego</Button>
-            </Link>
+            <ButtonLink to="/search">Añadir un juego</ButtonLink>
           }
         />
       </>
@@ -53,28 +52,15 @@ export function DashboardPage() {
   }
 
   const gameById = new Map(games.map((game) => [game.externalId, game]))
-  const total = entries.length
-  const totalHours = entries.reduce((sum, entry) => sum + (entry.hoursPlayed ?? 0), 0)
-  const scored = entries.filter((entry) => entry.score !== null)
-  const averageScore =
-    scored.length > 0
-      ? scored.reduce((sum, entry) => sum + (entry.score ?? 0), 0) / scored.length
-      : null
-  const platinumCount = entries.filter((entry) => entry.platinum).length
-  const hundredCount = entries.filter((entry) => entry.hundredPercent).length
-  const playingCount = entries.filter((entry) => entry.status === 'playing').length
-
-  const statusCounts = GAME_STATUSES.map((status) => ({
-    ...status,
-    count: entries.filter((entry) => entry.status === status.value).length,
-  }))
+  const { total, totalHours, averageScore, scoredCount, platinumCount, hundredCount, playingCount, statusCounts } =
+    libraryStats(entries)
 
   const topGames = mostPlayed(entries, TOP_GAMES)
 
   return (
     <>
       <PageHeader title="Inicio" />
-      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => libraryState.reload()} />}
+      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => void libraryState.refetch()} />}
 
       <section className={styles.stats} aria-label="Resumen de la biblioteca">
         <StatCard
@@ -88,7 +74,7 @@ export function DashboardPage() {
           label="Nota media"
           value={averageScore ?? '—'}
           format={formatAverage}
-          hint={scored.length > 0 ? `de ${scored.length} con nota` : undefined}
+          hint={scoredCount > 0 ? `de ${scoredCount} con nota` : undefined}
           to="/library?orden=score"
         />
         <StatCard label="Platinos" value={platinumCount} to="/library?logro=platino" />

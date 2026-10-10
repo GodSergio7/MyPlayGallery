@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.15 |
+| Versión | 0.16 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -30,6 +30,7 @@
 | 0.13 | 2026-10-09 | Barra de navegación: el botón "Añadir juego" pasa a ser un **botón redondo "+"** (mismo destino, `/search`; "Añadir juego" como etiqueta accesible) y a su lado un **enlace al perfil** con el avatar y el nombre. Con Steam conectado, el nombre y el avatar son los de la cuenta de Steam; si no, la parte del email antes de la @ y su inicial. En móvil, el "+" y el avatar (sin nombre) se ven junto a la hamburguesa. El perfil (`/profile`) es de momento una página provisional que remite a Ajustes. El CardNav sustituye `cta` por un hueco genérico `actions`. |
 | 0.14 | 2026-10-09 | Imagen para compartir (`public/og-image.jpg`, 1200 × 630, JPEG de unos 113 KB). Lleva el logo, "MyPlayGallery", "Tu biblioteca de juegos" y el lema a la izquierda; a la derecha, el mosaico de portadas de la pantalla de acceso, fundido con el fondo; y el dominio abajo. `index.html` incluye la meta descripción y las etiquetas Open Graph y Twitter (`summary_large_image`) con URLs absolutas a `https://myplaygallery.vercel.app`. |
 | 0.15 | 2026-10-10 | Filtros sin desplazamiento horizontal en ningún tamaño. En móvil, las pastillas desplegables (Biblioteca y Explorar) forman una **rejilla de 2 columnas**: cada filtro es una tarjeta con la etiqueta pequeña encima del valor, para que el valor no se recorte (si sobra uno, ocupa la fila entera). Las pastillas de estado de la Biblioteca bajan de línea cuando no caben. En pantallas anchas, todo sigue en línea. |
+| 0.16 | 2026-10-10 | **Pulido de la revisión (T-08 a T-41).** Formulario de entrada con validación por campo antes de guardar (plataforma, horas entre 0 y 99.999,9, fecha de fin no anterior a la de inicio, textos de 5.000 caracteres como mucho) (T-08). Añadir juego: id no válido → "Juego no encontrado" (T-11); juegos sin plataformas en IGDB → lista completa de plataformas (T-10); "Volver a la búsqueda" recupera lo buscado, que ahora va en la URL igual que la búsqueda de la Biblioteca (T-18). Ventana modal accesible: foco dentro, Tab atrapado, scroll bloqueado y foco devuelto al cerrar; botón de cerrar de 44 px (T-12). Enlaces con aspecto de botón (`ButtonLink`) en lugar de botones dentro de enlaces (T-13). Al cambiar de página se vuelve arriba y el foco pasa al contenido (T-17). Título propio en cada pestaña (T-26). Portadas: iniciales si no cargan (T-28), doble resolución en pantallas retina (T-37), y las tarjetas leen todo su contenido en los lectores de pantalla (T-32). Fechas sin hora leídas como fecha local (T-25). Acceso: pestañas con flechas y título principal visible en móvil (T-31), mensajes de email sin confirmar con reenvío y de enlace caducado (T-24). Pie con enlace a IGDB (T-41). Poppins servida desde la propia web, solo grosores 400–700 (T-36). |
 
 ## Leyenda de estados de decisión
 

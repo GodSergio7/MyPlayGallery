@@ -9,10 +9,21 @@ export interface AuthState {
   signUp(email: string, password: string): Promise<boolean>
   /** Entra con la respuesta de Steam (parámetros openid.*). Si la cuenta de Steam es nueva, crea el usuario. */
   signInWithSteam(params: Record<string, string>): Promise<void>
+  /** Vuelve a enviar el correo de confirmación del registro. */
+  resendConfirmation(email: string): Promise<void>
   signOut(): Promise<void>
 }
 
-export class AuthError extends Error {}
+export class AuthError extends Error {
+  /** Código de Supabase cuando importa en la interfaz (p. ej. 'email_not_confirmed'). */
+  readonly code: string | undefined
+
+  constructor(message: string, code?: string) {
+    super(message)
+    this.name = 'AuthError'
+    this.code = code
+  }
+}
 
 export const AuthContext = createContext<AuthState | null>(null)
 

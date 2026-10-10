@@ -191,10 +191,6 @@
   }
 }
 
-.actionLink:hover {
-  text-decoration: none;
-}
-
 /* Última lectura y "Desconectar", en segundo plano bajo la fila de Steam */
 .connectionFooter {
   display: flex;

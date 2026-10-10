@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-01 |
 | Título | Arquitectura técnica |
-| Versión | 0.5 |
+| Versión | 0.6 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -20,6 +20,7 @@
 | 0.3 | 2026-09-16 | Aprobadas las decisiones de gestión de variables de entorno y de errores/carga. SPEC-01 aprobada. Unificada la nomenclatura a MyPlayGallery. |
 | 0.4 | 2026-10-08 | Enmienda por SPEC-05: Supabase Auth pasa de cuenta única a registro abierto (multiusuario). Se añaden `AuthProvider` y `RequireAuth` en `src/app/auth`. |
 | 0.5 | 2026-10-10 | **Carga bajo demanda (T-06).** Cada página se carga con `React.lazy` (ayudante `lazyNamed`) y un `Suspense` en `AppShell`; la pantalla de acceso solo se descarga sin sesión y el fondo `LineWaves` se carga aparte. Las librerías van en archivos propios (`react`, `supabase`, `datos` con TanStack Query y Zod, `gsap`, `ogl`) mediante `build.rolldownOptions.output.codeSplitting`. La descarga inicial con sesión pasa de 856 KB (256 KB comprimido) a unos 690 KB (210 KB), y las librerías quedan en caché entre versiones. |
+| 0.6 | 2026-10-10 | Puesta al día (T-40): estructura y rutas reales (IGDB en lugar de RAWG, `/game/:gameId`, nuevas secciones), todas las cargas con TanStack Query (`useAsync` eliminado, T-19) y sin el plugin de desarrollo de IGDB (T-20). Ver "Estado actual". |
 
 ## Leyenda de estados de decisión
 
@@ -28,6 +29,37 @@
 - **PENDING**: decisión abierta que debe aprobar el responsable de producto.
 
 > Esta SPEC es **solo documentación**. No implica implementación, creación de tablas SQL, ni integración de Supabase/RAWG.
+
+---
+
+## Estado actual (2026-10-10)
+
+> Las secciones de abajo conservan la redacción original (escrita cuando la fuente era RAWG). Donde digan otra cosa, manda esto:
+
+**Estructura de `src`**
+
+```
+src/
+├── app/            # Rutas (App.tsx), AppShell, sesión (auth/), proveedores, ErrorBoundary
+├── features/
+│   ├── auth/       # Acceso y registro (email o Steam)
+│   ├── dashboard/  # Inicio
+│   ├── library/    # Biblioteca y ficha de cada entrada (+ hooks/useLibrary.ts)
+│   ├── explore/    # Catálogo de IGDB
+│   ├── game-info/  # Ficha de cada juego
+│   ├── game/       # Añadir un juego a la biblioteca
+│   ├── search/     # Búsqueda rápida
+│   ├── settings/   # Ajustes, cuentas conectadas e importación de Steam
+│   └── profile/    # Perfil (provisional)
+├── data/           # igdb/ y supabase/: clientes, esquemas Zod, mappers y repositorios
+└── shared/         # components/ (incluye reactbits/), hooks/, lib/, styles/, types/
+```
+
+**Rutas**: `/` Inicio · `/library` · `/library/:entryId` · `/explore` · `/explore/:gameId` · `/search` · `/game/:gameId` · `/settings` · `/settings/steam` · `/profile`. Cada página se carga bajo demanda (v0.5).
+
+**Datos**: todas las lecturas usan **TanStack Query**. Las claves de la biblioteca cuelgan de `['library']` (`libraryKeys` en `features/library/hooks/useLibrary.ts`) y se invalidan juntas al crear, editar o borrar. El hook propio `useAsync` ya no existe (T-19).
+
+**Desarrollo local**: ya no hay plugin de Vite que sirva la función de IGDB (`vite/igdbDevProxy.ts` eliminado, T-20); en local la app usa el proyecto real de Supabase.
 
 ---
 

@@ -1,15 +1,11 @@
 import { fileURLToPath, URL } from 'node:url'
 import react from '@vitejs/plugin-react'
-import { loadEnv } from 'vite'
 import { defineConfig } from 'vitest/config'
-import { igdbDevProxy } from './vite/igdbDevProxy.ts'
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-
+export default defineConfig(() => {
   return {
-    plugins: [react(), igdbDevProxy(env)],
+    plugins: [react()],
     build: {
       rolldownOptions: {
         output: {

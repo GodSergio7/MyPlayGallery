@@ -4,7 +4,7 @@ import {
   type Platform,
 } from '@/shared/types/domain'
 import { Checkbox, Field, Input, Select, Textarea } from '@/shared/components/FormControls'
-import type { EntryFormValues } from './entryFormValues'
+import { MAX_TEXT_LENGTH, type EntryFormErrors, type EntryFormValues } from './entryFormValues'
 import styles from './EntryForm.module.css'
 
 const SCORE_OPTIONS: string[] = Array.from({ length: 21 }, (_, index) =>
@@ -17,6 +17,8 @@ interface EntryFieldsProps {
   platforms: Platform[]
   onChange: (patch: Partial<EntryFormValues>) => void
   platformDisabled?: boolean
+  /** Errores de validación por campo (T-08). */
+  errors?: EntryFormErrors
 }
 
 export function EntryFields({
@@ -25,10 +27,11 @@ export function EntryFields({
   platforms,
   onChange,
   platformDisabled,
+  errors = {},
 }: EntryFieldsProps) {
   return (
     <div className={styles.grid}>
-      <Field label="Plataforma" htmlFor={`${idPrefix}-platform`}>
+      <Field label="Plataforma" htmlFor={`${idPrefix}-platform`} error={errors.platformId}>
         <Select
           id={`${idPrefix}-platform`}
           value={values.platformId}
@@ -76,11 +79,12 @@ export function EntryFields({
         </Select>
       </Field>
 
-      <Field label="Horas jugadas" htmlFor={`${idPrefix}-hours`}>
+      <Field label="Horas jugadas" htmlFor={`${idPrefix}-hours`} error={errors.hoursPlayed}>
         <Input
           id={`${idPrefix}-hours`}
           type="number"
           min={0}
+          max={99999.9}
           step={0.1}
           inputMode="decimal"
           value={values.hoursPlayed}
@@ -97,7 +101,7 @@ export function EntryFields({
         />
       </Field>
 
-      <Field label="Fecha de finalización" htmlFor={`${idPrefix}-finished`}>
+      <Field label="Fecha de finalización" htmlFor={`${idPrefix}-finished`} error={errors.finishedOn}>
         <Input
           id={`${idPrefix}-finished`}
           type="date"
@@ -123,9 +127,15 @@ export function EntryFields({
       </div>
 
       <div className={styles.full}>
-        <Field label="Reseña" htmlFor={`${idPrefix}-review`}>
+        <Field
+          label="Reseña"
+          htmlFor={`${idPrefix}-review`}
+          error={errors.review}
+          hint={lengthHint(values.review)}
+        >
           <Textarea
             id={`${idPrefix}-review`}
+            maxLength={MAX_TEXT_LENGTH}
             value={values.review}
             onChange={(event) => onChange({ review: event.target.value })}
           />
@@ -133,9 +143,10 @@ export function EntryFields({
       </div>
 
       <div className={styles.full}>
-        <Field label="Notas" htmlFor={`${idPrefix}-notes`}>
+        <Field label="Notas" htmlFor={`${idPrefix}-notes`} error={errors.notes} hint={lengthHint(values.notes)}>
           <Textarea
             id={`${idPrefix}-notes`}
+            maxLength={MAX_TEXT_LENGTH}
             rows={3}
             value={values.notes}
             onChange={(event) => onChange({ notes: event.target.value })}
@@ -144,4 +155,9 @@ export function EntryFields({
       </div>
     </div>
   )
+}
+
+/** Contador de caracteres, solo cuando el texto se acerca al límite. */
+function lengthHint(text: string): string | undefined {
+  return text.length > MAX_TEXT_LENGTH * 0.8 ? `${text.length} / ${MAX_TEXT_LENGTH} caracteres` : undefined
 }

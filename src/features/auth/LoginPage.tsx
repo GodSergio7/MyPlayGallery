@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
-import { useAuth } from '@/app/auth/authContext'
+import { AuthError, useAuth } from '@/app/auth/authContext'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
 import Topography from '@/shared/components/reactbits/Topography'
 import { LogoMark } from '@/shared/components/LogoMark'
 import { readSteamReturn, STEAM_SIGN_IN_FLOW, steamLoginUrl } from '@/shared/lib/steamOpenId'
@@ -37,7 +38,7 @@ const COPY: Record<Mode, { heading: string; text: string; submit: string; submit
 }
 
 export function LoginPage() {
-  const { signIn, signUp, signInWithSteam } = useAuth()
+  const { signIn, signUp, signInWithSteam, resendConfirmation } = useAuth()
   const [mode, setMode] = useState<Mode>('signIn')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,6 +48,11 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pendingEmail, setPendingEmail] = useState<string | null>(null)
+  const [unconfirmed, setUnconfirmed] = useState(false)
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent'>('idle')
+  // Enlace de confirmación caducado o ya usado: Supabase vuelve con #error=...&error_code=otp_expired (T-24).
+  const [linkError] = useState(() => readAuthLinkError(window.location.hash))
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
 
   // Vuelta desde Steam (botón "Continuar con Steam"): se lee una sola vez, al cargar la pantalla.
   const [steamReturn] = useState(() =>
@@ -74,6 +80,12 @@ export function LoginPage() {
 
   const copy = COPY[mode]
   const isSignUp = mode === 'signUp'
+  useDocumentTitle(pendingEmail ? 'Revisa tu correo' : copy.submit)
+
+  useEffect(() => {
+    // Quita el #error=... de la URL una vez leído
+    if (linkError) window.history.replaceState(null, '', window.location.pathname + window.location.search)
+  }, [linkError])
   const longEnough = password.length >= MIN_PASSWORD_LENGTH
   const passwordsMatch = confirmPassword !== '' && password === confirmPassword
 
@@ -81,6 +93,7 @@ export function LoginPage() {
     if (next === mode) return
     setMode(next)
     setError(null)
+    setUnconfirmed(false)
     setPassword('')
     setConfirmPassword('')
     setShowPassword(false)
@@ -127,8 +140,31 @@ export function LoginPage() {
       }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Ha ocurrido un error inesperado.')
+      setUnconfirmed(cause instanceof AuthError && cause.code === 'email_not_confirmed')
+      setResendState('idle')
       setSubmitting(false)
     }
+  }
+
+  async function handleResend() {
+    setResendState('sending')
+    try {
+      await resendConfirmation(email.trim())
+      setResendState('sent')
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'No se ha podido reenviar el correo.')
+      setResendState('idle')
+    }
+  }
+
+  // Pestañas: las flechas pasan de una a otra, como en cualquier grupo de pestañas (T-31).
+  function handleTabKey(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return
+    event.preventDefault()
+    const next: Mode =
+      event.key === 'Home' ? 'signIn' : event.key === 'End' ? 'signUp' : mode === 'signIn' ? 'signUp' : 'signIn'
+    switchMode(next)
+    tabRefs.current[next === 'signIn' ? 0 : 1]?.focus()
   }
 
   if (steamPending) {
@@ -139,7 +175,7 @@ export function LoginPage() {
             <SteamGlyph width={28} height={28} style={{ color: '#fff' }} />
           </span>
           <div className={styles.intro}>
-            <h2 className={styles.heading}>Entrando con Steam…</h2>
+            <h1 className={styles.heading}>Entrando con Steam…</h1>
             <p className={styles.text}>Estamos comprobando tu cuenta con Steam. Solo tarda un momento.</p>
           </div>
           <span className={styles.spinnerLarge} aria-hidden="true" />
@@ -156,7 +192,7 @@ export function LoginPage() {
             <MailIcon width={26} height={26} />
           </span>
           <div className={styles.intro}>
-            <h2 className={styles.heading}>Revisa tu correo</h2>
+            <h1 className={styles.heading}>Revisa tu correo</h1>
             <p className={styles.text}>
               Te hemos enviado un enlace a <strong>{pendingEmail}</strong>. Ábrelo para activar la cuenta y
               después entra con tu contraseña.
@@ -188,30 +224,42 @@ export function LoginPage() {
   return (
     <AuthLayout>
       <form className={styles.card} onSubmit={handleSubmit} noValidate aria-labelledby="auth-heading">
-        <div className={styles.tabs} role="group" aria-label="Tipo de acceso" data-mode={mode}>
+        <div className={styles.tabs} role="tablist" aria-label="Tipo de acceso" data-mode={mode}>
           <span className={styles.tabIndicator} aria-hidden="true" />
           <button
+            ref={(element) => {
+              tabRefs.current[0] = element
+            }}
             type="button"
+            role="tab"
             className={styles.tab}
-            aria-pressed={!isSignUp}
+            aria-selected={!isSignUp}
+            tabIndex={!isSignUp ? 0 : -1}
             onClick={() => switchMode('signIn')}
+            onKeyDown={handleTabKey}
           >
             Entrar
           </button>
           <button
+            ref={(element) => {
+              tabRefs.current[1] = element
+            }}
             type="button"
+            role="tab"
             className={styles.tab}
-            aria-pressed={isSignUp}
+            aria-selected={isSignUp}
+            tabIndex={isSignUp ? 0 : -1}
             onClick={() => switchMode('signUp')}
+            onKeyDown={handleTabKey}
           >
             Crear cuenta
           </button>
         </div>
 
         <div className={styles.intro}>
-          <h2 id="auth-heading" className={styles.heading}>
+          <h1 id="auth-heading" className={styles.heading}>
             {copy.heading}
-          </h2>
+          </h1>
           <p className={styles.text}>{copy.text}</p>
         </div>
 
@@ -307,11 +355,30 @@ export function LoginPage() {
           )}
         </div>
 
+        {linkError && !error && (
+          <p className={styles.tip} role="status">
+            {linkError}
+          </p>
+        )}
         {error && (
           <p className={styles.error} role="alert">
             <AlertIcon width={18} height={18} aria-hidden="true" />
             {error}
           </p>
+        )}
+        {unconfirmed && (
+          <button
+            type="button"
+            className={styles.resend}
+            onClick={handleResend}
+            disabled={resendState !== 'idle' || email.trim() === ''}
+          >
+            {resendState === 'sent'
+              ? 'Correo reenviado: revisa tu bandeja de entrada'
+              : resendState === 'sending'
+                ? 'Reenviando…'
+                : 'Reenviar el correo de confirmación'}
+          </button>
         )}
         {steamNotice && !error && (
           <p className={styles.tip} role="status">
@@ -376,7 +443,7 @@ function AuthLayout({ children }: { children: ReactNode }) {
         <CoverWall />
         <BrandLogo className={styles.heroBrand} />
         <div className={styles.heroBody}>
-          <h1 className={styles.heroTitle}>Tu biblioteca de juegos</h1>
+          <p className={styles.heroTitle}>Tu biblioteca de juegos</p>
           <p className={styles.heroText}>
             Apunta a qué juegas, cuántas horas le echas y qué te ha parecido.
           </p>
@@ -405,4 +472,16 @@ function AuthLayout({ children }: { children: ReactNode }) {
       </div>
     </div>
   )
+}
+
+/** Mensaje para el error con el que vuelve Supabase de un enlace del correo (#error=...). */
+function readAuthLinkError(hash: string): string | null {
+  if (!hash.includes('error')) return null
+  const params = new URLSearchParams(hash.replace(/^#/, ''))
+  const code = params.get('error_code')
+  if (!params.get('error') && !code) return null
+  if (code === 'otp_expired') {
+    return 'El enlace del correo ha caducado o ya se usó. Si ya confirmaste tu cuenta, entra con tu email y contraseña; si no, intenta entrar y pulsa «Reenviar el correo de confirmación».'
+  }
+  return 'No se ha podido completar el enlace del correo. Vuelve a intentarlo.'
 }

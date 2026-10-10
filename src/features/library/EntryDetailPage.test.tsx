@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { gamesRepository, libraryRepository } from '@/data/repository'
 import { DataError } from '@/data/errors'
 import type { Game, LibraryEntry } from '@/shared/types/domain'
+import { renderWithProviders } from '@/test/renderWithProviders'
 import { EntryDetailPage } from './EntryDetailPage'
 
 const base: Omit<LibraryEntry, 'id' | 'platformId' | 'platformName' | 'hoursPlayed'> = {
@@ -38,13 +38,7 @@ const game: Game = {
 }
 
 function renderAt(path: string) {
-  return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/library/:entryId" element={<EntryDetailPage />} />
-      </Routes>
-    </MemoryRouter>,
-  )
+  return renderWithProviders(<EntryDetailPage />, { path, pattern: '/library/:entryId' })
 }
 
 function mockLibrary() {

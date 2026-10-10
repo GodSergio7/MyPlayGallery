@@ -21,9 +21,8 @@ export function ExploreListRow({ game, inLibrary }: ExploreListRowProps) {
       // La ficha usa esta ruta para el enlace de volver (conserva búsqueda y filtros).
       state={{ from: location.pathname + location.search }}
       className={styles.row}
-      aria-label={`Ver ${game.title}`}
     >
-      <CoverImage src={game.coverUrl} title={game.title} className={styles.cover} />
+      <CoverImage src={game.coverUrl} title={game.title} className={styles.cover} decorative />
 
       <span className={styles.main}>
         <span className={styles.title}>{game.title}</span>

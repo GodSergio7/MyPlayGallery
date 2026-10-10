@@ -1,10 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { gamesRepository, libraryRepository } from '@/data/repository'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { libraryRepository } from '@/data/repository'
 import { errorMessage } from '@/data/errors'
-import { useAsync } from '@/shared/hooks/useAsync'
+import type { Platform } from '@/shared/types/domain'
+import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle'
+import { PLATFORM_GROUPS } from '@/features/explore/catalog'
+import { useEntriesByGame, useGame, useInvalidateLibrary } from '@/features/library/hooks/useLibrary'
 import { formatDate } from '@/shared/lib/format'
-import { Button } from '@/shared/components/Button'
+import { Button, ButtonLink } from '@/shared/components/Button'
 import { CoverImage } from '@/shared/components/CoverImage'
 import { PlatformBadge, StatusBadge } from '@/shared/components/Badges'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/components/StateViews'
@@ -13,27 +16,53 @@ import { EntryFields } from '@/features/library/EntryForm'
 import {
   createEmptyForm,
   formToInput,
+  hasErrors,
+  validateEntryForm,
+  type EntryFormErrors,
   type EntryFormValues,
 } from '@/features/library/entryFormValues'
 import styles from './GameDetailPage.module.css'
 
+/** Todas las plataformas del catálogo, para juegos de los que IGDB no indica ninguna (T-10). */
+const ALL_PLATFORMS: Platform[] = PLATFORM_GROUPS.flatMap((group) =>
+  group.options.map((option) => ({ id: option.value, name: option.label })),
+)
+
+/** Id de IGDB válido: entero positivo. /game/abc, /game/0 o /game/1.5 no lo son (T-11). */
+function parseGameId(value: string | undefined): number | null {
+  if (!value || !/^\d+$/.test(value)) return null
+  const id = Number(value)
+  return Number.isSafeInteger(id) && id > 0 ? id : null
+}
+
 export function GameDetailPage() {
   const { gameId } = useParams()
-  const gameIdNumber = Number(gameId)
-  const navigate = useNavigate()
+  const gameIdNumber = parseGameId(gameId)
 
-  const gameState = useAsync(() => gamesRepository.getById(gameIdNumber), [gameIdNumber])
-  const entriesState = useAsync(
-    () => libraryRepository.listByGame(gameIdNumber),
-    [gameIdNumber],
-  )
+  if (gameIdNumber === null) {
+    return <GameNotFound />
+  }
+  return <AddGame key={gameIdNumber} gameId={gameIdNumber} />
+}
+
+function AddGame({ gameId }: { gameId: number }) {
+  const navigate = useNavigate()
+  const invalidateLibrary = useInvalidateLibrary()
+
+  const gameQuery = useGame(gameId)
+  const entriesQuery = useEntriesByGame(gameId)
 
   const [values, setValues] = useState<EntryFormValues>(createEmptyForm)
+  const [formErrors, setFormErrors] = useState<EntryFormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const game = gameState.data
-  const entries = entriesState.data ?? []
+  const game = gameQuery.data ?? undefined
+  const entries = entriesQuery.data ?? []
+  const noPlatforms = game !== undefined && game.platforms.length === 0
+  const platforms = noPlatforms ? ALL_PLATFORMS : (game?.platforms ?? [])
+
+  useDocumentTitle(game ? `Añadir ${game.title}` : 'Añadir juego')
 
   const existingEntry = entries.find(
     (entry) => String(entry.platformId) === values.platformId,
@@ -41,10 +70,20 @@ export function GameDetailPage() {
 
   function updateForm(patch: Partial<EntryFormValues>) {
     setValues((current) => ({ ...current, ...patch }))
+    setFormErrors((current) => {
+      const next = { ...current }
+      for (const key of Object.keys(patch)) delete next[key as keyof EntryFormErrors]
+      return next
+    })
   }
 
   async function handleSubmit() {
     if (!game) {
+      return
+    }
+    const errors = validateEntryForm(values)
+    setFormErrors(errors)
+    if (hasErrors(errors)) {
       return
     }
 
@@ -52,9 +91,10 @@ export function GameDetailPage() {
     setSubmitError(null)
     try {
       const created = await libraryRepository.create({
-        ...formToInput(values, game.platforms),
-        externalId: gameIdNumber,
+        ...formToInput(values, platforms),
+        externalId: gameId,
       })
+      await invalidateLibrary()
       navigate(`/library/${created.id}`)
     } catch (error) {
       setSubmitError(errorMessage(error))
@@ -63,34 +103,26 @@ export function GameDetailPage() {
     }
   }
 
-  if (gameState.loading || entriesState.loading) {
+  if (gameQuery.isPending || entriesQuery.isPending) {
     return <LoadingState message="Cargando…" />
   }
 
-  if (gameState.error || entriesState.error) {
+  if (gameQuery.isError || entriesQuery.isError) {
     return (
       <ErrorState
         onRetry={() => {
-          gameState.reload()
-          entriesState.reload()
+          void gameQuery.refetch()
+          void entriesQuery.refetch()
         }}
       />
     )
   }
 
   if (!game) {
-    return (
-      <>
-        <BackLink />
-        <EmptyState
-          title="Juego no encontrado"
-          description="IGDB no tiene este juego."
-        />
-      </>
-    )
+    return <GameNotFound />
   }
 
-  const canSubmit = values.platformId !== '' && !existingEntry && !submitting
+  const canSubmit = !existingEntry && !submitting
 
   return (
     <>
@@ -115,16 +147,18 @@ export function GameDetailPage() {
                 <dd>{game.genres.join(', ')}</dd>
               </div>
             </dl>
-            <div className={styles.platforms}>
-              <h2 className={styles.subheading}>Plataformas</h2>
-              <ul className={styles.platformList}>
-                {game.platforms.map((platform) => (
-                  <li key={platform.id}>
-                    <PlatformBadge name={platform.name} />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {!noPlatforms && (
+              <div className={styles.platforms}>
+                <h2 className={styles.subheading}>Plataformas</h2>
+                <ul className={styles.platformList}>
+                  {game.platforms.map((platform) => (
+                    <li key={platform.id}>
+                      <PlatformBadge name={platform.name} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </section>
 
@@ -159,11 +193,18 @@ export function GameDetailPage() {
             </p>
           )}
 
+          {noPlatforms && (
+            <p className={styles.help} role="note">
+              IGDB todavía no indica en qué plataformas sale este juego. Elige la tuya de la lista completa.
+            </p>
+          )}
+
           <EntryFields
             idPrefix="new-entry"
             values={values}
-            platforms={game.platforms}
+            platforms={platforms}
             onChange={updateForm}
+            errors={formErrors}
           />
 
           {submitError && (
@@ -183,9 +224,28 @@ export function GameDetailPage() {
   )
 }
 
-function BackLink() {
+function GameNotFound() {
+  useDocumentTitle('Juego no encontrado')
   return (
-    <Link to="/search" className={styles.back}>
+    <>
+      <BackLink />
+      <EmptyState
+        title="Juego no encontrado"
+        description="El enlace no corresponde a ningún juego de IGDB."
+        action={<ButtonLink to="/search">Buscar un juego</ButtonLink>}
+      />
+    </>
+  )
+}
+
+/** Vuelve a la búsqueda de la que se vino (con lo que se había escrito), o a Añadir juego. */
+function BackLink() {
+  const location = useLocation()
+  const from = (location.state as { from?: unknown } | null)?.from
+  const to = typeof from === 'string' && from.startsWith('/search') ? from : '/search'
+
+  return (
+    <Link to={to} className={styles.back}>
       <ArrowLeftIcon width={18} height={18} />
       Volver a la búsqueda
     </Link>

@@ -54,10 +54,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signIn(email, password) {
         const { error } = await getSupabaseClient().auth.signInWithPassword({ email, password })
         if (error) {
+          if (error.code === 'email_not_confirmed') {
+            throw new AuthError(
+              'Todavía no has confirmado tu email. Abre el enlace que te enviamos al registrarte (mira también en spam).',
+              error.code,
+            )
+          }
           throw new AuthError(
             error.code === 'invalid_credentials'
               ? 'Email o contraseña incorrectos.'
               : 'No se ha podido iniciar sesión. Inténtalo de nuevo.',
+            error.code,
+          )
+        }
+      },
+      async resendConfirmation(email) {
+        const { error } = await getSupabaseClient().auth.resend({
+          type: 'signup',
+          email,
+          options: { emailRedirectTo: window.location.origin },
+        })
+        if (error) {
+          throw new AuthError(
+            error.code === 'over_email_send_rate_limit'
+              ? 'Se han enviado demasiados correos. Espera unos minutos y vuelve a intentarlo.'
+              : 'No se ha podido reenviar el correo. Inténtalo de nuevo.',
+            error.code,
           )
         }
       },
