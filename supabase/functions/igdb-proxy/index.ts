@@ -1,3 +1,5 @@
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
+
 const IGDB_API_BASE = 'https://api.igdb.com/v4'
 const TWITCH_TOKEN_URL = 'https://id.twitch.tv/oauth2/token'
 const PAGE_SIZE = 20
@@ -7,12 +9,22 @@ const BROWSE_MAX_OFFSET = 4800
 const TIMEOUT_MS = 9000
 const TOKEN_SAFETY_MARGIN_MS = 60_000
 
+// Solo usuarios con sesión (no basta la clave pública) y con un límite por usuario (T-01).
+// 300 peticiones por minuto sobran para un uso normal (el scroll infinito de Explorar pide
+// 24 juegos por petición y la biblioteca, 100) y cortan a quien intente vaciar la cuota de IGDB.
+const RATE_LIMIT_PER_WINDOW = 300
+const RATE_LIMIT_WINDOW_SECONDS = 60
+// El usuario de cada token se recuerda un minuto para no consultar Auth en cada petición.
+const USER_CACHE_MS = 60_000
+const USER_CACHE_MAX = 500
+
 const DEFAULT_ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:4173',
 ]
 
 type ErrorCode =
+  | 'unauthorized'
   | 'bad_request'
   | 'not_found'
   | 'rate_limited'
@@ -22,6 +34,7 @@ type ErrorCode =
   | 'method_not_allowed'
 
 const ERROR_STATUS: Record<ErrorCode, number> = {
+  unauthorized: 401,
   bad_request: 400,
   not_found: 404,
   rate_limited: 429,
@@ -32,6 +45,7 @@ const ERROR_STATUS: Record<ErrorCode, number> = {
 }
 
 const ERROR_MESSAGES: Record<ErrorCode, string> = {
+  unauthorized: 'Inicia sesion para consultar el catalogo.',
   bad_request: 'Parametros de la peticion no validos.',
   not_found: 'Juego no encontrado.',
   rate_limited: 'Demasiadas peticiones. Intentalo mas tarde.',
@@ -709,6 +723,49 @@ async function handleDetail(upstream: Response, origin: string | null): Promise<
   return jsonResponse(game, 200, origin)
 }
 
+// ---------------------------------------------------------------- Sesión y límite (T-01)
+
+let adminClient: SupabaseClient | null = null
+
+function getAdminClient(): SupabaseClient {
+  if (adminClient) return adminClient
+  const url = Deno.env.get('SUPABASE_URL')
+  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  if (!url || !serviceRoleKey) throw new ConfigError('Supabase credentials are not configured')
+  adminClient = createClient(url, serviceRoleKey, { auth: { persistSession: false } })
+  return adminClient
+}
+
+const userCache = new Map<string, { userId: string; expiresAt: number }>()
+
+/** Id del usuario de la sesión, o null si la petición trae solo la clave pública o un token no válido. */
+async function sessionUserId(request: Request): Promise<string | null> {
+  const token = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '')
+  if (!token) return null
+
+  const cached = userCache.get(token)
+  if (cached && cached.expiresAt > Date.now()) return cached.userId
+
+  const { data, error } = await getAdminClient().auth.getUser(token)
+  if (error || !data.user) return null
+
+  if (userCache.size >= USER_CACHE_MAX) userCache.clear()
+  userCache.set(token, { userId: data.user.id, expiresAt: Date.now() + USER_CACHE_MS })
+  return data.user.id
+}
+
+/** Suma la petición al contador del usuario (en Postgres, común a todas las copias de la función). */
+async function withinRateLimit(userId: string): Promise<boolean> {
+  const { data, error } = await getAdminClient().rpc('hit_rate_limit', {
+    p_user: userId,
+    p_limit: RATE_LIMIT_PER_WINDOW,
+    p_window_seconds: RATE_LIMIT_WINDOW_SECONDS,
+  })
+  // Si el contador falla, no se bloquea al usuario: la sesión ya se ha comprobado.
+  if (error) return true
+  return data === true
+}
+
 Deno.serve(async (request: Request): Promise<Response> => {
   const origin = request.headers.get('origin')
 
@@ -721,6 +778,16 @@ Deno.serve(async (request: Request): Promise<Response> => {
   }
 
   try {
+    const userId = await sessionUserId(request)
+    if (!userId) {
+      return errorResponse('unauthorized', origin)
+    }
+    if (!(await withinRateLimit(userId))) {
+      const response = errorResponse('rate_limited', origin)
+      response.headers.set('Retry-After', String(RATE_LIMIT_WINDOW_SECONDS))
+      return response
+    }
+
     const route = parseRoute(new URL(request.url))
 
     if (route.kind === 'bad_route') {

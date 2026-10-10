@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { AppBackground } from '@/shared/components/AppBackground'
+import { LoadingState } from '@/shared/components/StateViews'
 import CardNav, { type CardNavItem } from '@/shared/components/reactbits/CardNav'
 import { LogoMark } from '@/shared/components/LogoMark'
 import { PlusIcon } from '@/shared/components/icons'
@@ -79,7 +80,9 @@ export function AppShell() {
 
       <main className={styles.main}>
         <div className={styles.container}>
-          <Outlet />
+          <Suspense fallback={<LoadingState message="Cargando…" />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
 

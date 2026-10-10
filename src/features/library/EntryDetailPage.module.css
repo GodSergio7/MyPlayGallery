@@ -191,3 +191,26 @@
   font-size: var(--font-size-sm);
   color: var(--color-error);
 }
+
+/* Aviso cuando IGDB no responde: la entrada se sigue viendo y editando */
+.notice {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-warning);
+  background: rgba(240, 192, 96, 0.08);
+  border: var(--border-width) solid rgba(240, 192, 96, 0.35);
+  border-radius: var(--radius-md);
+}
+
+.noticeAction {
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

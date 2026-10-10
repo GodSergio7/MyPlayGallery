@@ -3,17 +3,20 @@ import { AppShell } from './AppShell'
 import { AuthProvider } from './auth/AuthProvider'
 import { RequireAuth } from './auth/RequireAuth'
 import { ErrorBoundary } from './ErrorBoundary'
-import { NotFoundPage } from './NotFoundPage'
-import { DashboardPage } from '@/features/dashboard/DashboardPage'
-import { LibraryPage } from '@/features/library/LibraryPage'
-import { EntryDetailPage } from '@/features/library/EntryDetailPage'
-import { SearchPage } from '@/features/search/SearchPage'
-import { ExplorePage } from '@/features/explore/ExplorePage'
-import { GameInfoPage } from '@/features/game-info/GameInfoPage'
-import { GameDetailPage } from '@/features/game/GameDetailPage'
-import { SettingsPage } from '@/features/settings/SettingsPage'
-import { ProfilePage } from '@/features/profile/ProfilePage'
-import { SteamImportPage } from '@/features/settings/SteamImportPage'
+import { lazyNamed } from '@/shared/lib/lazyNamed'
+
+// Cada página se descarga al entrar en ella (T-06); AppShell muestra "Cargando…" mientras tanto.
+const NotFoundPage = lazyNamed(() => import('./NotFoundPage'), 'NotFoundPage')
+const DashboardPage = lazyNamed(() => import('@/features/dashboard/DashboardPage'), 'DashboardPage')
+const LibraryPage = lazyNamed(() => import('@/features/library/LibraryPage'), 'LibraryPage')
+const EntryDetailPage = lazyNamed(() => import('@/features/library/EntryDetailPage'), 'EntryDetailPage')
+const SearchPage = lazyNamed(() => import('@/features/search/SearchPage'), 'SearchPage')
+const ExplorePage = lazyNamed(() => import('@/features/explore/ExplorePage'), 'ExplorePage')
+const GameInfoPage = lazyNamed(() => import('@/features/game-info/GameInfoPage'), 'GameInfoPage')
+const GameDetailPage = lazyNamed(() => import('@/features/game/GameDetailPage'), 'GameDetailPage')
+const SettingsPage = lazyNamed(() => import('@/features/settings/SettingsPage'), 'SettingsPage')
+const SteamImportPage = lazyNamed(() => import('@/features/settings/SteamImportPage'), 'SteamImportPage')
+const ProfilePage = lazyNamed(() => import('@/features/profile/ProfilePage'), 'ProfilePage')
 
 export function App() {
   return (

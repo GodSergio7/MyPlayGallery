@@ -30,6 +30,8 @@ export interface LibraryRepository {
 export interface LibraryWithGames {
   entries: LibraryEntry[]
   games: Game[]
+  /** IGDB no ha respondido: las entradas se muestran sin título ni portada ("Juego desconocido"). */
+  gamesUnavailable: boolean
 }
 
 export const gamesRepository: GamesRepository = igdbGamesRepository
@@ -46,7 +48,13 @@ export const libraryRepository: LibraryRepository = {
 }
 
 export async function loadLibraryWithGames(): Promise<LibraryWithGames> {
+  // Tus datos están en Supabase: si IGDB falla (caído, sin cuota, tiempo agotado), la biblioteca
+  // se sigue mostrando con lo que tenemos en lugar de una pantalla de error.
   const entries = await libraryRepository.list()
-  const games = await gamesRepository.getByIds(entries.map((entry) => entry.externalId))
-  return { entries, games }
+  try {
+    const games = await gamesRepository.getByIds(entries.map((entry) => entry.externalId))
+    return { entries, games, gamesUnavailable: false }
+  } catch {
+    return { entries, games: [], gamesUnavailable: true }
+  }
 }

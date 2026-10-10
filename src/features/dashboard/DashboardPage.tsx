@@ -4,6 +4,7 @@ import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { formatAverage, formatHours } from '@/shared/lib/format'
 import { PageHeader } from '@/shared/components/PageHeader'
+import { IgdbNotice } from '@/shared/components/IgdbNotice'
 import { StatCard } from '@/shared/components/StatCard'
 import { Button } from '@/shared/components/Button'
 import { CoverImage } from '@/shared/components/CoverImage'
@@ -73,6 +74,7 @@ export function DashboardPage() {
   return (
     <>
       <PageHeader title="Inicio" />
+      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => libraryState.reload()} />}
 
       <section className={styles.stats} aria-label="Resumen de la biblioteca">
         <StatCard

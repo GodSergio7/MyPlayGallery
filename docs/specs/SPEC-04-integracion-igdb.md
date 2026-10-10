@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-04 |
 | Título | Integración de IGDB (datos externos de videojuegos) |
-| Versión | 0.4 |
+| Versión | 0.5 |
 | Estado | Aprobada |
 | Fecha | 2026-09-17 |
 | Autor | Responsable de producto |
@@ -19,6 +19,7 @@
 | 0.2 | 2026-09-16 | Resueltas las decisiones pendientes de la v0.1: `genres` opcional sin llamada adicional a `/genres`; `background_image`/`released` tratados como nullable; `page_size = 20` y primera página sin paginación; sin Auth/JWT ni rate limiting propio en SPEC-04; composición transitoria de `list()` sobre mock; atribución RAWG con hipervínculo en el footer; TanStack Query, Zod y estrategia de tests. |
 | 0.3 | 2026-09-16 | Cierre documental de las Fases 1–3. SPEC-04 pasa a **Aprobada**. Se añade "Estado de implementación" y se alinean las secciones con el estado real (incluida la eliminación de `VITE_RAWG_PROXY_URL`). |
 | 0.4 | 2026-09-17 | **Migración del proveedor externo de RAWG a IGDB.** La fuente externa pasa a ser la API de IGDB, consumida a través de la Edge Function `igdb-proxy`, que obtiene un access token de Twitch (OAuth2 Client Credentials) y lo reutiliza mientras es válido. Se sustituyen los tipos `Rawg*` por `Igdb*`, `rawgGamesRepository` por `igdbGamesRepository`, `invokeRawgProxy` por `invokeIgdbProxy` y la Edge Function `rawg-proxy` por `igdb-proxy`. El identificador de dominio `rawgId` pasa a `externalId` y la ruta `/game/:rawgId` a `/game/:gameId`. Se eliminan `RAWG_API_KEY` y las referencias activas a RAWG. Se mantienen sin cambios la arquitectura, la abstracción `GamesRepository`, TanStack Query, la UI/UX y el alcance de SPEC-04. |
+| 0.5 | 2026-10-10 | **Enmienda (T-01): `igdb-proxy` exige sesión de usuario y limita las peticiones.** Ya no basta la clave pública: la función valida el JWT con `auth.getUser` (el usuario de cada token se recuerda 60 s) y responde `401 unauthorized` sin sesión. Límite de **300 peticiones por minuto y usuario**, contado en Postgres (tabla `api_rate_limits` y función `hit_rate_limit`, migración `20261010000000`, solo ejecutable con la clave de servicio) para que valga para todas las copias de la función; al superarlo responde `429 rate_limited` con `Retry-After: 60`. Si el contador falla, no se bloquea al usuario. Sustituye a lo dicho más abajo de una función "sin Auth de usuario". **Además (T-03):** si IGDB falla, la biblioteca se sigue mostrando con "Juego desconocido" y un aviso, en lugar de una pantalla de error. |
 
 ## Leyenda de estados de decisión
 

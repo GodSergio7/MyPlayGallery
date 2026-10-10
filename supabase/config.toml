@@ -1,8 +1,7 @@
 project_id = "myplaygallery"
 
-# SPEC-04: el gateway de Supabase exige JWT (anon key) para invocar la funcion,
-# de modo que no queda completamente expuesta. No se implementa autenticacion
-# de usuario en esta fase; se abordara en SPEC-05/Auth.
+# El gateway exige un JWT (vale la clave publica) y, ademas, la propia funcion comprueba
+# que sea el de un usuario con sesion y limita las peticiones por usuario (T-01).
 [functions.igdb-proxy]
 verify_jwt = true
 

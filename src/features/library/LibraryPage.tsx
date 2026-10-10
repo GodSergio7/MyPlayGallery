@@ -4,6 +4,7 @@ import { GAME_STATUSES, type GameStatus } from '@/shared/types/domain'
 import { loadLibraryWithGames } from '@/data/repository'
 import { useAsync } from '@/shared/hooks/useAsync'
 import { PageHeader } from '@/shared/components/PageHeader'
+import { IgdbNotice } from '@/shared/components/IgdbNotice'
 import { SearchBar } from '@/shared/components/SearchBar'
 import { Button } from '@/shared/components/Button'
 import { GameGrid } from '@/shared/components/GameGrid'
@@ -198,6 +199,7 @@ export function LibraryPage() {
   return (
     <>
       <PageHeader title="Biblioteca" description={description} />
+      {libraryState.data?.gamesUnavailable && <IgdbNotice onRetry={() => libraryState.reload()} />}
 
       <section className={styles.toolbar} aria-label="Filtros de la biblioteca">
         <div className={styles.topRow}>

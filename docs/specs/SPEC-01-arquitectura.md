@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-01 |
 | Título | Arquitectura técnica |
-| Versión | 0.4 |
+| Versión | 0.5 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -19,6 +19,7 @@
 | 0.2 | 2026-09-16 | Resueltas las decisiones pendientes: estructura, oxlint, CSS Modules, React Router, estado/datos, Supabase Auth + RLS, RAWG sin persistir + Edge Function, Zod, testing y alias `@/`. |
 | 0.3 | 2026-09-16 | Aprobadas las decisiones de gestión de variables de entorno y de errores/carga. SPEC-01 aprobada. Unificada la nomenclatura a MyPlayGallery. |
 | 0.4 | 2026-10-08 | Enmienda por SPEC-05: Supabase Auth pasa de cuenta única a registro abierto (multiusuario). Se añaden `AuthProvider` y `RequireAuth` en `src/app/auth`. |
+| 0.5 | 2026-10-10 | **Carga bajo demanda (T-06).** Cada página se carga con `React.lazy` (ayudante `lazyNamed`) y un `Suspense` en `AppShell`; la pantalla de acceso solo se descarga sin sesión y el fondo `LineWaves` se carga aparte. Las librerías van en archivos propios (`react`, `supabase`, `datos` con TanStack Query y Zod, `gsap`, `ogl`) mediante `build.rolldownOptions.output.codeSplitting`. La descarga inicial con sesión pasa de 856 KB (256 KB comprimido) a unos 690 KB (210 KB), y las librerías quedan en caché entre versiones. |
 
 ## Leyenda de estados de decisión
 

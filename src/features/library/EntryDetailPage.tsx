@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { gamesRepository, libraryRepository } from '@/data/repository'
 import { errorMessage } from '@/data/errors'
 import { useAsync } from '@/shared/hooks/useAsync'
+import type { Game, LibraryEntry, Platform } from '@/shared/types/domain'
 import { formatDate, formatHours } from '@/shared/lib/format'
 import { Button } from '@/shared/components/Button'
 import { CoverImage } from '@/shared/components/CoverImage'
@@ -20,7 +21,12 @@ import styles from './EntryDetailPage.module.css'
 
 export function EntryDetailPage() {
   const { entryId } = useParams()
-  const id = entryId ?? ''
+  // La key hace que al pasar a otra entrada (p. ej. "También lo tienes en") el componente se monte
+  // de nuevo: el formulario, el modo edición y los avisos no se arrastran a la otra entrada.
+  return <EntryDetail key={entryId ?? ''} id={entryId ?? ''} />
+}
+
+function EntryDetail({ id }: { id: string }) {
   const navigate = useNavigate()
 
   const entryState = useAsync(() => libraryRepository.getById(id), [id])
@@ -41,7 +47,9 @@ export function EntryDetailPage() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
 
-  const game = gameState.data
+  // Si IGDB falla, la entrada se sigue viendo y editando ("Juego desconocido"): tus datos están en Supabase.
+  const game = gameState.error ? undefined : gameState.data
+  const gameUnavailable = Boolean(gameState.error)
   const siblings = (siblingsState.data ?? []).filter((item) => item.id !== id)
 
   function startEdit() {
@@ -56,7 +64,7 @@ export function EntryDetailPage() {
   }
 
   async function handleSave() {
-    if (!values || !game || !entry) {
+    if (!values || !entry) {
       return
     }
 
@@ -64,7 +72,7 @@ export function EntryDetailPage() {
     setActionError(null)
     try {
       await libraryRepository.update(id, {
-        ...formToInput(values, game.platforms),
+        ...formToInput(values, platformOptions(entry, game)),
         externalId: entry.externalId,
       })
       setEditing(false)
@@ -91,7 +99,7 @@ export function EntryDetailPage() {
     return <LoadingState message="Cargando…" />
   }
 
-  if (entryState.error || gameState.error || siblingsState.error) {
+  if (entryState.error || siblingsState.error) {
     return (
       <ErrorState
         onRetry={() => {
@@ -146,13 +154,23 @@ export function EntryDetailPage() {
           </div>
         </header>
 
+        {gameUnavailable && (
+          <p className={styles.notice} role="status">
+            No se ha podido cargar la información del juego desde IGDB. Tus datos están a salvo y puedes
+            editarlos; el título y la portada volverán cuando IGDB responda.{' '}
+            <button type="button" className={styles.noticeAction} onClick={() => gameState.reload()}>
+              Reintentar
+            </button>
+          </p>
+        )}
+
         {editing && values ? (
           <section className={styles.panel} aria-label="Editar">
             <h2 className={styles.panelTitle}>Editar</h2>
             <EntryFields
               idPrefix="edit-entry"
               values={values}
-              platforms={game?.platforms ?? []}
+              platforms={platformOptions(entry, game)}
               onChange={updateForm}
             />
             {actionError && (
@@ -262,6 +280,18 @@ export function EntryDetailPage() {
       </Modal>
     </>
   )
+}
+
+/**
+ * Plataformas del desplegable: las del juego en IGDB más la de la propia entrada, por si IGDB
+ * no responde o ya no la incluye (así nunca se pierde la plataforma guardada).
+ */
+function platformOptions(entry: LibraryEntry, game: Game | null | undefined): Platform[] {
+  const platforms = game?.platforms ?? []
+  if (platforms.some((platform) => platform.id === entry.platformId)) {
+    return platforms
+  }
+  return [{ id: entry.platformId, name: entry.platformName }, ...platforms]
 }
 
 function BackLink() {
