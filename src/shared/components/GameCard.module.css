@@ -73,9 +73,16 @@
   color: var(--color-text-secondary);
 }
 
-/* Fecha y nota abajo, alineadas en toda la fila aunque los títulos ocupen distinto */
-.metaRow {
+/* Móvil: fecha y nota al fondo, alineadas en toda la fila aunque los títulos ocupen distinto.
+   En escritorio van justo debajo del título (las plataformas cambian mucho de alto entre tarjetas). */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   margin-top: auto;
+}
+
+.metaRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,6 +109,10 @@
 }
 
 @media (min-width: 768px) {
+  .footer {
+    margin-top: 0;
+  }
+
   .card {
     gap: var(--space-3);
     padding: var(--space-3);

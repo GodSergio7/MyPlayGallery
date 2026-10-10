@@ -31,24 +31,26 @@ export function GameCard({ game, inLibrary = false, to }: GameCardProps) {
       </div>
       <div className={styles.body}>
         <h3 className={styles.title}>{game.title}</h3>
-        <div className={styles.metaRow}>
-          <p className={styles.meta}>{formatDate(game.released)}</p>
-          {game.rating !== null && (
-            <span className={styles.rating} title="Nota media en IGDB">
-              <StarIcon width={13} height={13} aria-hidden="true" />
-              {game.rating}
-            </span>
+        <div className={styles.footer}>
+          <div className={styles.metaRow}>
+            <p className={styles.meta}>{formatDate(game.released)}</p>
+            {game.rating !== null && (
+              <span className={styles.rating} title="Nota media en IGDB">
+                <StarIcon width={13} height={13} aria-hidden="true" />
+                {game.rating}
+              </span>
+            )}
+          </div>
+          {game.platforms.length > 0 && (
+            <ul className={styles.platforms}>
+              {game.platforms.slice(0, 3).map((platform) => (
+                <li key={platform.id}>
+                  <PlatformBadge name={platform.name} />
+                </li>
+              ))}
+            </ul>
           )}
         </div>
-        {game.platforms.length > 0 && (
-          <ul className={styles.platforms}>
-            {game.platforms.slice(0, 3).map((platform) => (
-              <li key={platform.id}>
-                <PlatformBadge name={platform.name} />
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </Link>
   )
