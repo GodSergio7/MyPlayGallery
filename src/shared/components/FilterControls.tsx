@@ -6,10 +6,26 @@ import styles from './FilterControls.module.css'
 // Piezas comunes de los filtros de Biblioteca y Explorar: fila de pastillas,
 // desplegable con forma de pastilla y selector de vista (cuadrícula / lista).
 
-/** Fila de pastillas: en móvil se desplaza en horizontal; en pantallas anchas, salta de línea. */
-export function FilterRow({ label, children }: { label?: string; children: ReactNode }) {
+/**
+ * Fila de filtros, sin desplazamiento horizontal:
+ * - "chips": las pastillas bajan a la línea siguiente cuando no caben.
+ * - "grid": en móvil, rejilla de 2 columnas (cada pastilla a media pantalla); en pantallas anchas, en línea.
+ */
+export function FilterRow({
+  label,
+  layout = 'chips',
+  children,
+}: {
+  label?: string
+  layout?: 'chips' | 'grid'
+  children: ReactNode
+}) {
   return (
-    <div className={styles.row} role={label ? 'group' : undefined} aria-label={label}>
+    <div
+      className={layout === 'grid' ? `${styles.row} ${styles.rowGrid}` : styles.row}
+      role={label ? 'group' : undefined}
+      aria-label={label}
+    >
       {children}
     </div>
   )
@@ -22,6 +38,7 @@ export function PillSelect({
   value,
   active,
   onChange,
+  className,
   children,
 }: {
   id: string
@@ -29,12 +46,15 @@ export function PillSelect({
   value: string
   active: boolean
   onChange: (value: string) => void
+  className?: string
   children: ReactNode
 }) {
+  const classes = [styles.pill, active && styles.pillActive, className].filter(Boolean).join(' ')
   return (
-    <div className={active ? `${styles.pill} ${styles.pillActive}` : styles.pill}>
+    <div className={classes}>
       <label htmlFor={id} className={styles.pillLabel}>
-        {label}:
+        {label}
+        <span className={styles.pillColon}>:</span>
       </label>
       <select id={id} className={styles.pillSelect} value={value} onChange={(event) => onChange(event.target.value)}>
         {children}

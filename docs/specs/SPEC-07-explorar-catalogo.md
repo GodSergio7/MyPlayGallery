@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-07 |
 | Título | Sección Explorar: catálogo completo con filtros y ordenación |
-| Versión | 0.3 |
+| Versión | 0.4 |
 | Estado | Aprobada |
 | Fecha | 2026-10-09 |
 | Autor | Responsable de producto |
@@ -18,6 +18,7 @@
 | 0.1 | 2026-10-09 | Creación inicial. Nueva sección `/explore` con el catálogo de IGDB, filtros, ordenación y scroll infinito. Refleja lo ya implementado. |
 | 0.2 | 2026-10-09 | Desde Explorar ya no se añade a la biblioteca: cada juego abre una **ficha informativa** (`/explore/:gameId`) con notas, descripción, tráileres, capturas, ficha técnica, duración, lanzamientos, tiendas y juegos similares. |
 | 0.3 | 2026-10-09 | Filtros con el mismo sistema que la Biblioteca (SPEC-03 v0.12): sin panel, buscador y cambio de vista arriba, **pastillas desplegables** (Consola, Género, Época, Nota y Orden) resaltadas cuando están activas, y la barra de letras como una fila más (desplazable en móvil). Desaparecen el botón "Filtros (n)" y la fila de filtros activos con "x". El recuento va acompañado de "Limpiar filtros" cuando hay filtros. Nueva **vista en lista** (portada, título, plataformas, "En tu biblioteca", año y nota), recordada en el navegador. Componentes compartidos en `shared/components/FilterControls` y `shared/hooks/useViewMode`. |
+| 0.4 | 2026-10-10 | La barra de letras solo se muestra a partir de 1100 px, donde cabe entera. Por debajo, la letra se elige con una pastilla más, "Letra", dentro de la rejilla de filtros (SPEC-03 v0.15). Nada se desplaza en horizontal. |
 
 ---
 

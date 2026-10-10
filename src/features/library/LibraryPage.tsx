@@ -232,7 +232,7 @@ export function LibraryPage() {
           ))}
         </FilterRow>
 
-        <FilterRow>
+        <FilterRow layout="grid">
           <PillSelect
             id="library-platform"
             label="Plataforma"

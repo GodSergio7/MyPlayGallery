@@ -4,7 +4,7 @@
 | --- | --- |
 | ID | SPEC-03 |
 | Título | UI/UX y diseño visual |
-| Versión | 0.14 |
+| Versión | 0.15 |
 | Estado | Aprobada |
 | Fecha | 2026-09-16 |
 | Autor | Responsable de producto |
@@ -29,6 +29,7 @@
 | 0.12 | 2026-10-09 | Nuevos filtros de la Biblioteca, sin caja ni etiquetas de formulario. Arriba, el buscador y el cambio de vista. Debajo, el **estado como pastillas** con punto de color y recuento (que respeta los demás filtros). Después, **Plataforma, Logros y Orden como pastillas desplegables**, resaltadas cuando no están en su valor por defecto, y "Limpiar filtros" junto al recuento ("X de Y juegos"), solo con filtros activos. En móvil, las filas de pastillas se desplazan en horizontal (desaparece el panel plegable "Filtros"). Nueva **vista en lista** (portada, título, plataforma, trofeo de platino o 100%, estado, nota y horas; columnas alineadas en escritorio), recordada en el navegador. |
 | 0.13 | 2026-10-09 | Barra de navegación: el botón "Añadir juego" pasa a ser un **botón redondo "+"** (mismo destino, `/search`; "Añadir juego" como etiqueta accesible) y a su lado un **enlace al perfil** con el avatar y el nombre. Con Steam conectado, el nombre y el avatar son los de la cuenta de Steam; si no, la parte del email antes de la @ y su inicial. En móvil, el "+" y el avatar (sin nombre) se ven junto a la hamburguesa. El perfil (`/profile`) es de momento una página provisional que remite a Ajustes. El CardNav sustituye `cta` por un hueco genérico `actions`. |
 | 0.14 | 2026-10-09 | Imagen para compartir (`public/og-image.jpg`, 1200 × 630, JPEG de unos 113 KB). Lleva el logo, "MyPlayGallery", "Tu biblioteca de juegos" y el lema a la izquierda; a la derecha, el mosaico de portadas de la pantalla de acceso, fundido con el fondo; y el dominio abajo. `index.html` incluye la meta descripción y las etiquetas Open Graph y Twitter (`summary_large_image`) con URLs absolutas a `https://myplaygallery.vercel.app`. |
+| 0.15 | 2026-10-10 | Filtros sin desplazamiento horizontal en ningún tamaño. En móvil, las pastillas desplegables (Biblioteca y Explorar) forman una **rejilla de 2 columnas**: cada filtro es una tarjeta con la etiqueta pequeña encima del valor, para que el valor no se recorte (si sobra uno, ocupa la fila entera). Las pastillas de estado de la Biblioteca bajan de línea cuando no caben. En pantallas anchas, todo sigue en línea. |
 
 ## Leyenda de estados de decisión
 

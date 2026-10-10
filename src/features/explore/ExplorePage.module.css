@@ -18,19 +18,10 @@
   min-width: 0;
 }
 
-/* ---------- Barra de letras ---------- */
+/* ---------- Letra ---------- */
 
-/* En móvil se desplaza en horizontal hasta el borde de la pantalla, como las pastillas */
+/* Por debajo de 1100 px, la letra se elige con una pastilla; la barra completa solo cuando cabe entera */
 .letters {
-  display: flex;
-  gap: 2px;
-  margin: 0 calc(var(--space-4) * -1);
-  padding: 2px var(--space-4);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.letters::-webkit-scrollbar {
   display: none;
 }
 
@@ -127,9 +118,14 @@
 /* Pantallas anchas: todas las letras en una fila, repartidas a partes iguales */
 @media (min-width: 1100px) {
   .letters {
-    margin: 0;
+    display: flex;
+    gap: 2px;
     padding: 2px 0;
-    overflow: visible;
+  }
+
+  /* .toolbar delante: gana a .pill (otro archivo) sin depender del orden de carga */
+  .toolbar .letterPill {
+    display: none;
   }
 
   .letter {

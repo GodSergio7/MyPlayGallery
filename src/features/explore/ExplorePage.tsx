@@ -70,7 +70,7 @@ export function ExplorePage() {
           <ViewToggle view={view} onChange={setView} />
         </div>
 
-        <FilterRow>
+        <FilterRow layout="grid">
           <PillSelect
             id="explore-platform"
             label="Consola"
@@ -145,6 +145,23 @@ export function ExplorePage() {
             {SORT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
+              </option>
+            ))}
+          </PillSelect>
+
+          {/* Hasta 1100 px la barra de letras no cabe: la letra se elige en esta pastilla */}
+          <PillSelect
+            id="explore-letter"
+            label="Letra"
+            value={filters.letter ?? ''}
+            active={filters.letter !== null}
+            onChange={(value) => update({ letter: value || null })}
+            className={styles.letterPill}
+          >
+            <option value="">Todas</option>
+            {LETTERS.map((letter) => (
+              <option key={letter} value={letter}>
+                {letter === '#' ? '# (números)' : letter}
               </option>
             ))}
           </PillSelect>

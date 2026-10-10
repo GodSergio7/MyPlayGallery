@@ -1,17 +1,20 @@
-/* ---------- Fila de pastillas ---------- */
+/* ---------- Filas de filtros (sin desplazamiento horizontal) ---------- */
 
 .row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 calc(var(--space-4) * -1);
-  padding: 2px var(--space-4);
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
-.row::-webkit-scrollbar {
-  display: none;
+/* Móvil: rejilla de 2 columnas; si queda una pastilla suelta al final, ocupa la fila entera */
+.rowGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rowGrid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 /* ---------- Desplegable con forma de pastilla ---------- */
@@ -21,7 +24,8 @@
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  min-height: 36px;
+  min-width: 0;
+  min-height: 40px;
   padding-left: var(--space-3);
   font-size: var(--font-size-sm);
   white-space: nowrap;
@@ -45,15 +49,16 @@
 }
 
 .pillLabel {
+  flex-shrink: 0;
   color: var(--color-text-secondary);
   cursor: pointer;
 }
 
-/* El select ocupa el resto de la pastilla; field-sizing ajusta su ancho a la opción elegida */
+/* El select ocupa el resto de la pastilla; en línea, field-sizing ajusta su ancho a la opción elegida */
 .pillSelect {
   field-sizing: content;
   max-width: 220px;
-  min-height: 34px;
+  min-height: 38px;
   padding: 0 30px 0 6px;
   font: inherit;
   font-weight: 600;
@@ -64,6 +69,44 @@
   border-radius: var(--radius-pill);
   appearance: none;
   cursor: pointer;
+}
+
+/* En la rejilla (móvil), cada filtro es una tarjeta con la etiqueta pequeña encima del valor:
+   así el valor tiene todo el ancho y no se recorta. */
+.rowGrid .pill {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-md);
+}
+
+.rowGrid .pillLabel {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+/* Los dos puntos sobran cuando la etiqueta va encima */
+.rowGrid .pillColon {
+  display: none;
+}
+
+.rowGrid .pillSelect {
+  field-sizing: fixed;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 0;
+  padding: 0 22px 0 0;
+  overflow: hidden;
+  line-height: 1.4;
+  border-radius: 0;
+}
+
+.rowGrid .pillChevron {
+  right: 12px;
 }
 
 .pillSelect:focus-visible {
@@ -141,12 +184,44 @@
   outline-offset: 1px;
 }
 
-/* En pantallas anchas las pastillas caben y no hace falta desplazar */
+/* Pantallas anchas: la rejilla vuelve a ser una fila de pastillas a su tamaño natural */
 @media (min-width: 768px) {
-  .row {
-    flex-wrap: wrap;
-    margin: 0;
-    padding: 2px 0;
-    overflow: visible;
+  .rowGrid {
+    display: flex;
+  }
+
+  .rowGrid > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+
+  .rowGrid .pill {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    min-height: 40px;
+    padding: 0 0 0 var(--space-3);
+    border-radius: var(--radius-pill);
+  }
+
+  .rowGrid .pillLabel {
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .rowGrid .pillColon {
+    display: inline;
+  }
+
+  .rowGrid .pillSelect {
+    field-sizing: content;
+    width: auto;
+    max-width: 220px;
+    min-height: 38px;
+    padding: 0 30px 0 6px;
+    border-radius: var(--radius-pill);
+  }
+
+  .rowGrid .pillChevron {
+    right: 11px;
   }
 }
